@@ -3,56 +3,29 @@
 
 ## Scope
 
-Chronological record of this chat up to, but not including, adoption of the
-collaboration protocol.
+Chronological continuation after the previously adopted state.
 
----
+## Search experiments
 
-## Research
+- Verified failed explicit searches replace the remembered search string.
+- Verified failed `:S` resets dot to B.
+- Verified counted searches match repeated-search semantics.
+- Verified repeated searches are non-overlapping.
+- Verified ordinary `S` raises SRH on failure.
+- Verified default case-insensitive search behaviour.
+- Verified failed counted searches expose no partial progress.
+- Compared bounded-search syntax:
+  - TECO-64 accepts documented `m,n:S`.
+  - TECOC rejects the syntax.
+- Used `G_` to expose the remembered search string.
+- Verified `G_` returns a copy by editing inserted text without changing subsequent null-search behaviour.
 
-- Continued TECO/EMACS reverse engineering.
-- Consolidated understanding that TECOC and TECO-64 should become the primary
-  experimental platforms.
-- Relegated TOPS-20 TECO to historical comparison except where architecture or
-  historical behaviour is under investigation.
+## Model evolution
 
-### Search investigations
+The search model advanced from inferred behaviour to a directly observable runtime-object model.
 
-Observations gathered:
+## Next experiments
 
-- remembered search string
-- null search reuse
-- searches start at current dot
-- no evidence for hidden continuation state
-
-Discussion shifted from command semantics toward modelling runtime search state.
-
-### EMACS discussion
-
-Reviewed evidence that:
-
-- EMACS extends TECO using MIDAS.
-- Command lookup occurs through M.M/Q-register M.
-- ..Q acts as a substantial internal data structure.
-- Runtime modelling appears more productive than treating EMACS as merely a
-  macro package.
-
-### Strategic conclusions
-
-- Focus future work on runtime objects.
-- Preserve dialect differences explicitly.
-- Prefer smallest discriminating experiment.
-
-## Methodology discussion
-
-Conversation broadened into improving collaboration methodology.
-
-Topics included:
-
-- separating Protocol, Project State and Session Log
-- reverse handover
-- explicit uncertainty
-- authority ordering
-- context management
-
-The session concluded with preparation to adopt the protocol.
+- Locate commands that directly manipulate the remembered search string.
+- Investigate search flags/options.
+- Continue runtime-object modelling.

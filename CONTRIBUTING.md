@@ -1,167 +1,77 @@
-# CONTRIBUTING.md
+# Contributing to Shared Reasoning
 
-## Welcome
+Thank you for your interest in improving **Shared Reasoning**.
 
-Thanks for contributing.
+This repository is an experiment in collaborative reasoning. The protocol evolves through **observed experience**, not speculation.
 
-This repository is designed for collaborative research in domains where documentation may be sparse, inconsistent, or unreliable (for example: legacy system/code archaeology).
+## Before proposing a change
 
-Primary objective: **improve shared understanding with traceable evidence**.
+Please ask yourself:
 
----
+* What happened?
+* Why was it a problem?
+* Is this a protocol issue, or is it specific to a particular project or domain?
+* What is the smallest change that would improve future collaboration?
 
-## Ground rules
+Whenever possible, describe **observations** rather than opinions.
 
-Before contributing, read:
+## Forks are encouraged
 
-1. `Protocol.md`
-2. `RATIONALE.md`
-3. `QUICK-START.md`
-4. relevant project `Project-State.md`
-5. relevant project `Session-Log.md` (latest entries first)
+Shared Reasoning is intended to be adapted.
 
-If these conflict, follow authority order defined in `Protocol.md`.
+If your work is specific to a domain—such as reverse engineering, software engineering, legal reasoning, scientific research, or another field—you are encouraged to **fork the repository** and evolve the protocol to suit your needs.
 
----
+Different domains may legitimately require different collaboration patterns.
 
-## Repository model
+## What belongs upstream?
 
-This repo uses stable artefact identities:
+Contributions are most valuable when they improve the general collaboration method rather than solving a domain-specific problem.
 
-- `Protocol.md` → collaboration method (changes rarely)
-- `Project-State.md` → current accepted project understanding
-- `Session-Log.md` → chronological reasoning and experiments
+Examples include:
 
-Do not create derivative filenames for normal maintenance (no suffixes/timestamps) unless explicitly requested by maintainers.
+* clarifying ambiguous wording;
+* improving collaboration workflows;
+* refining the protocol based on repeated observations;
+* improving documentation or examples;
+* correcting inconsistencies.
 
----
+## Reporting observations
 
-## What to contribute
+When opening an issue or pull request, it is usually sufficient to describe:
 
-Good contributions include:
+### Observation
 
-- new observations from source material or experiments
-- explicit competing hypotheses
-- contradiction reports
-- smallest discriminating experiment proposals
-- careful maintenance updates to project artefacts
+What happened?
 
-Avoid “polished certainty” without evidence.
+### Why it matters
 
----
+Why did it affect the collaboration?
 
-## Epistemic labeling (required)
+### Suggested improvement
 
-Label substantive claims as one of:
+What is the smallest change that would improve future collaborations?
 
-- Observation
-- Documentation
-- Inference
-- Hypothesis
-- Prediction
-- Verified Conclusion
+Evidence gathered through practical use is more valuable than hypothetical improvements.
 
-Do not silently promote one category into another.
+## About AI assistants
 
----
+AI coding assistants such as GitHub Copilot are welcome collaborators.
 
-## Promotion policy: Session-Log vs Project-State
+Please keep in mind that this repository is intentionally lightweight.
 
-### Keep in `Session-Log.md` when work is still exploratory:
+When suggesting repository structure or process:
 
-- intermediate reasoning
-- tentative hypotheses
-- dead ends
-- unresolved contradictions
-- unverified interpretations
+* prefer simplicity over bureaucracy;
+* prefer observed needs over anticipated ones;
+* avoid introducing process that increases friction without demonstrated benefit.
 
-### Promote to `Project-State.md` only when:
+The protocol should evolve because experience shows that it should—not because a repository is expected to have a particular governance structure.
 
-- experimentally verified, **or**
-- explicitly accepted as current working model
+## Guiding principle
 
-When promoting, include scope/limits and remaining uncertainty.
+**The protocol changes slowly. Evidence accumulates quickly.**
 
----
+The purpose of this repository is not to create the perfect protocol.
 
-## Minimal evidence block (recommended)
-
-Use this compact format in issues, PRs, or notes:
-
-- **Claim**:
-- **Type**: Observation / Inference / Hypothesis / etc.
-- **Evidence**:
-- **Confidence**: Low / Medium / High
-- **Scope**:
-- **Contradictions**:
-- **Next check**:
-
----
-
-## Pull request expectations
-
-A PR should clearly state:
-
-1. **Operation type**: Bootstrap / Maintenance / Handover / Reconstruction
-2. **What changed**
-3. **Why it changed**
-4. **Evidence basis**
-5. **What remains uncertain**
-6. **Recommended next step**
-
-If updating `Project-State.md`, include a short “promotion rationale”.
-
----
-
-## Preferred workflow
-
-1. Open an issue (or discussion) for non-trivial changes.
-2. State operation + scope before large edits.
-3. Keep commits focused and reversible.
-4. Preserve rejected paths in `Session-Log.md` (don’t erase useful dead ends).
-5. Ask for review when uncertainty is high.
-
----
-
-## Forking & specialization
-
-Forks are encouraged for domain-specific adaptations.
-
-If you specialize a fork:
-
-- preserve core artefact identities
-- document protocol deviations explicitly
-- keep epistemic discipline and uncertainty labeling
-- provide migration notes if terminology changes
-
-Upstream sync is easier when structure and naming remain stable.
-
----
-
-## Anti-patterns (please avoid)
-
-- Treating legacy docs as unquestioned truth
-- Replacing project evidence with generic prior knowledge
-- Dropping contradictory evidence to “tidy” narrative
-- Editing Project-State without explicit acceptance basis
-- Process-heavy changes that increase friction without better outcomes
-
----
-
-## Review criteria
-
-Contributions are evaluated on:
-
-- evidence quality
-- clarity of uncertainty
-- traceability of reasoning
-- reversibility of decisions
-- reduction of workflow friction
-- net improvement in shared project understanding
-
----
-
-## Maintainer note
-
-This is a canonical repository.  
-Contributors are welcome; forks for specialization are welcome; clarity and evidence are mandatory.
+It is to discover, through practical experience, how humans and reasoning systems collaborate most effectively on long-running investigations.
+tory.

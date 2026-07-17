@@ -1,6 +1,11 @@
 # Shared Reasoning
 
-A collaboration protocol for long-running reasoning between humans and LLMs.
+A protocol for long-running collaborative reasoning between humans and LLMs.
+
+This repository is an experiment in improving collaboration rather than
+individual answers. It provides a lightweight protocol for investigations
+where understanding evolves over time and documentation may be incomplete,
+contradictory or unreliable.
 
 Modern language models are remarkably good at answering questions.
 
@@ -8,10 +13,10 @@ Long-running investigations require something different.
 
 They require collaborators to:
 
-preserve accepted knowledge separately from exploratory reasoning;
-distinguish observation from inference;
-maintain a shared mental model as understanding evolves;
-improve collaboration rather than merely producing answers.
+- preserve accepted knowledge separately from exploratory reasoning;
+- distinguish observation from inference;
+- maintain a shared mental model as understanding evolves;
+- improve collaboration rather than merely producing answers.
 
 This repository is an experiment in building that kind of collaboration.
 

@@ -1,6 +1,23 @@
-# Collaborative ChatGPT prompts
+# Shared Reasoning
 
-This repository holds my ongoing work to create a working LLM prompt to do collaborative work on poor and/or unreliable documentation.
+A collaboration protocol for long-running reasoning between humans and LLMs.
+
+Modern language models are remarkably good at answering questions.
+
+Long-running investigations require something different.
+
+They require collaborators to:
+
+preserve accepted knowledge separately from exploratory reasoning;
+distinguish observation from inference;
+maintain a shared mental model as understanding evolves;
+improve collaboration rather than merely producing answers.
+
+This repository is an experiment in building that kind of collaboration.
+
+It began during reverse engineering of TECO and TOPS-20, where sparse and occasionally contradictory documentation repeatedly exposed the limitations of treating an LLM as a question-answering tool.
+
+The protocol has since evolved into a lightweight framework intended to support collaborative reasoning across multiple domains.
 
 ## Where to open issues (important)
 

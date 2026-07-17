@@ -19,6 +19,16 @@ It began during reverse engineering of TECO and TOPS-20, where sparse and occasi
 
 The protocol has since evolved into a lightweight framework intended to support collaborative reasoning across multiple domains.
 
+**The goal is not better prompts. The goal is better collaboration.**
+
+## Current Status
+
+This project is experimental.
+
+The protocol is currently being field-tested across multiple domains, including reverse engineering, software engineering and legal reasoning.
+
+Feedback based on practical experience is particularly valuable.
+
 ## Where to open issues (important)
 
 This repository’s issues are for **meta-level work**:

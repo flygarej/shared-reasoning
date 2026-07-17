@@ -12,8 +12,8 @@ This repository’s issues are for **meta-level work**:
 
 For **domain-specific research** (e.g., findings about a specific legacy system), use the relevant project artefacts/repo/fork:
 
-- `Project-State.md` for accepted current understanding
-- `Session-Log.md` for ongoing exploration and evidence trail
+- `project-state.md` for accepted current understanding
+- `session-log.md` for ongoing exploration and evidence trail
 
 If you open a domain issue here, please use it as a **pointer only** and link the target project location.
 

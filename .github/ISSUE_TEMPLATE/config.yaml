@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Collaboration protocol
+    url: https://github.com/flygarej/another-brick-in-the-wall/blob/main/protocol.md
+    about: Read Protocol.md and QUICK-START.md before opening complex issues.

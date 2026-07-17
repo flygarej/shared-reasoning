@@ -2,6 +2,21 @@
 
 This repository holds my ongoing work to create a working LLM prompt to do collaborative work on poor and/or unreliable documentation.
 
+## Where to open issues (important)
+
+This repository’s issues are for **meta-level work**:
+
+- protocol improvements
+- collaboration process
+- framework/tooling around the method
+
+For **domain-specific research** (e.g., findings about a specific legacy system), use the relevant project artefacts/repo/fork:
+
+- `Project-State.md` for accepted current understanding
+- `Session-Log.md` for ongoing exploration and evidence trail
+
+If you open a domain issue here, please use it as a **pointer only** and link the target project location.
+
 ### Overview
 
 - protocol.md sets the overall goal, a collaborative session where available sources are tested before they are added to the knowledge base. Basically it defines HOW we reason-

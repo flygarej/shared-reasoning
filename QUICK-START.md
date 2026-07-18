@@ -2,7 +2,8 @@
 
 ## Quick quick-start
 
-Use one of the packaged capsules to start up a pre-defined reasoning session, such as capsules/new-reasoning.md
+Use one of the packaged capsules to start up a pre-defined reasoning session, such as capsules/new-reasoning.md or capsules/learn-collaboration.md
+
 A capsule consists of protocol.md, rationale.md and a specific project-state and session-log concatenated together.  
 That capsule can be uploaded or pasted into a chat to get things up and running.
 Suggested initial prompt to get an overview of the project:

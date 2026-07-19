@@ -34,6 +34,13 @@ The protocol is currently being field-tested across multiple domains, including 
 
 Feedback based on practical experience is particularly valuable.
 
+### Latest changes
+
+I added support for inference-friendly domain-knowledge prompts that can be added to kick-start a new chat with information condensed from earlier chats. The trick here is to use the inference engine as much as possible, allowing it to infer from available sources while at the same time provide clear boundaries for when it should stop or not trust inferences. This works really good on knowledge that can be generated from rules.
+
+For examples, take a look in projects/teco/domain-teco.md and projects/teco/documentation-overview.md or the files in projects/macro-20/domain-llm. 
+Note that the domain knowledge may be organized different for different domains. This is a degree of freedom, not a fault.
+
 ## Who is this for?
 
 Shared Reasoning is intended for investigations where understanding evolves over time, for example:

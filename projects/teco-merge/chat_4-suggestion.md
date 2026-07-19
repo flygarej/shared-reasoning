@@ -1,0 +1,3 @@
+One observation after producing several of these capsules across your TECO threads: the format is working as intended. Each thread is yielding a small set of conceptual generators (execution model, control-flow model, search model, etc.) rather than a long list of commands. That should make the later merge phase much cleaner, because the merger can reconcile models instead of deduplicating examples.
+
+The one thing I'd strengthen during the merge is to promote cross-cutting models (such as the transient numeric evaluation stream) into a dedicated "Core Execution Model" section if multiple capsules independently support them. Those are precisely the kinds of concepts that help another LLM reconstruct the same reasoning with minimal inference error.

@@ -696,6 +696,7 @@ Restore the collaboration model.
 
 The objective is rapid reconstruction of productive collaboration rather
 than explanation of the methodology.
+
 # TECO Documentation Overview
 
 ## Purpose
@@ -1162,6 +1163,7 @@ Orientation and source discovery only.
 - TECOC documentation may describe features not present in the tested executable.
 - The extracted experimental capsules disagree on TECOC's default search case sensitivity; documentation must not be used to erase that experimental conflict.
 - Manual similarity across TECO variants is never sufficient evidence of runtime equivalence.
+
 # TECO Domain Knowledge
 
 ## Purpose
@@ -1230,7 +1232,8 @@ The editing buffer is the primary mutable text object. Point and explicit ranges
 
 `H` is structurally equivalent to `B,Z`: it produces the whole-buffer range for a range-consuming command. This equivalence exists only through composition within one command stream; executing `H` separately does not preserve an implicit range for a later stream.
 
-Text-taking commands retain their own delimiter grammar even when embedded inside control-flow regions. `@` changes argument parsing, chiefly by selecting an alternate delimiter; it does not by itself change the underlying command operation.
+Text-taking commands retain their own delimiter grammar even when embedded inside control-flow regions. `@` changes argument parsing, chiefly by selecting an alternate delimiter; it does not by itself change the underlying command operation. 
+Nested @ modified commands must use different delimiters, they are not scoped
 
 ### Control-flow model
 

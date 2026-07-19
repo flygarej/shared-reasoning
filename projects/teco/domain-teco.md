@@ -68,6 +68,8 @@ The editing buffer is the primary mutable text object. Point and explicit ranges
 
 Text-taking commands retain their own delimiter grammar even when embedded inside control-flow regions. `@` changes argument parsing, chiefly by selecting an alternate delimiter; it does not by itself change the underlying command operation.
 
+Nested @ modified commands must use different delimiters, they are not scoped
+
 ### Control-flow model
 
 Control flow is sequential unless changed by conditionals, iteration, or goto.

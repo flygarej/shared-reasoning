@@ -85,3 +85,6 @@ Rather than merely challenging conclusions.
 Repository considered sufficiently coherent for initial public release.
 
 Future protocol evolution should be driven by external experience rather than further speculative refinement.
+
+---
+

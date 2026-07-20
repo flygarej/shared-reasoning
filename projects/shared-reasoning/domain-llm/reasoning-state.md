@@ -15,3 +15,6 @@ Restore reasoning habits for maintaining domain knowledge.
     ones.
 -   Preserve open questions explicitly.
 -   Prefer one structural constraint over many factual details.
+
+---
+

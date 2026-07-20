@@ -1,4 +1,4 @@
-# TECO Domain Knowledge
+# TECO Domain Knowledge (teco/domain-teco.md)
 
 ## Purpose
 
@@ -250,3 +250,6 @@ Original TECO EMACS is layered on the TECO interpreter using:
 - Exact execution context preserved across nested `M` calls and Q-register push/pop.
 - Exact schema of `..Q`, generated `.:EJ` libraries, named-command storage, machine-language dispatch, and keyboard macro execution in TECO EMACS.
 - Precise boundary between shared TECO semantics and implementation-specific behaviour.
+
+---
+

@@ -14,3 +14,6 @@ Restore the project knowledge architecture.
 -   Serialization preserves artefact identity while enabling transport.
 -   Do not silently promote history or TODO items into accepted
     knowledge.
+
+---
+

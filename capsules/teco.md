@@ -641,45 +641,7 @@ It should improve collaboration between humans and language models regardless of
 The measure of success is therefore not whether an individual answer is better.
 
 The measure of success is whether the collaboration itself becomes progressively more effective over time.
-# Project-State.md
-
-## Placeholder
-
-This placeholder indicates that this is the start of a new project.
-
-If this placeholder is present, no project-specific state has yet been established.
-
-Do not infer or reconstruct project state.
-
-Instead, establish the project's scope and current state through collaboration with the user, following the guidance in protocol.md.
-
-Once sufficient project state has been established, remove this placeholder section and replace it with the current accepted project state.
-
-Future maintenance updates should preserve this document's identity by updating **project-State.md** rather than creating derivative filenames.
-
-The purpose of this document is to capture the project's current accepted understanding, enabling future conversations to resume work with minimal friction.
-
----
-# session-log.md
-
-## Placeholder
-
-This placeholder indicates that no project history has yet been established.
-
-If this placeholder is present, this is the beginning of a new project.
-
-Do not infer historical reasoning that has not yet occurred.
-
-Instead, establish the project through collaboration with the user, following the guidance in protocol.md.
-
-The first maintenance update should remove this placeholder and begin the chronological project log.
-
-Future maintenance updates should preserve this document's identity by updating **session-log.md** rather than creating derivative filenames.
-
-The purpose of this document is to preserve the project's chronological evolution so that future conversations can understand not only what is currently believed, but how those conclusions were reached.
-
----
-# Collaboration
+# Collaboration (common/collaboration-state.md)
 
 ## Purpose
 
@@ -697,7 +659,87 @@ Restore the collaboration model.
 The objective is rapid reconstruction of productive collaboration rather
 than explanation of the methodology.
 
-# TECO Documentation Overview
+---
+
+# Inference Policy (common/inference-policy.md)
+
+## Purpose
+
+Restore reasoning habits for maintaining domain knowledge.
+
+-   Store generators rather than enumerations.
+-   Store relationships rather than isolated facts.
+-   Add structural details only when they prevent important incorrect
+    inference.
+-   High-information-density knowledge constrains many future
+    inferences.
+-   Reasoning failures identify missing capsule constraints.
+-   Maintain capsules from observed failures rather than anticipated
+    ones.
+-   Preserve open questions explicitly.
+-   Prefer one structural constraint over many factual details.
+
+---
+
+## Example Generation Under Incomplete Local Semantics
+
+Generating executable examples requires both:
+
+- a correct structural model;
+- verified local semantics for every operator affecting correctness.
+
+Do not silently replace uncertain local semantics with plausible
+approximations.
+
+Instead:
+
+- identify the uncertain semantics;
+- preserve competing interpretations;
+- separate verified structure from candidate implementation;
+- propose the smallest discriminating experiment;
+- finalize examples only after local semantics are established.
+
+Observed inference failures identify missing reasoning constraints.
+
+---
+
+# Knowledge Representation (common/knowledge-arhitecture.md)
+
+## Purpose
+
+Restore the project knowledge architecture.
+
+-   Protocol defines collaboration.
+-   Rationale explains design intent.
+-   Project-State contains accepted knowledge.
+-   Session-Log preserves historical reasoning.
+-   Domain knowledge capsules restore conceptual models.
+-   Human documentation and reasoning capsules have different
+    optimization goals.
+-   Serialization preserves artefact identity while enabling transport.
+-   Do not silently promote history or TODO items into accepted
+    knowledge.
+# Reasoning Constraints (common/reasoning-constraints.md)
+
+## Purpose
+
+Constrain inference where observed failures show that plausible reasoning
+can outrun accepted knowledge.
+
+- A correct structural model does not establish exact local semantics.
+- Executable examples require verified semantics for every operation whose
+  precise behaviour affects correctness.
+- Do not replace uncertain local semantics with plausible approximations.
+- Separate verified structure from candidate implementation.
+- Preserve competing interpretations when evidence does not discriminate.
+- Prefer the smallest discriminating experiment.
+- Add constraints in response to observed failure classes rather than
+  anticipated possibilities.
+- Prefer one general constraint over many incident-specific prohibitions.
+
+---
+
+# TECO Documentation Overview (teco/documentation-teco-overview.md)
 
 ## Purpose
 
@@ -1164,7 +1206,9 @@ Orientation and source discovery only.
 - The extracted experimental capsules disagree on TECOC's default search case sensitivity; documentation must not be used to erase that experimental conflict.
 - Manual similarity across TECO variants is never sufficient evidence of runtime equivalence.
 
-# TECO Domain Knowledge
+---
+
+# TECO Domain Knowledge (teco/domain-teco.md)
 
 ## Purpose
 
@@ -1232,7 +1276,8 @@ The editing buffer is the primary mutable text object. Point and explicit ranges
 
 `H` is structurally equivalent to `B,Z`: it produces the whole-buffer range for a range-consuming command. This equivalence exists only through composition within one command stream; executing `H` separately does not preserve an implicit range for a later stream.
 
-Text-taking commands retain their own delimiter grammar even when embedded inside control-flow regions. `@` changes argument parsing, chiefly by selecting an alternate delimiter; it does not by itself change the underlying command operation. 
+Text-taking commands retain their own delimiter grammar even when embedded inside control-flow regions. `@` changes argument parsing, chiefly by selecting an alternate delimiter; it does not by itself change the underlying command operation.
+
 Nested @ modified commands must use different delimiters, they are not scoped
 
 ### Control-flow model
@@ -1415,62 +1460,52 @@ Original TECO EMACS is layered on the TECO interpreter using:
 - Exact execution context preserved across nested `M` calls and Q-register push/pop.
 - Exact schema of `..Q`, generated `.:EJ` libraries, named-command storage, machine-language dispatch, and keyboard macro execution in TECO EMACS.
 - Precise boundary between shared TECO semantics and implementation-specific behaviour.
-# Knowledge Representation
-
-## Purpose
-
-Restore the project knowledge architecture.
-
--   Protocol defines collaboration.
--   Rationale explains design intent.
--   Project-State contains accepted knowledge.
--   Session-Log preserves historical reasoning.
--   Domain knowledge capsules restore conceptual models.
--   Human documentation and reasoning capsules have different
-    optimization goals.
--   Serialization preserves artefact identity while enabling transport.
--   Do not silently promote history or TODO items into accepted
-    knowledge.
-# Reasoning State
-
-## Purpose
-
-Restore reasoning habits for maintaining domain knowledge.
-
--   Store generators rather than enumerations.
--   Store relationships rather than isolated facts.
--   Add structural details only when they prevent important incorrect
-    inference.
--   High-information-density knowledge constrains many future
-    inferences.
--   Reasoning failures identify missing capsule constraints.
--   Maintain capsules from observed failures rather than anticipated
-    ones.
--   Preserve open questions explicitly.
--   Prefer one structural constraint over many factual details.
 
 ---
 
-## Example-generation under command-local uncertainty
+# TECO Reasoning Constraints (teco/reasoning-contraints.md)
 
--   Exact TECO examples require verified command-local semantics, not
-    only a correct high-level structural program shape.
--   If exact command-local semantics for any operator needed by a
-    requested TECO program are not explicitly established in accepted
-    knowledge, do not silently infer them and do not present a final
-    program as correct.
--   Instead:
-    -   mark the relevant semantics as uncertain;
-    -   preserve any plausible competing interpretations;
-    -   separate a candidate program shape from verified command
-        behaviour;
-    -   ask for or propose the smallest collaborative step that would
-        discriminate between the interpretations;
-    -   finalize the program only after those command-local semantics
-        are established.
--   This applies especially to compact operators and modifier-sensitive
-    text commands, such as `@`-modified insertion forms and operators
-    like `%` whose local semantics may both mutate state and leave a
-    numeric result in the command stream.
--   Do not smooth compact TECO operators into generic structural
-    approximations.
+## Exact Program Generation
+
+- Exact TECO programs require verified command-local semantics, not only a
+  correct high-level program shape.
+- Treat compact operators and command modifiers as semantically dense.
+- Do not infer the value produced by an operator merely from the state
+  change it performs.
+- Do not infer delimiter behaviour across commands, modifiers,
+  implementations or interactive/file contexts.
+- When command-local semantics are uncertain, present only the verified
+  structural shape and identify the unresolved operation.
+- Finalize the program only after the relevant semantics are documented or
+  experimentally discriminated.
+  
+---
+
+## Semantically dense commands
+
+When generating executable examples, treat compact commands whose behavior depends on precise local semantics (for example %, ;, :S, X, G, M) as verification points.
+
+Do not substitute an intuitive interpretation based on other programming languages or overall program intent.
+
+Before finalizing executable code, verify that each such command is used according to its experimentally established local semantics.
+
+---
+
+## Failure classes
+
+- Structural correctness does not imply command-local correctness.
+- Control-flow operators (;, :;, %, O, etc.) are semantically dense. Their structural role does not determine their local semantics. When generating executable examples, verify the exact command-local exit conditions rather than inferring them from the intended control flow.
+- When a program depends on command-local behavior, verify that behavior against accepted project knowledge before generating executable examples.
+- If local semantics are uncertain, preserve the structural solution and identify the unresolved operator rather than silently choosing a plausible interpretation.
+- Side effects and produced values are independent semantic properties. Verify both.
+- Partial documentation can create false semantic completeness.
+  Documentation of a command’s syntax or side effect does not establish its produced value, error behavior, point movement, or modifier interaction. Treat each correctness-relevant dimension independently until documented or experimentally verified.
+
+---
+
+## Suggested strategy when handling failure classes
+
+On uncertain inference, ask collaborator for advice or input. If neither know how to resolve, devise a test to determine correct path forward.
+
+---
+

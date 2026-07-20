@@ -1,4 +1,4 @@
-# TECO Documentation Overview
+# TECO Documentation Overview (teco/documentation-teco-overview.md)
 
 ## Purpose
 
@@ -464,3 +464,6 @@ Orientation and source discovery only.
 - TECOC documentation may describe features not present in the tested executable.
 - The extracted experimental capsules disagree on TECOC's default search case sensitivity; documentation must not be used to erase that experimental conflict.
 - Manual similarity across TECO variants is never sufficient evidence of runtime equivalence.
+
+---
+

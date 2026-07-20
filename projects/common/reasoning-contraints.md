@@ -1,4 +1,4 @@
-# Reasoning Constraints
+# Reasoning Constraints (common/reasoning-constraints.md)
 
 ## Purpose
 
@@ -15,3 +15,6 @@ can outrun accepted knowledge.
 - Add constraints in response to observed failure classes rather than
   anticipated possibilities.
 - Prefer one general constraint over many incident-specific prohibitions.
+
+---
+

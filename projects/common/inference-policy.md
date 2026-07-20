@@ -1,4 +1,4 @@
-# Reasoning State
+# Inference Policy (common/inference-policy.md)
 
 ## Purpose
 
@@ -37,3 +37,6 @@ Instead:
 - finalize examples only after local semantics are established.
 
 Observed inference failures identify missing reasoning constraints.
+
+---
+

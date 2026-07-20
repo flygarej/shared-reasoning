@@ -1,4 +1,4 @@
-# Collaboration
+# Collaboration (common/collaboration-state.md)
 
 ## Purpose
 
@@ -15,3 +15,6 @@ Restore the collaboration model.
 
 The objective is rapid reconstruction of productive collaboration rather
 than explanation of the methodology.
+
+---
+

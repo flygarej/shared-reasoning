@@ -34,6 +34,9 @@ The protocol is currently being field-tested across multiple domains, including 
 
 Feedback based on practical experience is particularly valuable.
 
+The protocol + domain knowledge format have been tested with ChatGPT and Meta AI, using capsule teco.md. 
+That's enough domain knowledge about TECO packaged into ~700 lines plus 700 lines for handling the collaboration to discuss TECO code, and the LLM is even fairly good at producing simple programs.
+
 ### Latest changes
 
 I added support for inference-friendly domain-knowledge prompts that can be added to kick-start a new chat with information condensed from earlier chats. The trick here is to use the inference engine as much as possible, allowing it to infer from available sources while at the same time provide clear boundaries for when it should stop or not trust inferences. This works really good on knowledge that can be generated from rules.

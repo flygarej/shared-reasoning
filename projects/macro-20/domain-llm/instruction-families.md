@@ -36,3 +36,96 @@ dispatches execution to the actual privileged routine.
 JSR non-reentrant. JSP reentrant. JFCL test+clear flags. XCT executes
 instruction from memory.
 
+## Shift Family
+
+Grammar
+
+Dimension 1
+
+- Logical
+- Arithmetic
+- Rotate
+
+Dimension 2
+
+- Single-word
+- Combined (AC,AC+1)
+
+Resulting family
+
+LSH   LSHC
+ASH   ASHC
+ROT   ROTC
+
+Generator
+
+The C suffix denotes operation on the concatenated doubleword AC,AC+1.
+
+## Arithmetic Families
+
+Shared destination grammar
+
+(blank)
+    memory operand, result to AC
+
+I
+    immediate operand
+
+M
+    result written to memory
+
+B
+    result written to both AC and memory
+
+Families using this grammar
+
+ADD
+SUB
+IMUL
+
+## Width hierarchy
+
+Arithmetic operations scale by operand width.
+
+IMUL
+    one-word product
+
+MUL
+    two-word product
+
+DMUL
+    four-word product
+
+IDIV
+    one-word dividend
+
+DIV
+    two-word dividend
+
+DDIV
+    four-word dividend
+	
+## Floating-point grammar
+
+Single precision
+
+F
++
+operation
++
+optional rounding
++
+destination variant
+
+Double precision
+
+DF
++
+operation
+
+Operations
+
+AD
+SB
+MP
+DV

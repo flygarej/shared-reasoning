@@ -3,6 +3,18 @@
 ## Project
 **MACRO-20 on TOPS-20 (Bootstrap phase)**
 
+## Domain Knowledge
+
+Current project knowledge is maintained in:
+
+- Data-Representation.md
+- Addressing.md
+- Instruction-Families.md
+- Memory-Operations.md
+- Arithmetic.md
+
+Project-State intentionally contains only the current project overview and accepted high-level model.
+
 ### Objective
 Develop a rigorous understanding of MACRO-20, the PDP-10 architecture it exposes, and the TOPS-20 monitor interface through documentation and experiment.
 
@@ -16,26 +28,34 @@ Develop a rigorous understanding of MACRO-20, the PDP-10 architecture it exposes
 - Workflow verified: .MAC → COMPILE → .REL → LOAD → SAVE → execute.
 - First Hello World assembled and executed successfully.
 - Missing newline after END causes MCRNES 'NO END STATEMENT ENCOUNTERED'.
+- Completed the core architecture chapters of Gorin through arithmetic.
 
 ## Current Model
-- PDP-10 words are 36 bits, two's complement.
-- Five 7-bit ASCII characters pack into one word.
-- ASCII packs only characters.
-- ASCIZ appends a terminating zero byte.
-- Normal instruction fields: opcode, AC, I, X, Y.
-- Effective address is computed before execution.
-- JSYS arguments normally use AC1–AC4.
-- HRROI builds a common byte pointer for PSOUT.
-- MOVE family is a regular instruction matrix.
-- JRST uses the AC field to select related operations.
-- JSR is non-reentrant, JSP reentrant, XCT executes an instruction from memory.
+
+Core architectural model established.
+
+Accepted conceptual areas:
+
+- Data representation.
+- Effective address calculation.
+- Instruction families.
+- Fixed and floating-point arithmetic.
+- Basic JSYS calling convention.
+
+Detailed knowledge has been moved into domain documents.
 
 ## Open Questions
 - Hexadecimal syntax in MACRO-20.
 - Detailed JSYS encoding.
 - Processor flags.
-- Stack instructions (PUSH/PUSHJ/POPJ).
 - Byte pointer internals.
+- Exact IDIVM/DIVM remainder semantics.
+- Verify accumulator relationship to low memory.
+- Verify floating-point field layout (possible transcription ambiguity).
 
 ## Next
-Continue Gorin through tests, booleans, stack operations and arithmetic, validating interesting claims experimentally.
+Continue Gorin:
+
+- Macro facilities.
+- Conditional assembly.
+- Local UUOs.

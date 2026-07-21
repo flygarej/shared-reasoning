@@ -641,56 +641,98 @@ It should improve collaboration between humans and language models regardless of
 The measure of success is therefore not whether an individual answer is better.
 
 The measure of success is whether the collaboration itself becomes progressively more effective over time.
-# Collaboration
+# Project-State.md
 
-## Purpose
+## Project
+**MACRO-20 on TOPS-20 (Bootstrap phase)**
 
-Restore the collaboration model.
+## Domain Knowledge
 
--   Shared Reasoning optimizes collaboration rather than prompts.
--   Distinguish methodology from project knowledge.
--   Evidence precedes inference.
--   Preserve working models until verified.
--   Prefer the smallest discriminating experiment.
--   Separate accepted knowledge from historical reasoning.
--   Improve abstractions before adding rules.
--   Ask for missing context rather than silently inventing it.
+Current project knowledge is maintained in:
 
-The objective is rapid reconstruction of productive collaboration rather
-than explanation of the methodology.
-# Knowledge Representation
+- Data-Representation.md
+- Addressing.md
+- Instruction-Families.md
+- Memory-Operations.md
+- Arithmetic.md
 
-## Purpose
+Project-State intentionally contains only the current project overview and accepted high-level model.
 
-Restore the project knowledge architecture.
+### Objective
+Develop a rigorous understanding of MACRO-20, the PDP-10 architecture it exposes, and the TOPS-20 monitor interface through documentation and experiment.
 
--   Protocol defines collaboration.
--   Rationale explains design intent.
--   Project-State contains accepted knowledge.
--   Session-Log preserves historical reasoning.
--   Domain knowledge capsules restore conceptual models.
--   Human documentation and reasoning capsules have different
-    optimization goals.
--   Serialization preserves artefact identity while enabling transport.
--   Do not silently promote history or TODO items into accepted
-    knowledge.
-# Reasoning State
+## Collaboration Method
+- Follow Protocol.md v1.0.2.
+- Distinguish Observation, Documentation, Inference, Hypothesis, Prediction and Verified Conclusion.
+- Prefer experiments over speculation.
 
-## Purpose
+## Verified Findings
+- Panda KLH10/TOPS-20 MACRO-20 toolchain works.
+- Workflow verified: .MAC → COMPILE → .REL → LOAD → SAVE → execute.
+- First Hello World assembled and executed successfully.
+- Missing newline after END causes MCRNES 'NO END STATEMENT ENCOUNTERED'.
+- Completed the core architecture chapters of Gorin through arithmetic.
 
-Restore reasoning habits for maintaining domain knowledge.
+## Current Model
 
--   Store generators rather than enumerations.
--   Store relationships rather than isolated facts.
--   Add structural details only when they prevent important incorrect
-    inference.
--   High-information-density knowledge constrains many future
-    inferences.
--   Reasoning failures identify missing capsule constraints.
--   Maintain capsules from observed failures rather than anticipated
-    ones.
--   Preserve open questions explicitly.
--   Prefer one structural constraint over many factual details.
+Core architectural model established.
+
+Accepted conceptual areas:
+
+- Data representation.
+- Effective address calculation.
+- Instruction families.
+- Fixed and floating-point arithmetic.
+- Basic JSYS calling convention.
+
+Detailed knowledge has been moved into domain documents.
+
+## Open Questions
+- Hexadecimal syntax in MACRO-20.
+- Detailed JSYS encoding.
+- Processor flags.
+- Byte pointer internals.
+- Exact IDIVM/DIVM remainder semantics.
+- Verify accumulator relationship to low memory.
+- Verify floating-point field layout (possible transcription ambiguity).
+
+## Next
+Continue Gorin:
+
+- Macro facilities.
+- Conditional assembly.
+- Local UUOs.
+# Session-Log.md
+
+## Bootstrap
+
+Read Protocol, RATIONALE and placeholder project artefacts.
+
+Established a new project exploring MACRO-20 on TOPS-20.
+
+### Experiments
+
+- Wrote first Hello World.
+- Initial compile failed due to missing newline after END.
+- Recompiled successfully.
+- Loaded, saved and executed the program.
+
+### Documentation Covered
+
+- Hello World example.
+- SEARCH MONSYM.
+- JSYS overview.
+- HRROI and PSOUT.
+- ASCII vs ASCIZ.
+- 36-bit architecture.
+- Effective addressing.
+- MOVE family.
+- EXCH.
+- JRST, JSR, JSP, JFCL, JFFO, XCT.
+
+### Emerging Model
+
+Gorin teaches architecture first, syntax second. MACRO-20 closely exposes the PDP-10 architecture. Continue with tests, booleans and stack operations.
 # Addressing
 
 Instruction fields: opcode, AC, I, X, Y.
@@ -704,6 +746,78 @@ Immediate instructions use the address field itself.
 
 Current JSYS model: arguments usually in AC1-AC4; HRROI builds a byte
 pointer for PSOUT.
+
+## Boundary
+
+Effective address is computed before instruction execution.
+
+Instructions that modify values involved in their own effective address calculation produce undefined or unpredictable behaviour.
+
+Verified example:
+
+- BLT must not use its own accumulator as an index register because BLT updates that accumulator while executing.
+# Arithmetic (arithmetic.md)
+
+## Fixed point
+
+### Width model
+
+Single-word
+Double-word
+Quad-word
+
+Arithmetic instructions expand naturally with operand width.
+
+## Multiplication
+
+IMUL
+    one-word result
+
+MUL
+    double-word result
+
+DMUL
+    quadruple-word result
+
+## Division
+
+Division produces two outputs:
+
+- quotient
+- remainder
+
+Known asymmetry
+
+IDIVM and DIVM require verification of remainder handling.
+
+## Floating point
+
+Representation
+
+Single precision
+Double precision
+
+Instruction grammar
+
+F/DF
++
+operation
++
+optional rounding
++
+destination variant
+
+Conversions
+
+FIX
+FIXR
+FLTR
+FSC
+
+Open questions
+
+- Verify exact floating-point bit layout.
+- Verify complete floating instruction matrix.
 # Data Representation
 
 -   36-bit words.
@@ -753,75 +867,119 @@ dispatches execution to the actual privileged routine.
 JSR non-reentrant. JSP reentrant. JFCL test+clear flags. XCT executes
 instruction from memory.
 
-# Project-State.md
+## Shift Family
 
-## Project
-**MACRO-20 on TOPS-20 (Bootstrap phase)**
+Grammar
 
-### Objective
-Develop a rigorous understanding of MACRO-20, the PDP-10 architecture it exposes, and the TOPS-20 monitor interface through documentation and experiment.
+Dimension 1
 
-## Collaboration Method
-- Follow Protocol.md v1.0.2.
-- Distinguish Observation, Documentation, Inference, Hypothesis, Prediction and Verified Conclusion.
-- Prefer experiments over speculation.
+- Logical
+- Arithmetic
+- Rotate
 
-## Verified Findings
-- Panda KLH10/TOPS-20 MACRO-20 toolchain works.
-- Workflow verified: .MAC → COMPILE → .REL → LOAD → SAVE → execute.
-- First Hello World assembled and executed successfully.
-- Missing newline after END causes MCRNES 'NO END STATEMENT ENCOUNTERED'.
+Dimension 2
 
-## Current Model
-- PDP-10 words are 36 bits, two's complement.
-- Five 7-bit ASCII characters pack into one word.
-- ASCII packs only characters.
-- ASCIZ appends a terminating zero byte.
-- Normal instruction fields: opcode, AC, I, X, Y.
-- Effective address is computed before execution.
-- JSYS arguments normally use AC1–AC4.
-- HRROI builds a common byte pointer for PSOUT.
-- MOVE family is a regular instruction matrix.
-- JRST uses the AC field to select related operations.
-- JSR is non-reentrant, JSP reentrant, XCT executes an instruction from memory.
+- Single-word
+- Combined (AC,AC+1)
 
-## Open Questions
-- Hexadecimal syntax in MACRO-20.
-- Detailed JSYS encoding.
-- Processor flags.
-- Stack instructions (PUSH/PUSHJ/POPJ).
-- Byte pointer internals.
+Resulting family
 
-## Next
-Continue Gorin through tests, booleans, stack operations and arithmetic, validating interesting claims experimentally.
-# Session-Log.md
+LSH   LSHC
+ASH   ASHC
+ROT   ROTC
 
-## Bootstrap
+Generator
 
-Read Protocol, RATIONALE and placeholder project artefacts.
+The C suffix denotes operation on the concatenated doubleword AC,AC+1.
 
-Established a new project exploring MACRO-20 on TOPS-20.
+## Arithmetic Families
 
-### Experiments
+Shared destination grammar
 
-- Wrote first Hello World.
-- Initial compile failed due to missing newline after END.
-- Recompiled successfully.
-- Loaded, saved and executed the program.
+(blank)
+    memory operand, result to AC
 
-### Documentation Covered
+I
+    immediate operand
 
-- Hello World example.
-- SEARCH MONSYM.
-- JSYS overview.
-- HRROI and PSOUT.
-- ASCII vs ASCIZ.
-- 36-bit architecture.
-- Effective addressing.
-- MOVE family.
-- EXCH.
-- JRST, JSR, JSP, JFCL, JFFO, XCT.
+M
+    result written to memory
 
-### Emerging Model
+B
+    result written to both AC and memory
 
-Gorin teaches architecture first, syntax second. MACRO-20 closely exposes the PDP-10 architecture. Continue with tests, booleans and stack operations.
+Families using this grammar
+
+ADD
+SUB
+IMUL
+
+## Width hierarchy
+
+Arithmetic operations scale by operand width.
+
+IMUL
+    one-word product
+
+MUL
+    two-word product
+
+DMUL
+    four-word product
+
+IDIV
+    one-word dividend
+
+DIV
+    two-word dividend
+
+DDIV
+    four-word dividend
+	
+## Floating-point grammar
+
+Single precision
+
+F
++
+operation
++
+optional rounding
++
+destination variant
+
+Double precision
+
+DF
++
+operation
+
+Operations
+
+AD
+SB
+MP
+DV
+# Memory Operations (memory-operations.md)
+
+## BLT
+
+Principle
+
+The BLT accumulator contains the moving source and destination addresses.
+
+Generator
+
+The accumulator is updated during execution.
+
+Consequences
+
+- BLT modifies its own accumulator.
+- Never use that accumulator during EA calculation.
+- Copy proceeds from low addresses upward.
+- If BLT overwrites its own accumulator, that must be the final destination.
+- If BLT overwrites the BLT instruction, that must be the final destination.
+
+Boundary
+
+Overlapping copies require careful ordering because BLT copies upward.

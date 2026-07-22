@@ -31,3 +31,9 @@ Examples:
 - elimination of major competing hypotheses
 - completion of a chapter or subsystem
 - Project-State requires substantial revision
+
+## Project TODO's
+
+### Dig deeper into macro processing
+
+Revisit MACRO-20 macro expansion semantics after the introductory chapters: nested angle brackets, argument substitution, rescanning, redefinition, and emitted source.

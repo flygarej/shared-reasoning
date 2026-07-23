@@ -1,3 +1,5 @@
+<!-- protocol.md -->
+
 # protocol.md
 ## Version 1.0.2
 
@@ -145,7 +147,7 @@ Transfer work between conversations.
 Read:
 
 - protocol.md
-- project-state.md
+- project-State.md
 
 Optionally read:
 
@@ -326,6 +328,10 @@ The protocol succeeds when:
 The objective is not to appear intelligent.
 
 The objective is to become progressively less wrong together.
+
+
+<!-- rationale.md -->
+
 # rationale.md
 
 > This document explains the reasoning behind the collaboration protocol.
@@ -641,6 +647,10 @@ It should improve collaboration between humans and language models regardless of
 The measure of success is therefore not whether an individual answer is better.
 
 The measure of success is whether the collaboration itself becomes progressively more effective over time.
+
+
+<!-- projects/common/collaboration-state.md -->
+
 # Collaboration (common/collaboration-state.md)
 
 ## Purpose
@@ -660,6 +670,10 @@ The objective is rapid reconstruction of productive collaboration rather
 than explanation of the methodology.
 
 ---
+
+
+
+<!-- projects/common/inference-policy.md -->
 
 # Inference Policy (common/inference-policy.md)
 
@@ -703,6 +717,10 @@ Observed inference failures identify missing reasoning constraints.
 
 ---
 
+
+
+<!-- projects/common/knowledge-architecture.md -->
+
 # Knowledge Representation (common/knowledge-arhitecture.md)
 
 ## Purpose
@@ -719,6 +737,10 @@ Restore the project knowledge architecture.
 -   Serialization preserves artefact identity while enabling transport.
 -   Do not silently promote history or TODO items into accepted
     knowledge.
+
+
+<!-- projects/common/reasoning-contraints.md -->
+
 # Reasoning Constraints (common/reasoning-constraints.md)
 
 ## Purpose
@@ -739,7 +761,11 @@ can outrun accepted knowledge.
 
 ---
 
-# TECO Documentation Overview (teco/documentation-teco-overview.md)
+
+
+<!-- projects/emacs-teco/state/documentation-teco-overview.md -->
+
+# TECO Documentation Overview
 
 ## Purpose
 
@@ -1206,9 +1232,197 @@ Orientation and source discovery only.
 - The extracted experimental capsules disagree on TECOC's default search case sensitivity; documentation must not be used to erase that experimental conflict.
 - Manual similarity across TECO variants is never sufficient evidence of runtime equivalence.
 
----
 
-# TECO Domain Knowledge (teco/domain-teco.md)
+<!-- projects/emacs-teco/state/project-state.md -->
+
+# Project-State.md
+
+## Scope
+
+State of the TECO / TECO EMACS research project after the conditional-control-flow
+investigations.
+
+# Verified Conclusions
+
+## Research methodology
+
+- Primary experimental targets are TECOC and TECO-64.
+- TOPS-20 TECO is primarily a historical reference implementation.
+- Original TECO EMACS is used when investigating architecture.
+
+## Search model
+
+### Verified
+
+- The current search string is a persistent runtime object.
+- `G_` copies the current search string into the buffer.
+- Explicit searches update the current search string even when the search fails.
+- Null searches reuse the remembered search string.
+- Searches begin at the current dot.
+- Successful searches leave dot immediately after the match.
+- Successive searches are non-overlapping.
+- Counted searches (`n:S`) locate the nth occurrence from the current dot.
+- Failed counted searches expose no partial progress and leave dot at B.
+- Failed `:S` returns 0; successful `:S` returns -1.
+- Ordinary `S` signals SRH on failure.
+- Default TECOC search is case-insensitive.
+- Editing text produced by `G_` does not modify the remembered search string.
+
+### Working Model
+
+Persistent search state consists minimally of:
+
+- current dot
+- remembered search string
+
+Installing the search string and executing the search are distinct phases.
+
+## Conditional execution model
+
+### Verified
+
+- Untaken conditional branches are not executed.
+- Untaken branches are scanned with sufficient syntax awareness to locate the
+  correct conditional delimiters.
+- Nested conditionals are balanced while scanning untaken branches.
+- Delimited insertion text (`@I/.../`) is recognized during dead-branch scanning,
+  preventing embedded `'` and `|` from terminating the branch.
+- Semantic command execution does not occur while scanning untaken branches.
+- Command errors inside untaken branches are ignored.
+- Iteration delimiters (`<...>`) are not balanced while scanning untaken branches.
+
+### Working Model
+
+Dead branches undergo selective structural scanning rather than full parsing.
+The scanner tracks only syntax required to locate the matching conditional
+delimiter.
+
+## Conditional tests
+
+### Verified
+
+Numeric tests:
+
+- `"E` selects zero.
+- `"N` selects non-zero.
+- `"L` selects negative values.
+- `"G` selects positive values.
+
+Character tests:
+
+- `"A` recognizes alphabetic character codes.
+- `"D` recognizes decimal digit character codes.
+- `"C` recognizes symbol constituents.
+- TECOC classifies letters, digits and underscore as symbol constituents.
+- Hyphen and space are not symbol constituents.
+
+The character tests operate on the numeric value produced by the preceding
+expression, not only on numeric literals.
+
+## Iteration interaction
+
+### Verified
+
+- `n;` exits the current iteration when `n >= 0`.
+- A conditional can control iteration exit by conditionally executing `n;`.
+- Bare `;` is the search-status form and is not an unconditional iteration exit.
+
+## Dialect understanding
+
+- TOPS-20 TECO is an older, smaller dialect.
+- TECOC and TECO-64 are closer to later Standard TECO.
+- TECO-64 supports documented bounded-search syntax (`m,n:S`).
+- TECOC rejects the same syntax; treat this as a dialect difference pending
+  further evidence.
+
+## EMACS architecture
+
+- EMACS extends TECO using MIDAS.
+- Long command names resolve through M.M.
+- Q-register M preserves MM compatibility.
+- Q-register ..Q is a substantial dispatch structure.
+
+## Active Questions
+
+- Remaining conditional tests.
+- Expression evaluation semantics for conditional predicates.
+- Safe branch contents beyond current experiments.
+- Command-stream model and ESC semantics.
+
+
+
+
+
+<!-- projects/emacs-teco/state/session-log.md -->
+
+# Session-Log.md
+
+## Scope
+
+Chronological continuation after the previous project state.
+
+## Conditional parser experiments
+
+- Verified untaken branches do not execute erroneous commands.
+- Verified command errors inside untaken branches are ignored.
+- Verified dead branches correctly balance nested conditionals.
+- Verified dead-branch scanning recognizes `@I/.../` text delimiters and ignores
+  embedded conditional delimiter characters.
+- Verified dead-branch scanning does not require balanced iteration delimiters.
+- Refined the parser model from "lazy execution" to selective structural scanning.
+
+## Iteration interaction
+
+- Revisited interaction between conditionals and `;`.
+- Identified incorrect assumption that bare `;` is an unconditional iteration exit.
+- Confirmed documented distinction:
+  - `;` / `:;` inspect search success.
+  - `n;` / `n:;` inspect the supplied numeric argument.
+- Verified a conditional can control iteration exit by executing `0;`.
+
+## Conditional tests
+
+Verified:
+
+- `"N`
+- `"L`
+- `"E`
+- `"G`
+- `"A`
+- `"D`
+- Initial characterization of `"C`.
+
+Observed TECOC `"C` classification:
+
+- alphabetic → true
+- decimal digit → true
+- underscore → true
+- hyphen → false
+- space → false
+
+Verified that character-class conditionals operate on the numeric value produced
+by the preceding expression (e.g. `0A`), not only on numeric literals.
+
+## Working model evolution
+
+The conditional model evolved from a simple execution/no-execution model to a
+two-stage model:
+
+1. selective structural scanning;
+2. conditional execution.
+
+## Next experiments
+
+- Complete remaining conditional predicates.
+- Investigate expression evaluation semantics.
+- Explore additional legal branch contents.
+- Continue refining the command-stream execution model.
+
+
+
+<!-- projects/emacs-teco/domain/domain-teco.md -->
+
+# TECO Domain Knowledge
 
 ## Purpose
 
@@ -1277,8 +1491,6 @@ The editing buffer is the primary mutable text object. Point and explicit ranges
 `H` is structurally equivalent to `B,Z`: it produces the whole-buffer range for a range-consuming command. This equivalence exists only through composition within one command stream; executing `H` separately does not preserve an implicit range for a later stream.
 
 Text-taking commands retain their own delimiter grammar even when embedded inside control-flow regions. `@` changes argument parsing, chiefly by selecting an alternate delimiter; it does not by itself change the underlying command operation.
-
-Nested @ modified commands must use different delimiters, they are not scoped
 
 ### Control-flow model
 
@@ -1461,51 +1673,4 @@ Original TECO EMACS is layered on the TECO interpreter using:
 - Exact schema of `..Q`, generated `.:EJ` libraries, named-command storage, machine-language dispatch, and keyboard macro execution in TECO EMACS.
 - Precise boundary between shared TECO semantics and implementation-specific behaviour.
 
----
-
-# TECO Reasoning Constraints (teco/reasoning-contraints.md)
-
-## Exact Program Generation
-
-- Exact TECO programs require verified command-local semantics, not only a
-  correct high-level program shape.
-- Treat compact operators and command modifiers as semantically dense.
-- Do not infer the value produced by an operator merely from the state
-  change it performs.
-- Do not infer delimiter behaviour across commands, modifiers,
-  implementations or interactive/file contexts.
-- When command-local semantics are uncertain, present only the verified
-  structural shape and identify the unresolved operation.
-- Finalize the program only after the relevant semantics are documented or
-  experimentally discriminated.
-  
----
-
-## Semantically dense commands
-
-When generating executable examples, treat compact commands whose behavior depends on precise local semantics (for example %, ;, :S, X, G, M) as verification points.
-
-Do not substitute an intuitive interpretation based on other programming languages or overall program intent.
-
-Before finalizing executable code, verify that each such command is used according to its experimentally established local semantics.
-
----
-
-## Failure classes
-
-- Structural correctness does not imply command-local correctness.
-- Control-flow operators (;, :;, %, O, etc.) are semantically dense. Their structural role does not determine their local semantics. When generating executable examples, verify the exact command-local exit conditions rather than inferring them from the intended control flow.
-- When a program depends on command-local behavior, verify that behavior against accepted project knowledge before generating executable examples.
-- If local semantics are uncertain, preserve the structural solution and identify the unresolved operator rather than silently choosing a plausible interpretation.
-- Side effects and produced values are independent semantic properties. Verify both.
-- Partial documentation can create false semantic completeness.
-  Documentation of a command’s syntax or side effect does not establish its produced value, error behavior, point movement, or modifier interaction. Treat each correctness-relevant dimension independently until documented or experimentally verified.
-
----
-
-## Suggested strategy when handling failure classes
-
-On uncertain inference, ask collaborator for advice or input. If neither know how to resolve, devise a test to determine correct path forward.
-
----
 

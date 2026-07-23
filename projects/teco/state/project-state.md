@@ -1,4 +1,4 @@
-# TECO Documentation Overview (teco/documentation-teco-overview.md)
+# TECO Documentation Overview (teco/state/project-state.md)
 
 ## Purpose
 

@@ -1,4 +1,4 @@
-# TECO Reasoning Constraints (teco/reasoning-contraints.md)
+# TECO Reasoning Constraints (teco/domain/reasoning-contraints.md)
 
 ## Exact Program Generation
 

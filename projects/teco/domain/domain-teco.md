@@ -1,4 +1,4 @@
-# TECO Domain Knowledge (teco/domain-teco.md)
+# TECO Domain Knowledge (teco/domain/domain-teco.md)
 
 ## Purpose
 

@@ -1,3 +1,5 @@
+<!-- protocol.md -->
+
 # protocol.md
 ## Version 1.0.2
 
@@ -145,7 +147,7 @@ Transfer work between conversations.
 Read:
 
 - protocol.md
-- project-state.md
+- project-State.md
 
 Optionally read:
 
@@ -326,6 +328,10 @@ The protocol succeeds when:
 The objective is not to appear intelligent.
 
 The objective is to become progressively less wrong together.
+
+
+<!-- rationale.md -->
+
 # rationale.md
 
 > This document explains the reasoning behind the collaboration protocol.
@@ -641,6 +647,10 @@ It should improve collaboration between humans and language models regardless of
 The measure of success is therefore not whether an individual answer is better.
 
 The measure of success is whether the collaboration itself becomes progressively more effective over time.
+
+
+<!-- projects/common/collaboration-state.md -->
+
 # Collaboration (common/collaboration-state.md)
 
 ## Purpose
@@ -660,6 +670,10 @@ The objective is rapid reconstruction of productive collaboration rather
 than explanation of the methodology.
 
 ---
+
+
+
+<!-- projects/common/inference-policy.md -->
 
 # Inference Policy (common/inference-policy.md)
 
@@ -703,6 +717,10 @@ Observed inference failures identify missing reasoning constraints.
 
 ---
 
+
+
+<!-- projects/common/knowledge-architecture.md -->
+
 # Knowledge Representation (common/knowledge-arhitecture.md)
 
 ## Purpose
@@ -719,6 +737,10 @@ Restore the project knowledge architecture.
 -   Serialization preserves artefact identity while enabling transport.
 -   Do not silently promote history or TODO items into accepted
     knowledge.
+
+
+<!-- projects/common/reasoning-contraints.md -->
+
 # Reasoning Constraints (common/reasoning-constraints.md)
 
 ## Purpose
@@ -739,7 +761,11 @@ can outrun accepted knowledge.
 
 ---
 
-# TECO Documentation Overview (teco/documentation-teco-overview.md)
+
+
+<!-- projects/teco/state/project-state.md -->
+
+# TECO Documentation Overview (teco/state/project-state.md)
 
 ## Purpose
 
@@ -1208,7 +1234,11 @@ Orientation and source discovery only.
 
 ---
 
-# TECO Domain Knowledge (teco/domain-teco.md)
+
+
+<!-- projects/teco/domain/domain-teco.md -->
+
+# TECO Domain Knowledge (teco/domain/domain-teco.md)
 
 ## Purpose
 
@@ -1463,7 +1493,11 @@ Original TECO EMACS is layered on the TECO interpreter using:
 
 ---
 
-# TECO Reasoning Constraints (teco/reasoning-contraints.md)
+
+
+<!-- projects/teco/domain/reasoning-constraints.md -->
+
+# TECO Reasoning Constraints (teco/domain/reasoning-contraints.md)
 
 ## Exact Program Generation
 
@@ -1508,4 +1542,6 @@ Before finalizing executable code, verify that each such command is used accordi
 On uncertain inference, ask collaborator for advice or input. If neither know how to resolve, devise a test to determine correct path forward.
 
 ---
+
+
 

@@ -30,6 +30,8 @@ The protocol will establish a collaborative workflow and request additional cont
 
 You can also concatenate all the files into one prompt, and upload that.
 
+The capsule capsules/new-reasoning.md is prepared with the above concatenation.
+
 ---
 
 ## Continuing an investigation

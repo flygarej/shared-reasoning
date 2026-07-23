@@ -16,9 +16,9 @@ Upload:
 
 - protocol.md
 - rationale.md
+- projects/common/*.md
 - templates/new-project-state.md
 - templates/new-session-log.md
-- templates/common/*.md
 
 Then describe:
 
@@ -40,7 +40,7 @@ Upload:
 
 - protocol.md
 - rationale.md
-- templates/common/*.md
+- projects/common/*.md
 - your project's project-state.md
 - your project's session-log.md
 - your project's domain knowledge markdown files.

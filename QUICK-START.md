@@ -18,6 +18,7 @@ Upload:
 - rationale.md
 - templates/new-project-state.md
 - templates/new-session-log.md
+- templates/common/*.md
 
 Then describe:
 
@@ -27,6 +28,8 @@ Then describe:
 
 The protocol will establish a collaborative workflow and request additional context if needed.
 
+You can also concatenate all the files into one prompt, and upload that.
+
 ---
 
 ## Continuing an investigation
@@ -35,10 +38,14 @@ Upload:
 
 - protocol.md
 - rationale.md
+- templates/common/*.md
 - your project's project-state.md
 - your project's session-log.md
+- your project's domain knowledge markdown files.
 
 The collaborator should resume from the accepted project state while preserving continuity.
+
+You can also concatenate all the files into one prompt, and upload that.
 
 ---
 

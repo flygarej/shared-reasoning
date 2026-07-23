@@ -641,41 +641,409 @@ It should improve collaboration between humans and language models regardless of
 The measure of success is therefore not whether an individual answer is better.
 
 The measure of success is whether the collaboration itself becomes progressively more effective over time.
-# Project-State.md
+# project-state.md
 
-## Placeholder
+## Scope
 
-This placeholder indicates that this is the start of a new project.
+Development and evaluation of the **Shared Reasoning** methodology as a general collaboration framework for long-running investigations between humans and LLMs.
 
-If this placeholder is present, no project-specific state has yet been established.
+This project focuses on the methodology itself rather than any individual research domain.
 
-Do not infer or reconstruct project state.
+---
 
-Instead, establish the project's scope and current state through collaboration with the user, following the guidance in protocol.md.
+## Current Objective
 
-Once sufficient project state has been established, remove this placeholder section and replace it with the current accepted project state.
+Evaluate whether a lightweight protocol can improve the quality, continuity and trustworthiness of collaborative reasoning.
 
-Future maintenance updates should preserve this document's identity by updating **project-State.md** rather than creating derivative filenames.
+---
 
-The purpose of this document is to capture the project's current accepted understanding, enabling future conversations to resume work with minimal friction.
+## Verified Conclusions
+
+### Shared Reasoning is broader than a prompt
+
+The project has evolved from a prompt into a collaboration methodology consisting of interacting artefacts:
+
+* protocol.md
+* rationale.md
+* project-state.md
+* session-log.md
+
+The protocol alone is insufficient; the artefacts collectively establish collaboration.
+
+---
+
+### Separation of responsibilities is beneficial
+
+The repository naturally separates into:
+
+* repository-level methodology
+* project-level investigations
+
+Repository artefacts describe *how collaboration works*.
+
+Project artefacts describe *what has been learned*.
+
+---
+
+### Evidence-first collaboration
+
+Repeated use demonstrated value in distinguishing:
+
+* observation
+* documentation
+* inference
+* hypothesis
+* verified conclusion
+
+This discipline prevented several scope and reconstruction errors.
+
+---
+
+### Maintenance differs from handover
+
+Maintenance updates existing artefacts while preserving identity.
+
+Handover transfers collaboration between conversations using those maintained artefacts.
+
+---
+
+### Repository philosophy
+
+The repository should remain intentionally lightweight.
+
+Additional structure should be introduced only when supported by practical experience.
+
+---
+
+## Working Model
+
+Shared Reasoning is best viewed as a methodology for preserving and evolving shared understanding across long-running collaborations.
+
+The protocol establishes reasoning discipline.
+
+Project State captures accepted knowledge.
+
+Session Log preserves chronological reasoning.
+
+RATIONALE records design intent.
+
+---
+
+## Evidence Strength
+
+Current evidence:
+
+* repeated successful use during TECO and MACRO-20 investigations;
+* successful transfer between conversations using Project State and Session Log;
+* positive initial external feedback.
+
+Evidence remains limited by small sample size and early adopters.
+
+---
+
+## Open Questions
+
+* Which parts of the methodology generalize across domains?
+* Which artefacts, if any, should emerge only in specific projects?
+* How should abstraction-level changes be handled explicitly during long conversations?
+* How should retrieval-tool limitations best be represented within collaborative reasoning?
+
+---
+
+## Next Evaluation Goals
+
+* Gather independent field reports.
+* Observe adaptations in other technical domains.
+* Identify recurring friction before modifying the protocol.
+* Allow repository evolution to be driven by evidence rather than anticipation.
 
 ---
 # session-log.md
 
-## Placeholder
+## Session Purpose
 
-This placeholder indicates that no project history has yet been established.
-
-If this placeholder is present, this is the beginning of a new project.
-
-Do not infer historical reasoning that has not yet occurred.
-
-Instead, establish the project through collaboration with the user, following the guidance in protocol.md.
-
-The first maintenance update should remove this placeholder and begin the chronological project log.
-
-Future maintenance updates should preserve this document's identity by updating **session-log.md** rather than creating derivative filenames.
-
-The purpose of this document is to preserve the project's chronological evolution so that future conversations can understand not only what is currently believed, but how those conclusions were reached.
+Evaluate and refine the Shared Reasoning methodology through practical use while preparing it for public release.
 
 ---
+
+## Chronology
+
+### Repository identity
+
+Reviewed the public presentation of the project.
+
+Concluded that the methodology had evolved beyond a prompt collection into a collaboration framework.
+
+Repository identity shifted toward "Shared Reasoning."
+
+---
+
+### README review
+
+Reworked the repository introduction to emphasize:
+
+* collaboration rather than prompting;
+* shared reasoning rather than individual answers;
+* evidence-driven evolution.
+
+Established the central statement:
+
+> The goal is not better prompts. The goal is better collaboration.
+
+---
+
+### Repository architecture
+
+Clarified separation between:
+
+* methodology;
+* project investigations.
+
+Confirmed that projects remain living investigations rather than examples.
+
+---
+
+### Contribution philosophy
+
+Reduced repository process substantially.
+
+Adopted the principle that protocol evolution should follow observed experience rather than anticipated needs.
+
+---
+
+### Tooling observations
+
+Repeated attempts to review the repository through web retrieval exposed limitations of retrieval tooling.
+
+Rather than treating this as an isolated failure, the discussion distinguished:
+
+* retrieval;
+* evidence;
+* reasoning.
+
+This reinforced the protocol's emphasis on evidence before inference.
+
+---
+
+### Reflection
+
+Compared early collaboration with the current collaboration.
+
+Observed that reasoning increasingly challenged:
+
+* evidence quality;
+* scope;
+* abstraction level;
+* retrieval success.
+
+Rather than merely challenging conclusions.
+
+---
+
+### Current state
+
+Repository considered sufficiently coherent for initial public release.
+
+Future protocol evolution should be driven by external experience rather than further speculative refinement.
+
+---
+
+# TODO.md
+
+This document collects observations, ideas and potential improvements that have emerged during practical use of Shared Reasoning.
+
+Items recorded here are intentionally **not** part of the accepted methodology.
+
+They are preserved so they can mature through repeated observation before being considered for promotion into:
+
+- protocol.md
+- rationale.md
+- project-state.md
+
+Most items are expected to remain here until multiple independent observations support the same abstraction.
+
+The objective is to improve the methodology through evidence rather than anticipation.
+
+---
+
+# Potential changes to protocol.md
+
+- Long-running collaborations should periodically re-establish the current abstraction level when rapidly switching between implementation, methodology, and philosophy.
+
+- During long collaborations, restarting after a maintenance point reduces accidental mixing of implementation, methodology, and philosophical discussion while preserving accepted knowledge through the project artefacts.
+
+# Potential changes to rationale.md
+
+- The protocol is not primarily about overcoming context limits. It is about preserving conceptual integrity as a project evolves.
+
+# Potential evolution
+
+- Investigate whether Shared Reasoning should explicitly support transitions between collaboration phases.
+
+  Current experience suggests the methodology provides the greatest value during periods of high uncertainty (discovery, investigation, requirements, reverse engineering, hypothesis formation).
+
+  Once the project's conceptual model stabilizes, it may be beneficial to generate a lightweight handover prompt optimized for execution-oriented work (implementation, coding, optimization, routine engineering).
+
+  The objective would not be to replace Shared Reasoning, but to allow the collaboration style to adapt as uncertainty decreases.
+
+  Evidence needed:
+  - Does this transition occur consistently across different domains?
+  - Which information should be preserved in such a handover?
+  - Can the transition be recognized automatically from project state?
+# Collaboration (common/collaboration-state.md)
+
+## Purpose
+
+Restore the collaboration model.
+
+-   Shared Reasoning optimizes collaboration rather than prompts.
+-   Distinguish methodology from project knowledge.
+-   Evidence precedes inference.
+-   Preserve working models until verified.
+-   Prefer the smallest discriminating experiment.
+-   Separate accepted knowledge from historical reasoning.
+-   Improve abstractions before adding rules.
+-   Ask for missing context rather than silently inventing it.
+
+The objective is rapid reconstruction of productive collaboration rather
+than explanation of the methodology.
+
+---
+
+# Inference Policy (common/inference-policy.md)
+
+## Purpose
+
+Restore reasoning habits for maintaining domain knowledge.
+
+-   Store generators rather than enumerations.
+-   Store relationships rather than isolated facts.
+-   Add structural details only when they prevent important incorrect
+    inference.
+-   High-information-density knowledge constrains many future
+    inferences.
+-   Reasoning failures identify missing capsule constraints.
+-   Maintain capsules from observed failures rather than anticipated
+    ones.
+-   Preserve open questions explicitly.
+-   Prefer one structural constraint over many factual details.
+
+---
+
+## Example Generation Under Incomplete Local Semantics
+
+Generating executable examples requires both:
+
+- a correct structural model;
+- verified local semantics for every operator affecting correctness.
+
+Do not silently replace uncertain local semantics with plausible
+approximations.
+
+Instead:
+
+- identify the uncertain semantics;
+- preserve competing interpretations;
+- separate verified structure from candidate implementation;
+- propose the smallest discriminating experiment;
+- finalize examples only after local semantics are established.
+
+Observed inference failures identify missing reasoning constraints.
+
+---
+
+# Knowledge Representation (common/knowledge-arhitecture.md)
+
+## Purpose
+
+Restore the project knowledge architecture.
+
+-   Protocol defines collaboration.
+-   Rationale explains design intent.
+-   Project-State contains accepted knowledge.
+-   Session-Log preserves historical reasoning.
+-   Domain knowledge capsules restore conceptual models.
+-   Human documentation and reasoning capsules have different
+    optimization goals.
+-   Serialization preserves artefact identity while enabling transport.
+-   Do not silently promote history or TODO items into accepted
+    knowledge.
+# Reasoning Constraints (common/reasoning-constraints.md)
+
+## Purpose
+
+Constrain inference where observed failures show that plausible reasoning
+can outrun accepted knowledge.
+
+- A correct structural model does not establish exact local semantics.
+- Executable examples require verified semantics for every operation whose
+  precise behaviour affects correctness.
+- Do not replace uncertain local semantics with plausible approximations.
+- Separate verified structure from candidate implementation.
+- Preserve competing interpretations when evidence does not discriminate.
+- Prefer the smallest discriminating experiment.
+- Add constraints in response to observed failure classes rather than
+  anticipated possibilities.
+- Prefer one general constraint over many incident-specific prohibitions.
+
+---
+
+# Collaboration
+
+## Purpose
+
+Restore the collaboration model.
+
+-   Shared Reasoning optimizes collaboration rather than prompts.
+-   Distinguish methodology from project knowledge.
+-   Evidence precedes inference.
+-   Preserve working models until verified.
+-   Prefer the smallest discriminating experiment.
+-   Separate accepted knowledge from historical reasoning.
+-   Improve abstractions before adding rules.
+-   Ask for missing context rather than silently inventing it.
+
+The objective is rapid reconstruction of productive collaboration rather
+than explanation of the methodology.
+
+---
+
+# Knowledge Representation
+
+## Purpose
+
+Restore the project knowledge architecture.
+
+-   Protocol defines collaboration.
+-   Rationale explains design intent.
+-   Project-State contains accepted knowledge.
+-   Session-Log preserves historical reasoning.
+-   Domain knowledge capsules restore conceptual models.
+-   Human documentation and reasoning capsules have different
+    optimization goals.
+-   Serialization preserves artefact identity while enabling transport.
+-   Do not silently promote history or TODO items into accepted
+    knowledge.
+
+---
+
+# Reasoning State
+
+## Purpose
+
+Restore reasoning habits for maintaining domain knowledge.
+
+-   Store generators rather than enumerations.
+-   Store relationships rather than isolated facts.
+-   Add structural details only when they prevent important incorrect
+    inference.
+-   High-information-density knowledge constrains many future
+    inferences.
+-   Reasoning failures identify missing capsule constraints.
+-   Maintain capsules from observed failures rather than anticipated
+    ones.
+-   Preserve open questions explicitly.
+-   Prefer one structural constraint over many factual details.
+
+---
+

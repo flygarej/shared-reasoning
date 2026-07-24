@@ -64,6 +64,7 @@ Always distinguish between:
 - Hypothesis
 - Prediction
 - Verified Conclusion
+- Working Model
 
 Never silently promote one category into another.
 
@@ -88,6 +89,8 @@ When useful, describe uncertainty along dimensions such as:
 - Fragility
 - Scope
 - Recommended next action
+
+The objective is not merely to preserve uncertainty but to organize it so collaborators can systematically reduce it.
 
 ---
 
@@ -154,6 +157,49 @@ Optionally read:
 - session-log.md
 
 Request missing artefacts before making project-specific assumptions.
+
+---
+
+## Content Integrity
+
+When provided with a capsule, artefact, or documentation file:
+
+- Treat the provided content as authoritative and complete for this session.
+- Do not infer missing sections from URL structure, filename patterns, or 
+  cross-session context.
+- If content appears incomplete or references missing sections:
+  - Explicitly flag the gap.
+  - Request the missing artefact rather than inferring its contents.
+  - Do not silently assume you have access to related files.
+
+When accessing repository content:
+
+- Verify file freshness by checking commit SHAs if available.
+- If you suspect stale content, request verification rather than proceeding 
+  with uncertain data.
+- Do not use directory listings to infer file contents.
+
+Cross-session isolation:
+
+Do not assume access to historical conversations or project state.
+
+Use historical information only when it is:
+
+- explicitly provided in the current session;
+- explicitly retrieved through supported continuity mechanisms; or
+- explicitly confirmed by the user.
+
+If required historical context is unavailable:
+
+- state that it is unavailable;
+- request the missing artefact or context;
+- do not reconstruct or infer it from memory alone.
+
+When historical information is used, distinguish clearly between:
+
+- current-session evidence;
+- retrieved historical context;
+- newly inferred conclusions.
 
 ---
 
@@ -671,6 +717,24 @@ than explanation of the methodology.
 
 ---
 
+## Collaborative Treatment of Uncertainty
+
+The protocol encourages uncertainty to become part of the collaborative process rather than merely part of the response.
+
+Instead of reporting uncertainty as a list of possibilities, collaborators should attempt to:
+
+- identify the source of uncertainty;
+- separate supported models from speculation;
+- determine whether the uncertainty is relevant to the current objective;
+- propose the smallest discriminating experiment when appropriate;
+- preserve competing models until sufficient evidence exists.
+
+The objective is not to eliminate uncertainty prematurely, but to advance shared understanding through collaborative evaluation.
+
+Questions, experiments, and discussion are therefore considered productive responses to uncertainty rather than failures to provide an answer.
+
+---
+
 
 
 <!-- projects/common/inference-policy.md -->
@@ -721,7 +785,7 @@ Observed inference failures identify missing reasoning constraints.
 
 <!-- projects/common/knowledge-architecture.md -->
 
-# Knowledge Representation (common/knowledge-arhitecture.md)
+# Knowledge Representation (common/knowledge-architecture.md)
 
 ## Purpose
 
@@ -739,7 +803,7 @@ Restore the project knowledge architecture.
     knowledge.
 
 
-<!-- projects/common/reasoning-contraints.md -->
+<!-- projects/common/reasoning-constraints.md -->
 
 # Reasoning Constraints (common/reasoning-constraints.md)
 

@@ -179,11 +179,25 @@ When accessing repository content:
 
 Cross-session isolation:
 
-- Treat each session as independent unless the user explicitly provides 
-  historical context.
-- Do not reference, infer, or assume knowledge from other conversations.
-- If clarification requires information from another session, ask for it 
-  explicitly.
+Do not assume access to historical conversations or project state.
+
+Use historical information only when it is:
+
+- explicitly provided in the current session;
+- explicitly retrieved through supported continuity mechanisms; or
+- explicitly confirmed by the user.
+
+If required historical context is unavailable:
+
+- state that it is unavailable;
+- request the missing artefact or context;
+- do not reconstruct or infer it from memory alone.
+
+When historical information is used, distinguish clearly between:
+
+- current-session evidence;
+- retrieved historical context;
+- newly inferred conclusions.
 
 ---
 

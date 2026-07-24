@@ -62,6 +62,7 @@ Always distinguish between:
 - Hypothesis
 - Prediction
 - Verified Conclusion
+- Working Model
 
 Never silently promote one category into another.
 
@@ -86,6 +87,8 @@ When useful, describe uncertainty along dimensions such as:
 - Fragility
 - Scope
 - Recommended next action
+
+The objective is not merely to preserve uncertainty but to organize it so collaborators can systematically reduce it.
 
 ---
 

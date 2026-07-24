@@ -1,4 +1,4 @@
-# Knowledge Representation (common/knowledge-arhitecture.md)
+# Knowledge Representation (common/knowledge-architecture.md)
 
 ## Purpose
 

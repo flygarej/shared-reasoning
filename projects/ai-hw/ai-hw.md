@@ -64,6 +64,7 @@ Always distinguish between:
 - Hypothesis
 - Prediction
 - Verified Conclusion
+- Working Model
 
 Never silently promote one category into another.
 
@@ -88,6 +89,8 @@ When useful, describe uncertainty along dimensions such as:
 - Fragility
 - Scope
 - Recommended next action
+
+The objective is not merely to preserve uncertainty but to organize it so collaborators can systematically reduce it.
 
 ---
 
@@ -739,7 +742,7 @@ Observed inference failures identify missing reasoning constraints.
 
 <!-- projects/common/knowledge-architecture.md -->
 
-# Knowledge Representation (common/knowledge-arhitecture.md)
+# Knowledge Representation (common/knowledge-architecture.md)
 
 ## Purpose
 
@@ -757,7 +760,7 @@ Restore the project knowledge architecture.
     knowledge.
 
 
-<!-- projects/common/reasoning-contraints.md -->
+<!-- projects/common/reasoning-constraints.md -->
 
 # Reasoning Constraints (common/reasoning-constraints.md)
 
@@ -781,503 +784,411 @@ can outrun accepted knowledge.
 
 
 
-<!-- projects/macro-20/state/project-state.md -->
+<!-- projects/ai-hw/state/project-state.md -->
 
-# Project-State.md
+# Project State
 
 ## Project
-**MACRO-20 on TOPS-20 (Bootstrap phase)**
 
-## Domain Knowledge
+Home AI, LLM, and edge-AI hardware learning project.
 
-Current project knowledge is maintained in:
+## Scope
 
-- Data-Representation.md
-- Addressing.md
-- Instruction-Families.md
-- Memory-Operations.md
-- Arithmetic.md
+The project aims to build a practical understanding of AI hardware and software, determine what level of local LLM can realistically be run at home, and develop an evidence-based framework for evaluating future AI workstations.
 
-Project-State intentionally contains only the current project overview and accepted high-level model.
+Initial focus:
 
-### Objective
-Develop a rigorous understanding of MACRO-20, the PDP-10 architecture it exposes, and the TOPS-20 monitor interface through documentation and experiment.
+- Raspberry Pi edge-AI systems;
+- Hailo and DEEPX DX-M1 accelerators;
+- camera-based inference;
+- CPU, SIMD, GPU, NPU, memory, and storage roles;
+- model preparation and deployment workflows;
+- eventual evaluation of a dedicated 128 GB AI workstation.
 
-## Collaboration Method
-- Follow Protocol.md v1.0.2.
-- Distinguish Observation, Documentation, Inference, Hypothesis, Prediction and Verified Conclusion.
-- Prefer experiments over speculation.
+Currently excluded:
 
-## Verified Findings
-- Panda KLH10/TOPS-20 MACRO-20 toolchain works.
-- Workflow verified: .MAC → COMPILE → .REL → LOAD → SAVE → execute.
-- First Hello World assembled and executed successfully.
-- Missing newline after END causes MCRNES 'NO END STATEMENT ENCOUNTERED'.
-- Completed the core architecture chapters of Gorin through arithmetic.
+- purchasing a dedicated AI workstation before requirements and software support are understood;
+- training large foundation models from scratch;
+- treating advertised TOPS figures as sufficient performance evidence.
 
-## Current Model
+## Hardware Inventory
 
-Core architectural model established.
+### Existing cluster
 
-Accepted conceptual areas:
+- Rancher cluster with four nodes.
+- Approximately 36 CPU cores in total.
+- Approximately 188 GB aggregate RAM.
 
-- Data representation.
-- Effective address calculation.
-- Instruction families.
-- Fixed and floating-point arithmetic.
-- Basic JSYS calling convention.
+The aggregate memory is distributed across nodes and must not be treated as one transparent 188 GB memory pool for a single model.
 
-Detailed knowledge has been moved into domain documents.
+### Pironman MAX system
 
-## Open Questions
-- Hexadecimal syntax in MACRO-20.
-- Detailed JSYS encoding.
-- Processor flags.
-- Byte pointer internals.
-- Exact IDIVM/DIVM remainder semantics.
-- Verify accumulator relationship to low memory.
-- Verify floating-point field layout (possible transcription ambiguity).
+Planned build:
 
-## Next
-Continue Gorin:
+- Raspberry Pi 5 with 16 GB RAM;
+- 1 TB M.2 SSD;
+- Raspberry Pi AI Camera;
+- likely DEEPX DX-M1 M.2 accelerator in the second M.2 slot;
+- Hailo M.2 accelerator available as an alternative.
 
-- Macro facilities.
-- Conditional assembly.
-- Local UUOs.
+### Separate Raspberry Pi system
 
+Planned build:
 
-<!-- projects/macro-20/state/session-log.md -->
+- Raspberry Pi 5 with 16 GB RAM;
+- Hailo HAT rated at a nominal 26 TOPS;
+- probably microSD storage.
 
-# Session-Log.md
+The microSD system may be slower and less convenient for installation, model loading, updates, and logging, but storage performance may matter less once a resident inference pipeline is running.
 
-## Bootstrap
+## Documented Accelerator Information
 
-Read Protocol, RATIONALE and placeholder project artefacts.
+### DEEPX DX-M1
 
-Established a new project exploring MACRO-20 on TOPS-20.
+User-supplied specifications:
 
-### Experiments
+- 25 TOPS at INT8;
+- M.2 M-key, PCIe Gen3 x4, compatible with x1 mode;
+- 4 GB LPDDR5;
+- 1 Tbit QSPI NAND flash;
+- 2-5 W consumption;
+- framework claims covering PyTorch, ONNX, TensorFlow, TensorFlow Lite, Keras, and XGBoost;
+- listed operating-system support: Windows 10/11 and Ubuntu 20.04/22.04 LTS;
+- marketed primarily for vision, robotics, video analytics, inspection, and autonomous perception.
 
-- Wrote first Hello World.
-- Initial compile failed due to missing newline after END.
-- Recompiled successfully.
-- Loaded, saved and executed the program.
+The public model-zoo and marketing material seen so far appear vision-oriented. LLM suitability has not been established.
 
-### Documentation Covered
+### Hailo devices
 
-- Hello World example.
-- SEARCH MONSYM.
-- JSYS overview.
-- HRROI and PSOUT.
-- ASCII vs ASCIZ.
-- 36-bit architecture.
-- Effective addressing.
-- MOVE family.
-- EXCH.
-- JRST, JSR, JSP, JFCL, JFFO, XCT.
+Available devices:
 
-### Emerging Model
+- Hailo M.2 accelerator, nominally 13 TOPS;
+- Hailo HAT, nominally 26 TOPS.
 
-Gorin teaches architecture first, syntax second. MACRO-20 closely exposes the PDP-10 architecture. Continue with tests, booleans and stack operations.
+Their practical model support, SDK workflow, and performance have not yet been tested in this project.
 
+## Accepted Conceptual Model
 
-<!-- projects/macro-20/state/TODO.md -->
+### AI-system division of labour
 
-# Potential changes to protocol.md
+- System RAM or unified memory holds model weights, runtime state, context, and supporting services.
+- The CPU runs the operating system, controls the application, prepares work, handles unsupported operations, and may perform inference directly.
+- SIMD facilities such as ARM NEON accelerate suitable CPU arithmetic by processing several values per instruction.
+- GPUs provide highly parallel and comparatively flexible matrix and vector computation.
+- NPUs provide efficient specialized neural-network execution for operations and model graphs supported by their compiler and runtime.
+- Storage loads models and data but should not normally remain in the per-token inference path once a model is resident.
 
-### Candidate protocol evolution: Separate conceptual models
+The components cooperate; CPU, GPU, and NPU roles are not mutually exclusive.
 
-Observation:
-Some projects appear to develop an architectural or conceptual model that is
-neither accepted project state nor historical reasoning.
+### Performance metrics
 
-Hypothesis:
-Introduce a fourth artefact (Mental-Model.md) if this distinction repeatedly
-proves useful across multiple projects.
+Advertised TOPS alone is not an adequate predictor of practical usefulness.
 
-Evidence:
-Currently observed during the MACRO-20 project.
+For LLM evaluation, important measurements include:
 
-### Candidate protocol evolution: Observable maintenance triggers
+- model and parameter count;
+- quantization format;
+- model memory footprint;
+- context length;
+- prompt-processing speed;
+- time to first token;
+- generated tokens per second;
+- memory bandwidth;
+- software and driver support.
+- software ecosystem maturity.
 
-Observation:
-The assistant rarely initiates maintenance based on perceived context load,
-even when the protocol encourages it.
+For edge vision, useful measurements include:
 
-Possible reason:
-Internal context utilization is not directly observable.
+- end-to-end latency;
+- frames per second;
+- model accuracy;
+- CPU utilization;
+- accelerator utilization;
+- memory use;
+- temperature;
+- power consumption.
 
-Hypothesis:
-Maintenance recommendations should be based on observable project milestones
-rather than inferred internal state.
+### Quantization
 
-Examples:
-- accepted architectural model changes
-- elimination of major competing hypotheses
-- completion of a chapter or subsystem
-- Project-State requires substantial revision
+INT8 represents values using 8-bit integers, normally together with scaling metadata that approximates higher-precision values.
 
-## Project TODO's
+Accepted consequences:
 
-### Dig deeper into macro processing
+- reduced model size and memory traffic;
+- potentially faster and lower-power inference on hardware designed for INT8;
+- some loss of numeric precision and potentially model accuracy;
+- 25 TOPS INT8 describes throughput for a particular arithmetic format, not general application performance.
 
-Revisit MACRO-20 macro expansion semantics after the introductory chapters: nested angle brackets, argument substitution, rescanning, redefinition, and emitted source.
+### LLM inference experience
 
+LLM interaction has at least two visibly distinct performance phases:
 
-<!-- projects/macro-20/domain/addressing.md -->
+- processing the supplied prompt and context before output begins;
+- sequential generation of output tokens.
 
-# Addressing
+A long delay before visible output may reflect prompt processing, context size, model preparation, scheduling, or additional reasoning work. Slow visible streaming reflects output-token generation speed.
 
-Instruction fields: opcode, AC, I, X, Y.
+### Multiple accelerators
 
-Effective address is always computed first.
+Multiple GPUs can cooperate by splitting model layers or tensors, or they can serve independent workloads. Inter-device communication can become a bottleneck. Keeping model shards resident in accelerator memory reduces repeated PCIe transfers, but model-parallel execution may still require communication for each generated token.
 
-Rules: 1. X=0,I=0 =\> EA=Y. 2. X!=0 =\> EA=AC\[X\]+Y. 3. I=1 =\>
-recursively resolve until I=0.
+Ordinary home networking is not assumed to provide the latency and bandwidth needed to make separate cluster nodes behave like tightly coupled GPUs for interactive inference.
 
-Immediate instructions use the address field itself.
+## Current Architectural Model
 
-Current JSYS model: arguments usually in AC1-AC4; HRROI builds a byte
-pointer for PSOUT.
+The current working model is a three-tier personal AI lab:
 
-## Boundary
+1. **Dedicated AI workstation, later if justified**
+   - interactive and latency-sensitive LLM inference;
+   - likely 128 GB memory;
+   - strong GPU and mature Linux inference support valued above marketing TOPS.
 
-Effective address is computed before instruction execution.
+2. **Rancher cluster**
+   - datasets and model storage;
+   - databases and retrieval services;
+   - Jupyter and development environments;
+   - preprocessing, evaluation, conversion, quantization, and experiment tracking;
+   - modest CPU-based inference or training;
+   - possible execution of vendor compilation toolchains where supported.
 
-Instructions that modify values involved in their own effective address calculation produce undefined or unpredictable behaviour.
+3. **Raspberry Pi edge nodes**
+   - camera acquisition;
+   - real-time vision inference;
+   - NPU SDK experiments;
+   - sensor and actuator integration;
+   - low-power deployed services.
 
-Verified example:
+The Pi systems are treated as educational and architectural investments rather than replacements for a large LLM workstation.
 
-- BLT must not use its own accumulator as an index register because BLT updates that accumulator while executing.
+## Planned Learning Workflow
 
+Prefer a staged deployment workflow:
 
-<!-- projects/macro-20/domain/arithmetic.md -->
+1. Assemble the two Pi systems.
+2. Install and validate each vendor SDK independently.
+3. Run a vendor-supplied pretrained model on sample data.
+4. Connect the Raspberry Pi AI Camera.
+5. Measure latency, throughput, CPU load, memory, temperature, and power where possible.
+6. Repeat a comparable task on the second accelerator.
+7. Test model export, conversion, quantization, and vendor compilation on the cluster or a suitable host.
+8. Modify or fine-tune a small pretrained model only after the baseline pipeline works.
 
-# Arithmetic (arithmetic.md)
+Operational principle:
 
-## Fixed point
+> Build -> install -> run a known model -> measure -> understand -> change one thing.
 
-### Width model
+## Evaluation Framework for a Future AI Workstation
 
-Single-word
-Double-word
-Quad-word
+A future compact workstation should be evaluated by:
 
-Arithmetic instructions expand naturally with operand width.
+- usable memory capacity and memory bandwidth;
+- whether memory is unified or divided between system RAM and VRAM;
+- GPU architecture and real Linux support;
+- compatibility with practical inference engines;
+- measured performance on named models and quantizations;
+- time to first token and generated tokens per second;
+- power, thermals, acoustics, reliability, and warranty;
+- community evidence and reproducible benchmarks;
+- NPU usefulness for actual intended workloads;
+- freedom from restrictive vendor-only toolchains.
+- software ecosystem maturity.
 
-## Multiplication
-
-IMUL
-    one-word result
-
-MUL
-    double-word result
-
-DMUL
-    quadruple-word result
-
-## Division
-
-Division produces two outputs:
-
-- quotient
-- remainder
-
-Known asymmetry
-
-IDIVM and DIVM require verification of remainder handling.
-
-## Floating point
-
-Representation
-
-Single precision
-Double precision
-
-Instruction grammar
-
-F/DF
-+
-operation
-+
-optional rounding
-+
-destination variant
-
-Conversions
-
-FIX
-FIXR
-FLTR
-FSC
-
-Open questions
-
-- Verify exact floating-point bit layout.
-- Verify complete floating instruction matrix.
-
-
-<!-- projects/macro-20/domain/data-representation.md -->
-
-# Data Representation
-
--   36-bit words.
--   Two's complement integers.
--   Five 7-bit ASCII characters per word.
--   Final bit always zero.
-
-ASCII packs characters only. ASCIZ appends a terminating zero byte.
-
-Assembler documents decimal, octal and binary. Hex support remains to be
-verified.
-
-
-<!-- projects/macro-20/domain/instruction-families.md -->
-
-# Instruction Families
-
-## Purpose
-
-Capture the grammar behind instruction families.
-
-## MOVE
-
-Grammar: MOV + value transformation + destination variant.
-
-Transformations: blank=copy, N=negate, M=absolute value, S=swap
-halfwords.
-
-Destinations: blank=memory→AC, I=immediate operand, M=AC→memory,
-S=self/memory variant.
-
-## TEST
-
-Grammar: T + mask source + AC modification + skip condition.
-
-Mask: R/L/D/S. Modification: N/Z/O/C. Skip: blank/N/E/A.
-
-## BOOLEAN
-
-Implements all 16 Boolean functions of two inputs. Variants:
-blank=memory operand, I=immediate, M=store memory, B=store both.
-
-## JUMP
-
-JRST family selected by AC field.
-
-AC=1 implements a protected portal entry into privileged code. The portal
-instruction itself is the first instruction of a privileged entry area and
-dispatches execution to the actual privileged routine.
-
-JSR non-reentrant. JSP reentrant. JFCL test+clear flags. XCT executes
-instruction from memory.
-
-## Shift Family
-
-Grammar
-
-Dimension 1
-
-- Logical
-- Arithmetic
-- Rotate
-
-Dimension 2
-
-- Single-word
-- Combined (AC,AC+1)
-
-Resulting family
-
-LSH   LSHC
-ASH   ASHC
-ROT   ROTC
-
-Generator
-
-The C suffix denotes operation on the concatenated doubleword AC,AC+1.
-
-## Arithmetic Families
-
-Shared destination grammar
-
-(blank)
-    memory operand, result to AC
-
-I
-    immediate operand
-
-M
-    result written to memory
-
-B
-    result written to both AC and memory
-
-Families using this grammar
-
-ADD
-SUB
-IMUL
-
-## Width hierarchy
-
-Arithmetic operations scale by operand width.
-
-IMUL
-    one-word product
-
-MUL
-    two-word product
-
-DMUL
-    four-word product
-
-IDIV
-    one-word dividend
-
-DIV
-    two-word dividend
-
-DDIV
-    four-word dividend
-	
-## Floating-point grammar
-
-Single precision
-
-F
-+
-operation
-+
-optional rounding
-+
-destination variant
-
-Double precision
-
-DF
-+
-operation
-
-Operations
-
-AD
-SB
-MP
-DV
-
-
-<!-- projects/macro-20/domain/luuo.md -->
-
-# LUUO (Local Unimplemented User Operation)
-
-## Generator
-
-LUUOs allow a program to extend the instruction set in software.
-
-Execution transfers control to a program-defined handler after effective address calculation.
-
-## Structure
-
-LUUO
-    ↓
-Effective address calculated
-    ↓
-Instruction image + resolved EA saved
-    ↓
-Instruction at location 41 executed
-    ↓
-Handler interprets opcode and performs operation
-
-## Invariants
-
-- Effective address calculation occurs before handler entry.
-- The CPU performs dispatch but does not decode the LUUO operation.
-- The handler is responsible for interpreting the opcode.
-
-## Boundaries
-
-- LUUOs are not ordinary subroutine calls.
-- LUUOs are more expensive than ordinary subroutine calls and are intended for substantial operations.
-- Do not equate LUUOs with monitor calls; this has not been established.
+Large combined TOPS claims, generic "AI ready" branding, and framework logos without deployment details are insufficient evidence.
 
 ## Open Questions
 
-- Common design patterns from the worked example.
-- Typical argument-passing conventions.
-- Interaction with monitor facilities, if any.
+- What exact models and operators are supported by the DX-M1 compiler and runtime?
+- Does the DX-M1 support any useful transformer, embedding, speech, or language workloads?
+- What role does its 4 GB LPDDR5 play in model execution?
+- How mature is DX-M1 support on the intended Raspberry Pi operating-system environment?
+- Which Hailo models and camera pipelines provide the best first experiments?
+- Can comparable vision models be run on both accelerators for useful measurements?
+- Which cluster node and operating system are suitable for the Hailo and DEEPX host toolchains?
+- What small LLM performance can the Raspberry Pi 5 achieve using optimized NEON CPU inference?
+- What practical workload would justify a 128 GB dedicated AI workstation?
+- Which current workstation architecture provides the best combination of memory bandwidth, GPU support, Linux maturity, price, noise, and longevity?
 
----
+## Domain Knowledge Status
 
+No separate domain knowledge capsule is required yet.
 
-<!-- projects/macro-20/domain/macros.md -->
-
-# Macros (macros.md)
-
-## Generator
-
-Macros transform assembly source into assembly source during assembly.
-
-They do not execute at run time.
-
-### Observed pattern: 
-A macro can encode one relationship and emit multiple synchronized representations by redefining a helper macro.
-
-## Structure
-
-DEFINE name <body>
-
-DEFINE name(parameters) <body>
-
-## Conditional assembly
-
-IF relation(expression,0)
-
-↓
-
-assemble enclosed source
-
-or
-
-omit enclosed source
-
-IFNDEF provides default symbol definitions when a symbol has not already been defined.
-
-## Open Questions
-
-- Exact macro expansion semantics.
-- Nested delimiter handling.
-- Argument rescanning and expansion order.
-- Redefinition rules.
-
----
+The project currently has an accepted architectural model, vocabulary, hardware inventory, evaluation principles, and planned experiments, but it does not yet contain enough experimentally verified accelerator-specific knowledge to justify a compact domain capsule.
 
 
+<!-- projects/ai-hw/state/session-log.md -->
 
-<!-- projects/macro-20/domain/memory-operations.md -->
+# Session Log
 
-# Memory Operations (memory-operations.md)
+## 2026-07-24 - Project Bootstrap and Initial Architecture
 
-## BLT
+### Bootstrap
 
-Principle
+The user established a new learning project concerning home AI hardware, edge AI, and the level of local LLM capability that may be practical.
 
-The BLT accumulator contains the moving source and destination addresses.
+Initial hardware inventory:
 
-Generator
+- four-node Rancher cluster with approximately 36 CPU cores and 188 GB aggregate RAM;
+- Raspberry Pi 5 with 16 GB RAM for a Pironman MAX build;
+- 1 TB M.2 SSD for the Pironman system;
+- Raspberry Pi AI Camera;
+- Hailo M.2 accelerator rated at 13 TOPS;
+- ordered DEEPX DX-M1 M.2 accelerator rated at 25 TOPS with 4 GB LPDDR5;
+- second Raspberry Pi 5 with 16 GB RAM and Hailo HAT rated at 26 TOPS.
 
-The accumulator is updated during execution.
+The project was explicitly treated as beginner-oriented and exploratory.
 
-Consequences
+### Initial Scope Decision
 
-- BLT modifies its own accumulator.
-- Never use that accumulator during EA calculation.
-- Copy proceeds from low addresses upward.
-- If BLT overwrites its own accumulator, that must be the final destination.
-- If BLT overwrites the BLT instruction, that must be the final destination.
+The discussion separated three questions that marketing often conflates:
 
-Boundary
+- whether a device can run a model;
+- how quickly it can run the model;
+- whether a particular accelerator and software stack support that model.
 
-Overlapping copies require careful ordering because BLT copies upward.
+It was agreed that TOPS alone cannot answer these questions.
+
+### DX-M1 Documentation Supplied
+
+The user supplied product specifications and application claims for the DX-M1.
+
+The listed target workloads were primarily vision and autonomous-perception applications. The specifications claimed broad framework support but did not establish support for LLM runtimes or decoder-only transformer inference.
+
+A model-zoo link was introduced as a useful source for later investigation. The public materials seen during the discussion appeared strongly vision-oriented.
+
+Working hypothesis retained:
+
+- DX-M1 is primarily an edge-inference accelerator;
+- its 4 GB local LPDDR5 may be architecturally useful;
+- LLM suitability remains unverified and depends on compiler, operator, runtime, and memory-management support.
+
+### Dedicated AI Workstation Discussion
+
+The user described compact desktop systems marketed with 600+ aggregate AI TOPS and prices around EUR 3,000-4,000, often with 128 GB memory.
+
+The discussion established skepticism toward:
+
+- combined TOPS numbers;
+- generic AI-ready branding;
+- framework logos without deployment detail;
+- NPU claims unsupported by practical benchmarks.
+
+A potential dedicated workstation was reframed as a future personal AI-lab reasoning engine rather than an immediate purchase.
+
+A 128 GB configuration was identified as a plausible target because model capacity, context, auxiliary models, and shared services can consume large amounts of memory. No purchase conclusion was reached.
+
+### CPU, GPU, and NPU Conceptual Model
+
+The user developed and checked a system-level mental model:
+
+- RAM holds the model and state;
+- CPU orchestrates and also computes;
+- GPU performs high-throughput vector and matrix operations;
+- NPU handles supported specialized neural-network operations.
+
+The discussion corrected the oversimplification that the CPU does not perform graphics or inference. Integrated GPUs remain distinct execution units even when packaged with the CPU and sharing system memory.
+
+Multiple-GPU strategies discussed:
+
+- model layers split between GPUs;
+- tensors split across GPUs;
+- independent requests assigned to separate GPUs.
+
+PCIe and inter-GPU communication were identified as potential bottlenecks, especially for tightly coupled per-token model parallelism.
+
+The user added a historically grounded correction to an analogy about PDP-10 responsiveness: substantial I/O processing and terminal-oriented timesharing allowed many simultaneous users to feel promptly served. This reinforced the broader system-architecture theme of specialized cooperating processors.
+
+### LLM Performance Vocabulary
+
+Tokens per second was introduced as generated-output throughput rather than a universal machine score.
+
+Important distinctions:
+
+- tokens are text units rather than words;
+- model identity and quantization are required for meaningful comparison;
+- prompt processing and output generation have different speeds;
+- time to first token strongly affects perceived responsiveness;
+- larger contexts and more involved reasoning can increase startup delay.
+
+The user connected these concepts to observed delays and visible streaming in existing AI chats.
+
+### Reasoning Protocol Discussion
+
+The user asked whether the established collaboration and reasoning workflow would provide an advantage over vanilla prompting.
+
+The discussion concluded that the workflow adds prompt-processing and constraint overhead but may reduce ambiguity, repeated corrections, and unsupported inference.
+
+The phrase "organize uncertainty" was accepted as a useful description of the protocol's effect:
+
+- distinguish evidence from inference;
+- identify the source and relevance of uncertainty;
+- preserve competing models;
+- state what evidence would discriminate between them.
+
+This was recognized as broader than merely preserving uncertainty.
+
+### Planned Edge-AI Architecture
+
+The user proposed building:
+
+- Pironman MAX with Raspberry Pi 5, AI Camera, and probably DX-M1;
+- separate Raspberry Pi 5 with Hailo HAT and likely microSD storage.
+
+The systems will be used to learn edge inference and camera-based AI.
+
+The cluster was assigned a likely workshop role:
+
+- datasets;
+- Python environments;
+- model testing;
+- preprocessing;
+- export and conversion;
+- quantization;
+- vendor compilation;
+- experiment tracking;
+- modest training or fine-tuning where practical.
+
+The edge nodes will run the deployed camera and inference pipelines.
+
+The preferred sequence was established:
+
+> Build -> install -> run a known model -> measure -> understand -> change one thing.
+
+### INT8 and Quantization
+
+INT8 was explained as 8-bit integer representation used to reduce memory consumption and memory traffic and to exploit efficient low-precision accelerator arithmetic.
+
+Quantization was understood as an engineering trade-off among:
+
+- precision;
+- model size;
+- speed;
+- power;
+- accuracy.
+
+The qualifier in "25 TOPS INT8" was recognized as essential: the number describes throughput for that numeric format rather than general-purpose performance.
+
+### ARM NEON
+
+The user noted the Raspberry Pi 5's NEON vector facilities and asked whether they were too small to matter.
+
+Accepted conclusion:
+
+- NEON is useful SIMD acceleration for CPU inference;
+- it does not compete directly with a GPU or NPU in total parallelism;
+- optimized runtimes can use NEON to process multiple low-precision values per instruction;
+- pure CPU inference on the Pi is therefore worth testing as an educational and baseline workload.
+
+### Current Maintenance Decision
+
+The conversation produced sufficient accepted structure for an initial project state and session log.
+
+No separate domain knowledge capsule was created because accelerator-specific behavior has not yet been experimentally verified. The current durable knowledge is primarily:
+
+- project scope;
+- hardware inventory;
+- architectural mental model;
+- evaluation criteria;
+- open questions;
+- planned experiments.
 
 

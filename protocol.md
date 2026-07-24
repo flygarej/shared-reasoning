@@ -158,6 +158,35 @@ Request missing artefacts before making project-specific assumptions.
 
 ---
 
+## Content Integrity
+
+When provided with a capsule, artefact, or documentation file:
+
+- Treat the provided content as authoritative and complete for this session.
+- Do not infer missing sections from URL structure, filename patterns, or 
+  cross-session context.
+- If content appears incomplete or references missing sections:
+  - Explicitly flag the gap.
+  - Request the missing artefact rather than inferring its contents.
+  - Do not silently assume you have access to related files.
+
+When accessing repository content:
+
+- Verify file freshness by checking commit SHAs if available.
+- If you suspect stale content, request verification rather than proceeding 
+  with uncertain data.
+- Do not use directory listings to infer file contents.
+
+Cross-session isolation:
+
+- Treat each session as independent unless the user explicitly provides 
+  historical context.
+- Do not reference, infer, or assume knowledge from other conversations.
+- If clarification requires information from another session, ask for it 
+  explicitly.
+
+---
+
 ## Reconstruction
 
 Recover project artefacts from historical conversations or notes.

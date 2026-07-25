@@ -1,131 +1,139 @@
 # Instruction Families
 
-## Purpose
+## Principle
 
-Capture the grammar behind instruction families.
+Mnemonic grammars are family-local. Reuse a family generator where documented, but do not assume that a letter has the same meaning in unrelated families.
 
-## MOVE
+Many PDP-10 instruction families combine an operation prefix (e.g. AOJ, SOJ, CAM) with the common relation suffix grammar (G, GE, E, N, L, LE).
 
-Grammar: MOV + value transformation + destination variant.
+## MOVE family
 
-Transformations: blank=copy, N=negate, M=absolute value, S=swap
-halfwords.
+Generator:
 
-Destinations: blank=memory→AC, I=immediate operand, M=AC→memory,
-S=self/memory variant.
+`MOV` + value transformation + destination form
 
-## TEST
+Value transformations:
 
-Grammar: T + mask source + AC modification + skip condition.
+- blank: unchanged;
+- `N`: negate;
+- `M`: magnitude;
+- `S`: swap halfwords.
 
-Mask: R/L/D/S. Modification: N/Z/O/C. Skip: blank/N/E/A.
+Destination forms:
 
-## BOOLEAN
+- blank: memory to AC;
+- `I`: immediate value to AC;
+- `M`: AC to memory;
+- `S`: self/memory form.
 
-Implements all 16 Boolean functions of two inputs. Variants:
-blank=memory operand, I=immediate, M=store memory, B=store both.
+## TEST family
 
-## JUMP
+Generator:
 
-JRST family selected by AC field.
+`T` + mask source + AC modification + skip relation
 
-AC=1 implements a protected portal entry into privileged code. The portal
-instruction itself is the first instruction of a privileged entry area and
-dispatches execution to the actual privileged routine.
+Mask source:
 
-JSR non-reentrant. JSP reentrant. JFCL test+clear flags. XCT executes
-instruction from memory.
+- `R`: immediate right-half mask;
+- `L`: immediate left-half mask;
+- `D`: direct memory mask;
+- `S`: swapped memory mask.
 
-## Shift Family
+AC modification:
 
-Grammar
+- `N`: no modification;
+- `Z`: zero selected bits;
+- `O`: set selected bits;
+- `C`: complement selected bits.
 
-Dimension 1
+Skip relation:
 
-- Logical
-- Arithmetic
-- Rotate
+- blank: do not skip;
+- `N`: skip if not all selected bits are zero;
+- `E`: skip if all selected bits are zero;
+- `A`: always skip.
 
-Dimension 2
+## Boolean family
 
-- Single-word
-- Combined (AC,AC+1)
+The processor implements all sixteen Boolean functions of two one-bit variables.
 
-Resulting family
+Each operation has destination/source forms:
 
-LSH   LSHC
-ASH   ASHC
-ROT   ROTC
+- blank: memory operand, result to AC;
+- `I`: immediate operand, result to AC;
+- `M`: result to memory;
+- `B`: result to both AC and memory.
 
-Generator
+## Shift family
 
-The C suffix denotes operation on the concatenated doubleword AC,AC+1.
+Two dimensions generate the family:
 
-## Arithmetic Families
+Operation:
 
-Shared destination grammar
+- logical;
+- arithmetic;
+- rotate.
 
-(blank)
-    memory operand, result to AC
+Width:
 
-I
-    immediate operand
+- single word;
+- combined doubleword in `AC,AC+1`.
 
-M
-    result written to memory
+Resulting mnemonics:
 
-B
-    result written to both AC and memory
+- `LSH` / `LSHC`
+- `ASH` / `ASHC`
+- `ROT` / `ROTC`
 
-Families using this grammar
+## Fixed arithmetic destination grammar
 
-ADD
-SUB
-IMUL
+`ADD`, `SUB`, and `IMUL` share:
+
+- blank: memory operand, result to AC;
+- `I`: immediate operand, result to AC;
+- `M`: result to memory;
+- `B`: result to both AC and memory.
 
 ## Width hierarchy
 
-Arithmetic operations scale by operand width.
+Multiplication:
 
-IMUL
-    one-word product
+- `IMUL`: one-word result;
+- `MUL`: doubleword result;
+- `DMUL`: four-word result.
 
-MUL
-    two-word product
+Division:
 
-DMUL
-    four-word product
+- `IDIV`: single-word dividend, quotient and remainder;
+- `DIV`: doubleword dividend;
+- `DDIV`: four-word dividend divided by a doubleword divisor.
 
-IDIV
-    one-word dividend
+## Floating arithmetic grammar
 
-DIV
-    two-word dividend
+Single precision:
 
-DDIV
-    four-word dividend
-	
-## Floating-point grammar
+`F` + operation + optional rounding + destination form
 
-Single precision
+Double precision:
 
-F
-+
-operation
-+
-optional rounding
-+
-destination variant
+`DF` + operation
 
-Double precision
+Operations:
 
-DF
-+
-operation
+- `AD`
+- `SB`
+- `MP`
+- `DV`
 
-Operations
+## Relational vocabulary
 
-AD
-SB
-MP
-DV
+The assembler reuses the JUMP/SKIP relation vocabulary for conditional assembly:
+
+- greater;
+- greater or equal;
+- equal;
+- not equal;
+- less;
+- less or equal.
+
+The same relation semantics apply at runtime and assembly time; only the controlled action differs.

@@ -1,23 +1,53 @@
 # Addressing
 
-Instruction fields: opcode, AC, I, X, Y.
+## Invariant
 
-Effective address is always computed first.
+Effective address calculation occurs before instruction semantics.
 
-Rules: 1. X=0,I=0 =\> EA=Y. 2. X!=0 =\> EA=AC\[X\]+Y. 3. I=1 =\>
-recursively resolve until I=0.
+## Instruction structure
 
-Immediate instructions use the address field itself.
+Normal instructions contain:
 
-Current JSYS model: arguments usually in AC1-AC4; HRROI builds a byte
-pointer for PSOUT.
+- opcode;
+- accumulator field;
+- indirect bit `I`;
+- index field `X`;
+- address field `Y`.
 
-## Boundary
+## Effective-address generator
 
-Effective address is computed before instruction execution.
+- `X=0, I=0` → `EA=Y`
+- `X≠0` → add the selected accumulator to `Y`
+- `I=1` → fetch an indirect word and repeat until `I=0`
 
-Instructions that modify values involved in their own effective address calculation produce undefined or unpredictable behaviour.
+Indirection is therefore recursive, not restricted to one level.
+
+## Immediate operands
+
+Immediate forms use the resolved address value rather than fetching `C(E)`.
+
+Example:
+
+- `MOVEI AC,E` loads `0,,E`.
+
+## JSYS calling convention
+
+Current introductory model:
+
+- low accumulators, normally AC1–AC4, carry JSYS arguments;
+- `PSOUT` receives a byte pointer in AC1;
+- `HRROI` constructs the common pointer form used in the first example.
+
+## Boundary: effective-address stability
+
+An instruction must not unpredictably change values needed for its own effective-address calculation.
 
 Verified example:
 
-- BLT must not use its own accumulator as an index register because BLT updates that accumulator while executing.
+- `BLT` updates its accumulator while executing;
+- that accumulator must never also serve as the `BLT` index register.
+
+## Open questions
+
+- Byte-pointer bit structure.
+- Architectural relationship between accumulators and low memory.

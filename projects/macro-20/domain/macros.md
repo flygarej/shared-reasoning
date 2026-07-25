@@ -1,40 +1,49 @@
-# Macros (macros.md)
+# Macros
 
 ## Generator
 
 Macros transform assembly source into assembly source during assembly.
 
-They do not execute at run time.
-
-### Observed pattern: 
-A macro can encode one relationship and emit multiple synchronized representations by redefining a helper macro.
+They do not execute at program runtime.
 
 ## Structure
 
-DEFINE name <body>
+- `DEFINE name <body>`
+- `DEFINE name(parameters) <body>`
 
-DEFINE name(parameters) <body>
+Actual arguments are substituted into the macro body, and the expanded source is then assembled normally.
 
 ## Conditional assembly
 
-IF relation(expression,0)
+Conditional assembly compares an expression with zero and either includes or omits enclosed source.
 
-↓
+It reuses the JUMP/SKIP relation vocabulary.
 
-assemble enclosed source
+`IFNDEF` may provide a default definition for a symbol that is otherwise undefined.
 
-or
+## Observed pattern
 
-omit enclosed source
+Macros may encode a relationship once and generate multiple consistent representations.
 
-IFNDEF provides default symbol definitions when a symbol has not already been defined.
+Gorin's `OPMAC`/`XX` example:
 
-## Open Questions
+- stores operator/instruction pairs once;
+- defines `XX` to select the character and emits `OPTAB`;
+- redefines `XX` to select the instruction and emits `OPINS`;
+- the completed program executes the selected instruction through `XCT`.
 
-- Exact macro expansion semantics.
-- Nested delimiter handling.
-- Argument rescanning and expansion order.
-- Redefinition rules.
+This is one demonstrated use, not the defining purpose of all macros.
 
----
+## Boundaries and open questions
 
+Angle brackets delimit and protect macro text, including arguments containing commas.
+
+Not yet established:
+
+- exact nested-delimiter rules;
+- quoting;
+- rescanning;
+- expansion order;
+- redefinition details.
+
+Revisit the macro processor when later examples require these semantics.

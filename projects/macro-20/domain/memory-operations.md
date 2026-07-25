@@ -1,23 +1,24 @@
-# Memory Operations (memory-operations.md)
+# Memory Operations
 
-## BLT
+## BLT generator
 
-Principle
+The `BLT` accumulator is the moving state of the copy operation:
 
-The BLT accumulator contains the moving source and destination addresses.
+- left half: current source address;
+- right half: current destination address.
 
-Generator
+The accumulator is updated as words are copied.
 
-The accumulator is updated during execution.
+## Consequences
 
-Consequences
+- `BLT` modifies its accumulator.
+- The `BLT` accumulator cannot be used as its own index register.
+- Anything used in the instruction's effective-address calculation must remain stable.
+- Copy order is from low source addresses upward.
+- Overlapping copies must account for that direction.
+- If the destination overwrites the `BLT` accumulator, it must be the final destination.
+- If the destination overwrites the `BLT` instruction, it must be the final destination.
 
-- BLT modifies its own accumulator.
-- Never use that accumulator during EA calculation.
-- Copy proceeds from low addresses upward.
-- If BLT overwrites its own accumulator, that must be the final destination.
-- If BLT overwrites the BLT instruction, that must be the final destination.
+## Boundary
 
-Boundary
-
-Overlapping copies require careful ordering because BLT copies upward.
+`BLT` is not automatically overlap-safe in the general sense of a direction-selecting move operation.

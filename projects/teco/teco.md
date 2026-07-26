@@ -746,6 +746,8 @@ Questions, experiments, and discussion are therefore considered productive respo
 Restore reasoning habits for maintaining domain knowledge.
 
 -   Store generators rather than enumerations.
+-   Promote generators conservatively.
+-   A repeated pattern is evidence for a capability, not necessarily for the defining purpose of the mechanism.
 -   Store relationships rather than isolated facts.
 -   Add structural details only when they prevent important incorrect
     inference.

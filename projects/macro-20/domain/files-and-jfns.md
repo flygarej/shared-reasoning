@@ -106,3 +106,56 @@ Do not infer these from other operating systems.
 - What exactly constitutes a JOB?
 - Lifetime rules for predefined JFNs.
 - Detailed OPENF access flags and byte-size handling.
+
+## String input
+
+`SIN` transfers bytes from a JFN into a caller-supplied buffer.
+
+AC registers:
+
+- AC1: source JFN
+- AC2: destination byte pointer
+- AC3: character count and stopping mode
+- AC4: break character when AC3 is positive
+
+The sign of AC3 selects the stopping rule:
+
+- Negative AC3: attempt to read exactly the specified number of characters. A short count occurs only on an error condition.
+- Positive AC3: stop when the count is exhausted or when an input character matches the break character in AC4.
+
+After the call, AC3 is moved toward zero by the number of characters actually transferred.
+
+## File status
+
+`GTSTS` accepts a JFN in AC1 and returns its status in AC2.
+
+Observed use:
+
+- after `SIN`, inspect the JFN status to distinguish the cause of an input condition.
+
+## Terminal input
+
+Observed use of `RDTTY`:
+
+- AC1 supplies the destination buffer pointer;
+- AC2 supplies the maximum input length;
+- AC3 may supply a reprompt string.
+
+The monitor supports redisplaying the reprompt when requested by the user, for example with `^R`.
+
+## Input principle
+
+For string input, the caller supplies both the destination storage and the stopping policy.
+
+## Wildcard iteration
+
+`GTJFN` may be called with flags permitting wildcard matching.
+
+Observed pattern:
+
+GTJFN (wildcard specification)
+    ↓
+GNJFN repeatedly advances through the matching files.
+
+Iteration terminates when GNJFN reports no further matches and releases the exhausted JFN.
+

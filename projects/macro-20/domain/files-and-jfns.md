@@ -70,6 +70,10 @@ This chapter introduces:
 
 Higher-level monitor calls (for example PSOUT) may internally operate using these predefined JFNs.
 
+### Verified pattern
+
+.PRIOU plus SOUT reproduces the primary-output behaviour of PSOUT.
+
 ## Vocabulary
 
 JOB

@@ -1165,6 +1165,568 @@ Operations:
 - `FSC`: adjust the exponent by `E` and normalize.
 
 
+<!-- projects/macro-20/domain/arrays.md -->
+
+# Arrays
+
+## Generator
+
+Arrays map collections of elements onto contiguous memory.
+
+Element selection is performed by computing an effective address from a base location and one or more indices.
+
+## One-dimensional arrays
+
+A one-dimensional array occupies a contiguous block of words.
+
+Indexed addressing selects an element relative to the array origin.
+
+## Multidimensional arrays
+
+Multidimensional arrays are represented in linear memory.
+
+Observed implementation techniques:
+
+- side-table containing row or column origins;
+- computed address polynomial.
+
+Both generate the effective address of the selected element.
+
+## Principles
+
+Array access builds on the ordinary effective-address mechanism rather than introducing special array instructions.
+
+## Boundaries
+
+This chapter introduces array organization and addressing techniques.
+
+Performance trade-offs and implementation preferences beyond the presented techniques are outside the current project model.
+
+---
+
+
+
+<!-- projects/macro-20/domain/comnd.md -->
+
+# COMND
+
+## Generator
+
+A command is represented as a tree of typed fields.
+
+Each COMND call parses one field and advances command processing along one valid branch of that tree.
+
+## Consequences
+
+Because the current field has a declared type and context, COMND can provide:
+
+- recognition;
+- completion;
+- context-sensitive help;
+- validation;
+- prompting;
+- field-appropriate terminal behavior.
+
+## Field roles introduced
+
+- keywords select command branches;
+- noise words improve readability without supplying application data;
+- values provide arguments to the program.
+
+## Boundary
+
+COMND parses one field per call, not an entire command line in one operation.
+
+The exact data structures and calling sequence used to describe fields have not yet been introduced.
+
+## Parser state
+
+COMND maintains parsing state within a command buffer.
+
+Observed state includes:
+
+- reprompt text;
+- beginning of editable input;
+- next field to parse;
+- remaining unparsed characters;
+- remaining free buffer space.
+
+Each successful COMND call advances the parser state rather than reparsing the command from the beginning.
+
+## Command state block
+
+COMND maintains persistent command-processing state in a caller-supplied block.
+
+The block contains:
+
+- input and output JFNs;
+- prompt/reprompt pointer;
+- editable-input boundary;
+- next parse position;
+- free-space and unparsed-character counts;
+- atom-buffer pointer and size;
+- GTJFN argument-block address;
+- a caller-provided reparse dispatch address.
+
+The command buffer holds the continuing input dialogue.  
+The atom buffer receives the contents of the current parsed field.
+
+## Reparse principle
+
+COMND preserves its parsing state, while the application supplies a reparse
+entry point for restoring application control state.
+
+An observed pattern saves a known stack pointer before parsing and restores
+it at the reparse entry.
+
+## Function descriptor blocks
+
+Each COMND call describes the next expected field with a Function
+Descriptor Block.
+
+An FDB contains:
+
+- field function code and flags;
+- optional link to another FDB;
+- function-specific data;
+- help text;
+- default text;
+- optional break-mask information.
+
+`FLDDB.` constructs these blocks.
+
+## Keyword dispatch pattern
+
+A `.CMKEY` field may refer to an alphabetically ordered command table.
+
+The table associates recognized keywords with command-server addresses.
+After COMND identifies an entry, the program obtains its server address
+from the entry and dispatches indirectly.
+
+This makes command recognition and execution data-driven rather than a
+sequence of explicit string comparisons.
+
+## Interactive field behavior
+
+Observed in the verified Small Executive session:
+
+- `?` displays help appropriate to the current field.
+- `ESC` performs recognition or completion for the current field.
+- A field default may be selected by completion when the user supplies no explicit value.
+- Noise words may be emitted as part of completion to make the command readable.
+- After help output, COMND redisplays the current command line and resumes at the same field.
+
+Example:
+
+`co<ESC><ESC>?`
+
+progresses through:
+
+- `COUNT`
+- default direction `UP`
+- noise word `(TO)`
+- help for the required numeric field
+
+
+<!-- projects/macro-20/domain/comnd-reference-program.md -->
+
+# COMND reference program
+
+## SMALL EXECUTIVE
+
+```MACRO-20
+	TITLE	SMALL EXECUTIVE		; Mark R. Crispin 12/79
+	SEARCH	MACSYM,MONSYM,QSRMAC
+	SALL
+
+;  Accumulator defs
+A=1			; JSYS Args and temp AC's 
+B=2
+C=3
+D=4
+P=17			; stack pointer
+
+OPDEF	CALL	[PUSHJ P,]
+OPDEF	RET	[POPJ P,]
+
+; Standard version info
+VWHO==2			; Who last edited program
+VMAJOR==2		; major version
+VMINOR==7		; minor version
+VEDIT==13		; edit version
+
+; Assembly switches
+; Note that CMDBSZ and ATMBSZ take on default values that can
+; be overridden by the inclusion of a header file
+
+PDLEN==100	; length of pushdown stack
+IFNDEF CMDBSZ,CMDBSZ==^D50	; length of command text buffer
+				; (250 characters)
+IFNDEF ATMBSZ,ATMBSZ==^D20	; atom buffer length (100 chars)
+
+	SUBTTL	Useful macro definitions
+
+; Parse tring of noise words
+DEFINE	NOISE (STRING) <
+	MOVEI	B,[FLDDB. .CMNOI,,<-1,,[ASCIZ/STRING/]>]
+	COMND
+	ERCAL	FATAL
+	TXNE	A,CM%NOP
+	JRST	ERROR	>	;Definition of noise
+
+; Obtain confirmation. an end of line indication. Tie off command line
+DEFINE	CONFIRM <
+	MOVEI	B,[FLDDB. .CMCFM]
+	COMND
+	ERCAL	FATAL
+	TXNE	A,CM%NOP
+	JRST	ERROR	>	; definition of CONFIRM
+
+; Call this macro to help build the command table. This macro is more complex
+;(and more useful) than the CMD macro decribed earlier
+;This macro explained in 26.2.9, page 380
+DEFINE	TBL (NAME,FLAGS,DISP) <
+IFNB <DISP>,<..DISP==DISP>		;; If a dispatch is given, use it
+IFB  <DISP>,<..DISP==.'NAME>		;; If none, default to .NAME
+IFB  <FLAGS>,<[ASCIZ/NAME/],,..DISP>	;; If no flags assemble name
+IFNB <FLAGS>,<[FLAGS!CM%FW		;; if flags use them and set CM%FW
+	ASCIZ/NAME/],,..DISP>		;;
+	PURGE	..DISP >		; TBL MACRO
+
+	SUBTTL	Data Storage Area
+
+PDLIST:	BLOCK	PDLEN		; Pushdown list
+SAVPDL: 0			; Save pushdown pointer
+				; in case of reparse
+CORBEG==.			; This storage zeroed at start
+
+				; Storage used by COMND
+CMDBUF:	BLOCK	CMDBSZ		; command buffer
+ATMBUF:	BLOCK	ATMBSZ		; atom buffer
+GTJBLK:	BLOCK	.GJATR+1	; GTJFN block
+
+				; Other storage
+UDFLAG:	0			; Up/down count flag for COUNT
+INPJFN:	0			; Input JFN for TYPE
+
+; Storage used by the PUSH command. See section 27, page 387
+EXCJFN:	0			; JFN for PUSH
+FKHAN:	0			; Fork handle for PUSH
+
+; Storage used for the QUEUE command. The server for this command is
+; explained in section 28.1, page 397
+IPCBLK:	BLOCK	.IPCFP+1	;Storage for IPCF JSYS calls
+MYPID:	0			; PID for this program
+QSRPID:	0			; PID for Quasar
+FIRSTP:	0			; Flag used in GETQRP
+
+COREND==.-1			; end of area zeroed at START
+
+; Command State Block
+CMDBLK:	0,,CMRPRS		; flags,,address of reparse routine
+	.PRIIN,,.PRIOU		; JFNS for command I/O
+	-1,,[ASCIZ/Small Executive>/]	;Ctrl-R buffer
+	-1,,CMDBUF		; ptr to start of buffer
+	-1,,CMDBUF		; ptr to start of next input
+	CMDBSZ*5-1		; size of command buffer in bytes
+	0			; number of unparsed characters
+	-1,,ATMBUF		; ptr to start of atom buffer
+	ATMBSZ*5-1		; size of atom buffer in bytes
+	GTJBLK			; pointer to GTJFN block
+
+	SUBTTL	Top level, first command dispatch and command table
+
+START:	RESET			; initialize all i/o
+	MOVE	P,[IOWD PDLEN,PDLIST]	; Initialize stack ptr
+	SETZM	CORBEG		; Initialize data area
+	MOVE	A,[CORBEG,,CORBEG+1]
+	BLT	A,COREND
+
+TOPLEV:	CALL	GETCMD		; get a command and run it
+	SETO	A,		; here on return from command
+	CLOSF			; clean up any stray JFNS left behind
+	ERCAL	FATAL		; should not happen...
+	JRST	TOPLEV		; back to top level
+
+GETCMD:	MOVEI	A,CMDBLK	; Register A points to state block
+	MOVEI	B,[FLDDB. .CMINI]	; Initialize state block, watch for
+	COMND			; CTRL/H. Do output prompt
+	ERCAL	FATAL		; Should never happen
+	MOVEM	P,SAVPDL	; Save stack ptr for reparse
+CMRPRS:	MOVE	P,SAVPDL	; Restore stack ptr for reparse
+	MOVEI	B,[FLDDB. .CMKEY,,CMDTAB,<A command>]
+	COMND
+	ERCAL	FATAL
+	TXNE	A,CM%NOP	; Parse fail?
+	JRST	ERROR		; yes, report and return
+	HRRZ	B,(B)		; ger address of command server
+	JRST	(B)		; dispatch to it
+
+; This table format discussed in 26.2.9, page 380
+
+CMDTAB:	CMDTBL,,CMDTBL	;Actual,,max no of entries
+	TBL(COUNT)
+	TBL(EXIT)
+	TBL(HELL,CM%NOR,0)	; Hell is an illegal abbreviation
+	TBL(HELLO)		; for hello
+	TBL(HELP)
+	TBL(PUSH)
+	TBL(Q,CM%INV!CM%ABR,$QUEUE)	; Q and QU are invisible 
+	TBL(QU,CM%INV!CM%ABR,$QUEUE)	; abbrevs for queue
+$QUEUE:	TBL(QUEUE)
+	TBL(QUIT,CM%INV,.EXIT)	; Quit is an invisible alias for EXIT
+	TBL(TYPE)
+CMDTBL==<.-CMDTAB>-1		; Entries in table
+
+	SUBTTL	Command Servers
+; Server for count command
+.COUNT:	SETZM	UDFLAG	;Assume count up
+	MOVEI	B,[FLDDB. .CMKEY,,UDCTAB,<a direction to count.>,UP,UPNUM]
+	COMND
+	ERCAL	FATAL
+	TXNE	A,CM%NOP	
+	JRST	ERROR
+	HRRZ	C,C	; Get address of function descriptor used
+	CAIN	C,UPNUM	; did we parse a number
+	JRST	CNUM2	; yes, result in B
+	HRRZ	B,(B)	; no, must be a command
+	JRST	(B)	; dispatch to handler
+
+UPNUM:	FLDDB.	.CMNUM,CM%SDH,^D10,<a number to count up to>
+
+UDCTAB:	UDCTLN,,UDCTLN	;Secondary kbd table for count command
+	TBL	(DOWN)
+	TBL	(UP)
+UDCTLN==<.-UDCTAB>-1
+
+.UP:	NOISE	(TO)
+	MOVEI	B,[FLDDB. .CMNUM,CM%SDH,^D10,a number to count up to,20]
+	JRST	CNUM
+.DOWN:	NOISE	(FROM)
+	SETOM	UDFLAG
+	MOVEI	B,[FLDDB. .CMNUM,CM%SDH,^D10,a number to count down from,20]
+CNUM:	COMND
+	ERCAL	FATAL
+	TXNE	A,CM%NOP
+	JRST	ERROR
+CNUM2:	JUMPLE	B,NONEG	; A negative argument makes no sense
+	MOVE	D,B	; Save number over CONFIRM
+	CONFIRM		; Tie off command
+			; here to actually do the counting
+	SKIPGE	UDFLAG	;Counting up or down, skip if up
+	JRST	COUNT0	; counting down, udflag=-1, max value
+	MOVEM	D,UDFLAG	; UDFLAG is now upper bound
+	SKIPA	D,[1]	;and for up counting D is initially 1
+COUNT0:	MOVN	D,D	;down count, D is initially -n
+			; D is lower boudn, UDFLAG is 
+			; upper bound. For counting down we'll
+			; actually cound a neg num up to -1
+	MOVEI	A,.PRIOU	; Set up to output to terminal
+COUNT1:	MOVM	B,D		; get magnitude of number to output
+	MOVEI	C,^D10		; decimal radix
+	NOUT			; output it
+	ERCAL	FATAL	
+	HRROI	B,CRLF		; output delimiting crlf
+	SETZ	C,		; terminate on null
+	SOUT
+	CAMGE	D,UDFLAG	; if counting down UDFLAG is -1
+	AOJA	D,COUNT1
+	RET
+
+NONEG:	HRROI	A,[ASCIZ/?I can't count down that far!
+/]
+	PSOUT
+	RET
+
+; Server for EXIT command to have a graceful way of getting out
+.EXIT:	NOISE	(FROM SMALL EXECUTIVE)
+	CONFIRM
+	HALTF
+	RET
+
+; Server for HELLO command
+; Format for printing version is MAJOR.MINOR(EDIT)-WHO
+.HELLO:	CONFIRM
+	HRROI	A,[ASCIZ/Hello this is the Small Executive.
+Version /]
+	PSOUT
+	MOVEI	A,.PRIOU	; Numeric object to terminal
+	MOVEI	C,10	;radix 8
+	LDB	B,[POINT 9,VERSIO,11]
+	NOUT
+	ERJMP	.+1
+	MOVEI	B,"."
+	BOUT
+	LDB	B,[POINT 6,VERSIO,17]	; Minor version
+	NOUT
+	ERJMP	.+1
+	MOVEI	B,"("
+	BOUT
+	HRRZ	B,VERSIO	; edit number in parens
+	NOUT
+	ERJMP	.+1
+	HRROI	A,[ASCIZ/)-/]
+	PSOUT
+	MOVEI	A,.PRIOU
+	LDB	B,[POINT 3,VERSIO,2]	;Finally, who edited
+	NOUT
+	ERJMP	.+1
+	HRROI	A,CRLF
+	PSOUT
+	RET
+
+; Server for HELP command
+.HELP:	NOISE (IN USING THE SMALL EXECUTIVE)
+	CONFIRM
+	HRROI	A,HLPMSG
+	PSOUT
+	RET
+
+HLPMSG:	ASCIZ/
+The Small Executive is a simple command processor that demonstrate the
+capabilities of the COMND JSYS. Try typing ? to see what commands are 
+available.
+/
+
+; The actual server for the PUSH command will be presented in section
+; 27, page 387
+.PUSH:	NOISE (COMMAND LEVEL)
+	CONFIRM
+	RET
+
+; The actual server for the QUEUE program will be presented in 
+; section 28.1, page 397
+.QUEUE:	NOISE (STATUS DISPLAY)
+	CONFIRM
+	RET
+
+.TYPE:	NOISE	(FILE ON TERMINAL)
+	SKIPE	A,INPJFN	; Any JFN lying around
+	CLOSF		; Yes, try to close it
+	ERJMP	.+1	; Ignore any failure
+	SETZM	INPJFN	; and don't try to do it again
+	MOVEI	A,CMDBLK	; Reload A with ptr to state block
+	MOVEI	B,[FLDDB. .CMIFI,CM%SDH,,name of the file you want to type]
+	COMND	; get an input file
+	ERCAL	FATAL
+	TXNE	A,CM%NOP	; Maybe not found or something?
+	JRST	ERROR
+	HRRZM	B,INPJFN	; Save the JFN we got
+	CONFIRM			; Tie off command
+	MOVE	A,INPJFN	; Open the file, using JFN from COMND
+	MOVX	B,<FLD(7,OF%BSZ)+OF%RD>	; Read access, 7-bit bytes
+	OPENF
+	JRST	ERROR		;OPENF failed for some reason...
+TYPE1:	MOVE	A,INPJFN
+	BIN			; Simple byte-by-byte copy loop
+	ERJMP	TYPE2
+	MOVEI	A,.PRIOU	; brevity, not speed...
+	BOUT
+	JRST	TYPE1
+
+TYPE2:	MOVE	A,INPJFN	; Error here, EOF?
+	GTSTS
+	TLNN	B,(GS%EOF)	
+	CALL	ERROR		; Some serious problem; report it.
+	MOVE	A,INPJFN
+	CLOSF			; Close file
+	ERCAL	FATAL
+	SETZM	INPJFN		; Zero JFN storage
+	RET
+
+	SUBTTL Error handlers and miscellany
+
+; Fatal error routine, for "impossible errors" only.
+; Called by ERCAL FATAL after failing JSYS
+
+FATAL:	CALL	ERROR	; First output reason JSYS died
+	HRROI	A,[ASCIZ/, JSYS at PC=/]
+	PSOUT
+	MOVEI	A,.PRIOU	; Output PC
+	POP	P,B		; get PC back from stack
+	SUBI	B,2		; Back up over ERCAL to JSYS address
+	MOVX	C,NO%MAG!10	; Output free format unsigned octal
+	NOUT
+	ERJMP	.+1		; This can't happen but avoid recursion
+	HRROI	A,CRLF
+	PSOUT
+	MOVEI	A,.PRIIN	; Flush TTY input handler
+	CFIBF
+FATAL0: HALTF
+	HRROI	A,[ASCIZ/?Can't continue
+/]
+	PSOUT
+	JRST	FATAL0	; Disallow continue command
+
+; Ordinary JSYS routine. Just outputs the error string for the 
+; failing JSYS and returns
+
+ERROR:	HRROI	A,[ASCIZ/Error: /]
+	ESOUT
+	MOVEI	A,.PRIOU	; Errmsg to primary output
+	HRLOI	B,.FHSLF	; This fork, last error
+	SETZ	C,		; No limit
+	ERSTR
+	ERJMP	.+1		; Neither of these are supposed to happen
+	ERJMP	.+1
+	HRROI	A,CRLF
+	PSOUT
+	RET
+
+CRLF:	BYTE(7)15,12
+
+;Entry vector
+EVEC:	JRST	START		; START entry point
+	JRST	START		; REENTER entry point
+VERSIO:	BYTE	(3)VWHO(9)VMAJOR(6)VMINOR(18)VEDIT ;version #. Label for Hello
+EVECL==.-EVEC
+
+	END	<EVECL,,EVEC>
+	
+	
+```
+
+### Sample session
+
+```TOPS-20
+@compile smexec.mac
+MACRO:	SMALL
+
+EXIT
+@load smexec
+LINK:	Loading
+@save smexec
+ SMEXEC.EXE.2 Saved
+@smexec
+Small Executive>? A command one of the following:
+ COUNT	 EXIT	  HELLO	   HELP	    PUSH     QUEUE    TYPE
+Small Executive>count ? a direction to count. one of the following:
+ DOWN	UP
+  or a number to count up to
+Small Executive>count uP (TO) ? a number to count up to
+Small Executive>count uP (TO) 11
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+Small Executive>hello
+Hello this is the Small Executive.
+Version 2.7(13)-2
+Small Executive>hello ? confirm with carriage return
+Small Executive>hello 
+Hello this is the Small Executive.
+Version 2.7(13)-2
+Small Executive>exit
+```
+
+
 <!-- projects/macro-20/domain/data-representation.md -->
 
 # Data Representation
@@ -1188,6 +1750,16 @@ Five 7-bit ASCII characters fit in one 36-bit word; the remaining bit is zero.
 - `ASCII` packs characters and zero-fills unused space in a partial final word.
 - `ASCII` does not append a separate terminator when the string exactly fills the final word.
 - `ASCIZ` appends a zero byte and may therefore require an additional word.
+
+## Numeric radix prefixes
+
+Unmarked numeric constants normally use the assembler's prevailing radix.
+
+`^D` marks the following constant as decimal.
+
+Verified experimentally:
+
+`BLOCK ^D100` allocates 100 decimal words
 
 ## Boundary
 
@@ -1304,6 +1876,59 @@ Do not infer these from other operating systems.
 - What exactly constitutes a JOB?
 - Lifetime rules for predefined JFNs.
 - Detailed OPENF access flags and byte-size handling.
+
+## String input
+
+`SIN` transfers bytes from a JFN into a caller-supplied buffer.
+
+AC registers:
+
+- AC1: source JFN
+- AC2: destination byte pointer
+- AC3: character count and stopping mode
+- AC4: break character when AC3 is positive
+
+The sign of AC3 selects the stopping rule:
+
+- Negative AC3: attempt to read exactly the specified number of characters. A short count occurs only on an error condition.
+- Positive AC3: stop when the count is exhausted or when an input character matches the break character in AC4.
+
+After the call, AC3 is moved toward zero by the number of characters actually transferred.
+
+## File status
+
+`GTSTS` accepts a JFN in AC1 and returns its status in AC2.
+
+Observed use:
+
+- after `SIN`, inspect the JFN status to distinguish the cause of an input condition.
+
+## Terminal input
+
+Observed use of `RDTTY`:
+
+- AC1 supplies the destination buffer pointer;
+- AC2 supplies the maximum input length;
+- AC3 may supply a reprompt string.
+
+The monitor supports redisplaying the reprompt when requested by the user, for example with `^R`.
+
+## Input principle
+
+For string input, the caller supplies both the destination storage and the stopping policy.
+
+## Wildcard iteration
+
+`GTJFN` may be called with flags permitting wildcard matching.
+
+Observed pattern:
+
+GTJFN (wildcard specification)
+    ↓
+GNJFN repeatedly advances through the matching files.
+
+Iteration terminates when GNJFN reports no further matches and releases the exhausted JFN.
+
 
 
 <!-- projects/macro-20/domain/handover-notes.md -->
@@ -1641,6 +2266,35 @@ Not yet established:
 Revisit the macro processor when later examples require these semantics.
 
 
+<!-- projects/macro-20/domain/memory-mapping.md -->
+
+# Memory Mapping
+
+## Generator
+
+Open files may be accessed either through stream I/O or by mapping file pages into a process address space.
+
+## PMAP
+
+PMAP associates a file page with a virtual memory page.
+
+Subsequent access uses ordinary memory instructions.
+
+## Observed options
+
+- read access
+- copy-on-write
+
+Copy-on-write provides a private modified page while leaving the file unchanged.
+
+## Principle
+
+Memory mapping operates on page-sized aligned regions.
+
+---
+
+
+
 <!-- projects/macro-20/domain/memory-operations.md -->
 
 # Memory Operations
@@ -1667,6 +2321,57 @@ The accumulator is updated as words are copied.
 ## Boundary
 
 `BLT` is not automatically overlap-safe in the general sense of a direction-selecting move operation.
+
+
+<!-- projects/macro-20/domain/program-memory.md -->
+
+# Program Memory
+
+## Generator
+
+The running program occupies a contiguous region of memory.
+
+Observed mechanism:
+
+`.JBSA` contains information describing the program image.
+
+The left half identifies the first free word above the program, allowing a program to allocate additional storage dynamically.
+
+## Boundary
+
+Only the allocation origin has been introduced.
+Memory management policy has not yet been investigated.
+
+---
+
+
+
+<!-- projects/macro-20/domain/records.md -->
+
+# Records
+
+## Generator
+
+A record layout is represented by symbolic field offsets rather than absolute addresses.
+
+`PHASE` allows field offsets to be generated automatically while assembling.
+
+`DEPHASE` restores normal location counting.
+
+`.ORG` may reclaim the temporary storage used during layout generation.
+
+## Principle
+
+Compile-time layout descriptions need not occupy runtime memory.
+
+## Boundary
+
+The current model describes record layout generation only.
+
+Record allocation, traversal, and list manipulation are introduced later.
+
+---
+
 
 
 <!-- projects/macro-20/domain/source-organization.md -->

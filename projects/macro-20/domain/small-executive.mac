@@ -1,0 +1,188 @@
+	TITLE	SMALL EXECUTIVE		; Mark R. Crispin 12/79
+	SEARCH MACSYM,MONSYM,QSRMAC
+	SALL
+
+;  Accumulator defs
+A=1			; JSYS Args and temp AC's 
+B=2
+C=3
+D=4
+P=17			; stack pointer
+
+OPDEF	CALL	[PUSHJ P,]
+OPDEF	RET	[POPJ P,]
+
+; Standard version info
+VWHO==2			; Who last edited program
+VMAJOR==2		; major version
+VMINOR==7		; minor version
+VEDIT==13		; edit version
+
+; Assembly switches
+; Note that CMDBSZ and ATMBSZ take on default values that can
+; be overridden by the inclusion of a header file
+
+PDLEN==100	; length of pushdown stack
+IFNDEF CMDBSZ,CMDBSZ==^D50	; length of command text buffer
+				; (250 characters)
+IFNDEF ATMBSZ,ATMBSZ==^D20	; atom buffer length (100 chars)
+
+	SUBTTL	Useful macro definitions
+
+; Parse tring of noise words
+DEFINE	NOISE (STRING) <
+	MOVEI	B,[FLDDB. .CMNOI,,<-1,,[ASCIZ/STRING/]>]
+	COMND
+	ERCAL	FATAL
+	TXNE	A,CM%NOP
+	JRST	ERROR	>	;Definition of noise
+
+; Obtain confirmation. an end of line indication. Tie off command line
+DEFINE	CONFIRM <
+	MOVEI	B,[FLDDB. .CMCFM]
+	COMND
+	ERCAL	FATAL
+	TXNE	A,CM%NOP
+	JRST	ERROR
+
+; Call this macro to help build the command table. This macro is more complex
+;(and more useful) than the CMD macro decribed earlier
+;This macro explained in 26.2.9, page 380
+DEFINE	TBL (NAME,FLAGS,DISP) <
+IFNB <DISP>,<..DISP==DISP>	; If a dispatch is given, use it
+IFB  <DISP>,<..DISP==.'NAME>	; If none, default to .NAME
+IFB  <FLAGS>,<[ASCIZ/NAME/],,..DISP>	; If no flags assemble name
+IFNB <FLAGS>,<[FLAGS!CM%FW		; if flags use them and set CM%FW
+	ASCIZ/NAME/],,..DISP>	;;
+	PURGE	DISP >		;; TBL MACRO
+
+	SUBTTL	Data Storage Area
+
+PDLIST:	BLOCK	PDLEN		; Pushdown list
+SAVPDL: 0			; Save pushdown pointer
+				; in case of reparse
+CORBEG==.			; This storage zeroed at start
+
+				; Storage used by COMND
+CMDBUF:	BLOCK	CMDBSZ		; command buffer
+ATMBUF:	BLOCK	ATMBSZ		; atom buffer
+GTJBLK:	BLOCK	.GJATR+1	; GTJFN block
+
+				; Other storage
+UDFLAG:	0			; Up/down count flag for COUNT
+INPJFN:	0			; Input JFN for TYPE
+
+; Storage used by the PUSH command. See section 27, page 387
+EXCJFN:	0			; JFN for PUSH
+FKHAN:	0			; Fork handle for PUSH
+
+; Storage used for the QUEUE command. The server for this command is
+; explained in section 28.1, page 397
+IPCBLK:	BLOCK	.IPCFP+1	;Storage for IPCF JSYS calls
+MYPID:	0			; PID for this program
+QSRPID:	0			; PID for Quasar
+FIRSTP:	0			; Flag used in GETQRP
+
+COREND==.-1			; end of area zeroed at START
+
+; Command State Block
+CMDBLK:	0,,CMRPRS		; flags,,address of reparse routine
+	.PRIIN,,.PRIOU		; JFNS for command I/O
+	-1,,[ASCIZ/Small Executive>/]	;Ctrl-R buffer
+	-1,,CMDBUF		; ptr to start of buffer
+	-1,,CMDBUF		; ptr to start of next input
+	CMDBSZ*5-1		; size of command buffer in bytes
+	0			; number of unparsed characters
+	-1,,ATMBUF		; ptr to start of atom buffer
+	ATMBSF*5-1		; size of atom buffer in bytes
+	GTJBLK			; pointer to GTJFN block
+
+	SUBTTL	Top level, first command dispatch and command table
+
+START:	RESET			; initialize all i/o
+	MOVE	P,[IOWD PDLEN,PDLIST]	; Initialize stack ptr
+	SETZM	CORBEG		; Initialize data area
+	MOVE	A,[CORBEG,,CORBEG+1]
+	BLT	A,COREND
+
+TOPLEV:	CALL	GETCMD		; get a command and run it
+	SETO	A,		; here on return from command
+	CLOSF			; clean up any stray JFNS left behind
+	ERCAL	FATAL		; should not happen...
+	JRST	TOPLEV		; back to top level
+
+GETCMD:	MOVEI	A,CMDBLK	; Register A points to state block
+	MOVEI	B,[FLDDB. .CMINI]	; Initialize state block, watch for
+	COMND			; CTRL/H. Do output prompt
+	ERCAL	FATAL		; Should never happen
+	MOVEM	P,SAVPOL	; Save stack ptr for reparse
+CMRPRS:	MOVE	P,SAVPOL	; Restore stack ptr for reparse
+	MOVEI	B,[FLDDB. .CMKEY,,CMDTAB,<A command>]
+	COMND
+	ERCAL	FATAL
+	TXNE	A,CM%NOP	; Parse fail?
+	JRST	ERROR		; yes, report and return
+	HRRZ	B,(B)		; ger address of command server
+	JRST	(B)		; dispatch to it
+
+; This table format discussed in 26.2.9, page 380
+
+CMDTAB:	CMDTBL,,CMDTBL	;Actual,,max no of entries
+	TBL(COUNT)
+	TBL(EXIT)
+	TBL(HELL,CM%NOR,0)	; Hell is an illegal abbreviation
+	TBL(HELLO)		; for hello
+	TBL(HELP)
+	TBL(PUSH)
+	TBL(Q,CM%INV!CM%ABR,$QUEUE)	; Q and QU are invisible 
+	TBL(QU,CM%INV!CM%ABR,$QUEUE)	; abbrevs for queue
+$QUEUE:	TBL(QUEUE)
+	TBL(QUIT,CM%INV,.EXIT)	; Quit is an invisible alias for EXIT
+	TBL(TYPE)
+CMDTBL==<.-CMDTAB>-1	.	; Entries in table
+
+	SUBTTL	Command Servers
+; Server for count command
+.COUNT:	SETZM	UDFLAG	;Assume count up
+	MOVEI	B,[FLDDB. .CMKEY,,UDCTAB,<a direction to count.>,UP,UPNUM]
+	COMND
+	ERCAL	FATAL
+	TXNE	A,CM%NOP	
+	JRST	ERROR
+	HRRZ	C,C	; Get address of function descriptor used
+	CAIN	C,UPNUM	; did we parse a number
+	JRST	CNUM2	; yes, result in B
+	HRRZ	B,(B)	; no, must be a command
+	JRST	(B)	; dispatch to handler
+
+UPNUM:	FLDDB.	.CMNUM,CM%SDH,^D10,<a number to count up to>
+
+UDCTAB:	UDCTLN,,UDCTLN	;Secondary kbd table for count command
+	TBL	(DOWN)
+	TBL	(UP)
+UDCTLN==<.-UDCTAB>-1
+
+.UP	NOISE	(TO)
+	MOVEI	B,[FLDDB. .CMNUM,CM%SDH,^D10,a number to count up to,20]
+	JRST	CNUM
+.DOWN	NOISE	(FROM)
+	SETM	UDFLAG
+	MOVEI	B,[FLDDB. .CMNUM,CM%SDH,^D10,a number to count down from,20]
+CNUM:	COMND
+	ERCAL	FATAL
+	TXNE	A,CM%NOP
+	JRST	ERROR
+CNUM2:	JUMPLE	B,NONEG	; A negative argument makes no sense
+	MOVE	D,B	; Save number over CONFIRM
+	CONFIRM		; Tie off command
+			; here to actually do the counting
+	SKIPGE	UDFLAG	;Counting up or down, skip if up
+	JRST	COUNTO	; counting down, udflag=-1, max value
+	MOVEM	D,UDFLAG	; UDFLAG is now upper bound
+	SKIPA	D,[1]	;and for up counting D is initially 1
+COUNTO:	MOVN	D,D	;down count, D is initially -n
+			; D is lower boudn, UDFLAG is 
+			; upper bound. For counting down we'll
+			; actually cound a neg num up to -1
+	MOVEI	A,.PRIOU	; Set up to output to terminal
+COUNT1:	MOVM

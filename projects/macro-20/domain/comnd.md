@@ -116,3 +116,14 @@ progresses through:
 - default direction `UP`
 - noise word `(TO)`
 - help for the required numeric field
+
+## Return convention
+
+COMND normally returns +1.
+
+- AC1: status flags in the left half and the command-state-block address in the right half.
+- AC2: data produced by the parsed field; if parsing failed, an error code and `CM%NOP` is set.
+- AC3: address of the first alternate FDB in the left half and address of the FDB actually used in the right half.
+
+If reparsing is required and the command state block provides a reparse
+address, COMND transfers control there instead of returning normally.

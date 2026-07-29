@@ -29,16 +29,35 @@ character -> position between characters -> range
 
 Point (`.`) is a position between characters. `B` and `Z` denote the buffer bounds. Lines and pages are derived from separator characters; explicit ranges are more fundamental than line- or page-oriented defaults.
 
-Commands compose by producing, transforming, consuming, or persisting values and effects. Important value classes include:
+### Value-flow model
+
+Most TECO commands are better understood by the values they consume and
+produce than by their surface syntax.
+
+Commands compose by passing values through the command stream.
+
+Important value classes include:
 
 - numbers;
 - positions;
 - ranges;
 - text;
 - status values;
-- persistent runtime state.
+- persistent runtime objects.
 
-This producer/consumer model is more fundamental than a catalogue of commands.
+A command may:
+
+- produce a value;
+- transform a value;
+- consume a value;
+- persist a value;
+- or produce only side effects.
+
+Understanding these producer/consumer relationships explains command
+composition more reliably than memorizing individual command syntax.
+
+Exact executable behaviour still depends on verified command-local
+semantics.
 
 ## Execution Model
 

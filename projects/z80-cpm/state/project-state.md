@@ -175,6 +175,15 @@ from the M80 manual.
 - CP/M 3
 - Initial domain knowledge capsules
 
+# Boundary
+
+Unless explicitly stated otherwise, accepted knowledge in this project
+applies only to the Microsoft M80/L80 toolchain.
+
+Other assemblers (such as Cromemco ZASM, SLR Z80ASM, or LINK 1.31) are
+treated as separate implementations until experimentally characterized
+or incorporated into the accepted project state.
+
 ---
 
 

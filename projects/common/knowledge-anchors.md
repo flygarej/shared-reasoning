@@ -23,7 +23,7 @@ They do not replace them.
 An anchor should:
 
 - represent a semantically important distinction;
-- prevent a known or plausible inference drift;
+- prevent an observed or plausible inference drift;
 - be substantially smaller than the documentation it replaces;
 - support multiple future reasoning tasks.
 
@@ -107,19 +107,21 @@ Both are necessary.
 
 ## Evolution
 
-Anchors should usually be discovered.
+Anchors should usually be discovered through use rather than created for
+coverage.
 
-Do not create anchors preemptively.
-
-Instead:
+A typical sequence is:
 
 1. Observe successful reasoning.
-2. Observe failures or ambiguity.
+2. Observe a failure, recurring ambiguity, or credible nearby
+   misinterpretation.
 3. Identify the smallest missing semantic constraint.
-4. Add that constraint as an anchor.
-5. Re-evaluate whether it continues to provide value.
-
-Unused anchors should be removed.
+4. Add that constraint as a candidate anchor.
+5. Test whether it improves reconstruction.
+6. Merge or remove it when it no longer contributes.
 
 The objective is the smallest accepted anchor set that reliably supports
 the generators.
+
+---
+

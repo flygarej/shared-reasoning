@@ -1,13 +1,23 @@
-# Files and JFNs
+# Files and JFNs (projects/macro-20/domain/files-and-jfns.md)
 
 ## Generator
 
-A Job File Number (JFN) is a job-local shorthand for a pathname.
+TOPS-20 separates **file identity** from **file access**.
 
-The monitor maintains the mapping between pathnames and JFNs so that almost all file operations use compact JFN identifiers rather than textual file names.
+A pathname names a file.
 
-## Lifecycle
+A Job File Number (JFN) is the monitor-managed handle used by nearly all
+subsequent file operations.
 
+Applications normally manipulate JFNs rather than pathnames.
+
+------------------------------------------------------------------------
+
+## File Lifecycle
+
+The accepted lifecycle is:
+
+``` text
 pathname
     ↓
 GTJFN
@@ -16,146 +26,198 @@ JFN
     ↓
 OPENF
     ↓
-File I/O
+File access
+    ↓
+GTSTS (optional status)
     ↓
 CLOSF
     ↓
 RLJFN
+```
 
-## Principles
+Each stage has a distinct responsibility.
 
-- TOPS-20 attempts to present different storage devices through a common file interface.
-- Most file-related JSYSes operate on JFNs rather than pathnames.
-- Once a JFN has been obtained, the pathname normally disappears from subsequent file operations.
+-   `GTJFN` establishes file identity.
+-   `OPENF` establishes access characteristics.
+-   I/O JSYSes operate on the JFN.
+-   `GTSTS` reports status associated with the JFN.
+-   `CLOSF` terminates file access.
+-   `RLJFN` releases the JFN.
 
-## Observed Patterns
+------------------------------------------------------------------------
 
-### Translation
+## Identity
 
-- GTJFN translates pathname → JFN.
-- JFNS translates JFN → pathname.
+`GTJFN`
 
-These form complementary operations.
+-   translates pathname → JFN.
 
-### Iteration
+`JFNS`
 
-GNJFN advances through wildcard matches using an existing JFN.
+-   translates JFN → pathname.
 
-The JFN itself carries the iteration state.
+These are complementary operations.
 
-### I/O
+Obtaining a JFN does **not** itself establish read or write access.
 
-Most file I/O follows the pattern
+------------------------------------------------------------------------
 
-JFN
-    ↓
-OPENF
-    ↓
-String/Byte input and output
-    ↓
-GTSTS (status)
-    ↓
-CLOSF
-    ↓
-RLJFN
+## Access
 
-### Predefined JFNs
+Once a JFN has been obtained, most operations use that JFN directly.
+
+Accepted access styles currently include:
+
+-   byte I/O;
+-   string I/O;
+-   mapped-file access.
+
+The pathname normally disappears from subsequent operations.
+
+------------------------------------------------------------------------
+
+## String I/O
+
+### Output
+
+`SOUT`
+
+-   AC1: output JFN
+-   AC2: source byte pointer
+-   AC3: character count or termination rule
+
+With AC3 equal to zero, output continues until a null byte.
+
+Verified experimentally:
+
+`.PRIOU` together with `SOUT` reproduces the terminal output normally
+performed through `PSOUT`.
+
+### Input
+
+`SIN`
+
+-   AC1: source JFN
+-   AC2: destination byte pointer
+-   AC3: character count and stopping mode
+-   AC4: break character when AC3 is positive
+
+Negative AC3 requests a fixed-length transfer.
+
+Positive AC3 terminates when either:
+
+-   the requested count is exhausted; or
+-   the break character is encountered.
+
+On return AC3 moves toward zero by the number of transferred characters.
+
+------------------------------------------------------------------------
+
+## Terminal I/O
+
+TOPS-20 also provides higher-level terminal-oriented JSYSes.
+
+Accepted examples include:
+
+-   `PSOUT`
+-   `RDTTY`
+
+These build upon the same underlying file abstraction.
+
+------------------------------------------------------------------------
+
+## Status
+
+`GTSTS`
+
+returns monitor status associated with a JFN.
+
+Current accepted use:
+
+-   distinguish end-of-file from other I/O failures following `SIN` or
+    similar operations.
+
+------------------------------------------------------------------------
+
+## Wildcard Iteration
+
+Wildcarded file specifications produce an initial JFN.
+
+`GNJFN`
+
+advances that JFN through subsequent wildcard matches.
+
+The iteration state is therefore associated with the JFN rather than
+with a pathname string.
+
+------------------------------------------------------------------------
+
+## Predefined JFNs
 
 The monitor provides predefined JFNs.
 
-This chapter introduces:
+Current project knowledge includes:
 
-- .PRIIN
-- .PRIOU
+-   `.PRIIN`
+-   `.PRIOU`
 
-Higher-level monitor calls (for example PSOUT) may internally operate using these predefined JFNs.
+These provide the conventional primary input and output streams.
 
-### Verified pattern
+------------------------------------------------------------------------
 
-.PRIOU plus SOUT reproduces the primary-output behaviour of PSOUT.
+## Conceptual Model
 
-## Vocabulary
+TOPS-20 attempts to present diverse devices through a common JFN-based
+interface.
 
-JOB
+The accepted abstraction is therefore:
 
-- Execution environment owning JFNs.
+``` text
+pathname
+        ↓
+   file identity
+        ↓
+       JFN
+        ↓
+ common file interface
+        ↓
+byte I/O
+string I/O
+mapped pages
+status
+iteration
+```
 
-FORK
+The JFN is the conceptual centre of the model.
 
-- Creates another process within a JOB.
-
-(The relationship between FORKs and JFN ownership has not yet been established.)
+------------------------------------------------------------------------
 
 ## Boundaries
 
-This chapter introduces the file abstraction and common JSYS workflow.
+Current project knowledge does **not** establish:
 
-It does not yet establish:
-
-- detailed OPENF modes;
-- sharing semantics;
-- buffering behaviour;
-- relationship between multiple FORKs and JFN mappings.
+-   detailed `OPENF` sharing modes;
+-   buffering policy;
+-   precise JOB/FORK ownership rules;
+-   lifetime rules for predefined JFNs;
+-   interaction between multiple FORKs and shared JFN tables.
 
 Do not infer these from other operating systems.
 
+------------------------------------------------------------------------
+
 ## Open Questions
 
-- Are JFN tables shared by all FORKs within a JOB?
-- Can a JFN migrate between FORKs?
-- What exactly constitutes a JOB?
-- Lifetime rules for predefined JFNs.
-- Detailed OPENF access flags and byte-size handling.
+-   Are JFN tables shared between FORKs?
+-   Can JFNs migrate between FORKs?
+-   Exact relationship between JOB and FORK ownership.
+-   Detailed `OPENF` access flags.
+-   Detailed `.CMIFI` interaction with COMND.
 
-## String input
+------------------------------------------------------------------------
 
-`SIN` transfers bytes from a JFN into a caller-supplied buffer.
+## Related Capsules
 
-AC registers:
-
-- AC1: source JFN
-- AC2: destination byte pointer
-- AC3: character count and stopping mode
-- AC4: break character when AC3 is positive
-
-The sign of AC3 selects the stopping rule:
-
-- Negative AC3: attempt to read exactly the specified number of characters. A short count occurs only on an error condition.
-- Positive AC3: stop when the count is exhausted or when an input character matches the break character in AC4.
-
-After the call, AC3 is moved toward zero by the number of characters actually transferred.
-
-## File status
-
-`GTSTS` accepts a JFN in AC1 and returns its status in AC2.
-
-Observed use:
-
-- after `SIN`, inspect the JFN status to distinguish the cause of an input condition.
-
-## Terminal input
-
-Observed use of `RDTTY`:
-
-- AC1 supplies the destination buffer pointer;
-- AC2 supplies the maximum input length;
-- AC3 may supply a reprompt string.
-
-The monitor supports redisplaying the reprompt when requested by the user, for example with `^R`.
-
-## Input principle
-
-For string input, the caller supplies both the destination storage and the stopping policy.
-
-## Wildcard iteration
-
-`GTJFN` may be called with flags permitting wildcard matching.
-
-Observed pattern:
-
-GTJFN (wildcard specification)
-    ↓
-GNJFN repeatedly advances through the matching files.
-
-Iteration terminates when GNJFN reports no further matches and releases the exhausted JFN.
-
+-   `program-memory.md`
+-   `comnd.md`
+-   `anchors.md`

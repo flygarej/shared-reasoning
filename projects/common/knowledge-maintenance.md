@@ -5,9 +5,9 @@
 Maintain the knowledge base so that it remains compact, internally
 consistent, and suitable for reliable reconstruction.
 
-Knowledge maintenance preserves accepted understanding.
+Knowledge maintenance preserves and restructures accepted understanding.
 
-It does not expand the domain.
+It does not expand the domain through unsupported inference.
 
 ---
 
@@ -15,24 +15,29 @@ It does not expand the domain.
 
 Maintenance applies to all knowledge artefacts, including:
 
-- project-state;
-- domain knowledge capsules;
+- project state;
+- session history;
+- domain capsules;
 - generators;
 - anchors;
 - boundaries;
+- open questions;
 - Rosetta/reference artefacts;
-- supporting common knowledge artefacts.
+- supporting common artefacts.
 
 ---
 
-## General Principles
+## General Principle
 
 Maintain the smallest accepted representation that reliably reconstructs
 the project understanding.
 
-Prefer restructuring over expansion.
+Prefer:
 
-Prefer consolidation over duplication.
+- restructuring over expansion;
+- consolidation over duplication;
+- accepted concepts over historical wording;
+- one authoritative location for each responsibility.
 
 Every retained artefact should contribute to future reasoning.
 
@@ -42,123 +47,135 @@ Every retained artefact should contribute to future reasoning.
 
 ### Promote
 
-Promote verified knowledge into accepted artefacts.
+Promote knowledge when it has become:
 
-Do not promote:
+- experimentally verified;
+- explicitly accepted;
+- or intentionally retained as a working model.
 
-- unresolved questions;
-- TODO items;
-- historical reasoning;
-- discarded hypotheses.
-
----
+Do not promote unresolved questions, discarded hypotheses, or historical
+reasoning as accepted knowledge.
 
 ### Consolidate
 
-Merge overlapping concepts.
+Merge overlapping concepts and parallel descriptions.
 
 Merge concepts rather than wording.
 
-Avoid parallel descriptions of the same accepted knowledge.
-
----
+Preserve provenance in the Session-Log or version history rather than
+duplicating it in current domain knowledge.
 
 ### Compact
 
-Reduce representation while preserving reconstruction quality.
+Remove redundancy while preserving reconstruction quality.
 
-Compression should remove redundancy rather than information.
+Compression must not erase:
 
----
+- important semantic distinctions;
+- accepted boundaries;
+- unresolved alternatives;
+- provenance needed to understand accepted conclusions.
 
 ### Prune
 
-Remove knowledge that no longer contributes.
+Remove artefacts or content that no longer contributes.
 
 Candidates include:
 
-- obsolete examples;
 - superseded models;
-- redundant explanations;
-- anchors no longer required;
-- generators fully subsumed by others.
+- obsolete examples;
+- repeated explanations;
+- anchors that no longer constrain plausible drift;
+- generators fully subsumed by stronger generators;
+- boundaries made obsolete by accepted knowledge.
 
-Removal should not reduce reconstruction quality.
+### Relocate
 
----
+Move content when its current artefact no longer matches its role.
 
-### Review
+Examples:
 
-Review artefacts after significant project milestones.
-
-Typical review questions:
-
-- Does this still contribute?
-- Is there unnecessary duplication?
-- Can two concepts be merged?
-- Has new evidence changed the accepted model?
-- Has an inference become verified?
-- Does this belong in another artefact?
+- history belongs in Session-Log;
+- accepted project direction belongs in Project-State;
+- conceptual reconstruction belongs in domain capsules;
+- exact drift-preventing facts belong in anchors;
+- verified integrative examples belong in reference artefacts.
 
 ---
 
-## Generator Maintenance
+## Maintenance Triggers
 
-Generators should:
+Review the knowledge base after observable milestones such as:
 
-- reconstruct conceptual models;
-- remain domain-oriented rather than documentation-oriented;
-- avoid unnecessary implementation detail;
-- preserve accepted abstractions.
+- completion of a chapter, subsystem, or investigation;
+- acceptance or rejection of a major working model;
+- accumulation of several new domain capsules;
+- discovery of repeated inference drift;
+- addition of a Rosetta/reference artefact;
+- substantial mismatch between Project-State and current domain
+  knowledge;
+- preparation for handover or release.
 
-If a generator repeatedly permits incorrect reconstruction,
-consider introducing an anchor rather than expanding the generator.
-
----
-
-## Anchor Maintenance
-
-Anchors should exist only where they measurably constrain
-incorrect inference.
-
-Candidate anchors usually originate from:
-
-- verified failures;
-- repeated ambiguity;
-- semantic distinctions;
-- structural relationships;
-- behavioural invariants.
-
-Each anchor should ideally have recorded provenance describing
-why it exists.
-
-Review anchors periodically.
-
-Merge overlapping anchors.
-
-Remove anchors that no longer improve reconstruction.
+Use observable project changes rather than attempting to infer internal
+context-window pressure.
 
 ---
 
-## Boundary Maintenance
+## Mechanism Review
 
-Boundaries should identify where reconstruction becomes unsafe.
+### Generators
 
-Add boundaries when repeated over-inference is observed.
+Generators should reconstruct conceptual models without becoming
+reference documentation.
 
-Remove boundaries that unnecessarily restrict correct reasoning.
+When a generator repeatedly permits a nearby incorrect reconstruction,
+consider adding an anchor or boundary rather than expanding the generator
+indefinitely.
 
----
+### Anchors
 
-## Rosetta Artefacts
+Anchors should preserve only load-bearing distinctions.
 
-Reference programs and canonical examples should remain:
+Prefer anchors motivated by observed failure, recurring ambiguity, or a
+credible close alternative.
+
+Record provenance when it explains why an anchor exists.
+
+### Boundaries
+
+Boundaries should identify where reconstruction is unsafe.
+
+Retain them while the uncertainty remains relevant; remove or narrow them
+when later accepted knowledge resolves it.
+
+### Rosetta/reference artefacts
+
+Reference artefacts should remain:
 
 - verified;
 - representative;
-- stable.
+- stable;
+- clearly separate from generator capsules.
 
-Prefer one authoritative example over many partial examples.
+Prefer a small number of authoritative examples over many partial ones.
+
+---
+
+## Reconstruction Check
+
+After substantial maintenance, test whether the revised artefacts still
+reconstruct the accepted model.
+
+Useful checks include:
+
+- a fresh conversation or model can explain the core mechanisms;
+- accepted boundaries remain visible;
+- known failure cases are constrained;
+- reference artefacts remain understandable from the capsules;
+- deleted material is either regenerable or preserved as history.
+
+A failure of reconstruction is evidence that compaction removed a
+load-bearing concept or anchor.
 
 ---
 
@@ -169,6 +186,7 @@ A well-maintained knowledge base:
 - reconstructs accepted understanding;
 - minimizes inference drift;
 - minimizes redundancy;
+- preserves important uncertainty;
 - remains easy to extend;
 - remains substantially smaller than the documentation from which it
   originated.

@@ -1,37 +1,137 @@
-# Arrays
+# Arrays (projects/macro-20/domain/arrays.md)
 
 ## Generator
 
-Arrays map collections of elements onto contiguous memory.
+An array is a contiguous region of memory whose elements are accessed
+through effective-address calculation.
 
-Element selection is performed by computing an effective address from a base location and one or more indices.
+The PDP-10 instruction set has no dedicated array mechanism.
 
-## One-dimensional arrays
+Arrays are constructed from ordinary memory together with address
+calculation.
 
-A one-dimensional array occupies a contiguous block of words.
+------------------------------------------------------------------------
 
-Indexed addressing selects an element relative to the array origin.
+## Linear Arrays
 
-## Multidimensional arrays
+A one-dimensional array occupies consecutive PDP-10 words.
 
-Multidimensional arrays are represented in linear memory.
+The address of an element is determined from:
 
-Observed implementation techniques:
+-   array origin;
+-   element index.
 
-- side-table containing row or column origins;
-- computed address polynomial.
+Iteration normally advances by changing the index rather than modifying
+the array itself.
 
-Both generate the effective address of the selected element.
+------------------------------------------------------------------------
 
-## Principles
+## Multidimensional Arrays
 
-Array access builds on the ordinary effective-address mechanism rather than introducing special array instructions.
+Multidimensional arrays remain linear in memory.
+
+Accepted construction techniques include:
+
+-   row-major or column-major address calculations;
+-   tables of row or column origins.
+
+The chosen mapping determines how multidimensional indices become linear
+addresses.
+
+------------------------------------------------------------------------
+
+## Address Calculation
+
+Array access is an application of the addressing generator.
+
+Conceptually:
+
+``` text
+Array base
+     ↓
+Element index
+     ↓
+Effective address
+     ↓
+Memory operand
+```
+
+The instruction family then operates on the resolved operand.
+
+------------------------------------------------------------------------
+
+## Relationship to Records
+
+Arrays organise homogeneous collections.
+
+Records organise heterogeneous fields.
+
+Arrays answer:
+
+> Which element?
+
+Records answer:
+
+> Which field?
+
+The two mechanisms are complementary.
+
+------------------------------------------------------------------------
+
+## Relationship to BLT
+
+`BLT` efficiently copies or initializes contiguous regions of memory.
+
+It therefore naturally complements array construction and bulk array
+operations without changing the conceptual array model.
+
+------------------------------------------------------------------------
+
+## Conceptual Model
+
+``` text
+Linear memory
+      ↓
+Choose origin
+      ↓
+Apply index calculation
+      ↓
+Effective address
+      ↓
+Element
+```
+
+Arrays are a view of memory rather than a distinct architectural object.
+
+------------------------------------------------------------------------
 
 ## Boundaries
 
-This chapter introduces array organization and addressing techniques.
+Current project knowledge does **not** establish:
 
-Performance trade-offs and implementation preferences beyond the presented techniques are outside the current project model.
+-   language-specific array descriptors;
+-   runtime bounds checking;
+-   dynamically resized arrays;
+-   compiler-generated array layouts.
+
+Do not infer higher-level language features from the assembly model.
+
+------------------------------------------------------------------------
+
+## Open Questions
+
+-   Common TOPS-20 runtime conventions for multidimensional arrays.
+-   Typical library support for dynamic arrays, if any.
+
+------------------------------------------------------------------------
+
+## Related Capsules
+
+-   `addressing.md`
+-   `records.md`
+-   `program-memory.md`
+-   `blt.md`
+-   `anchors.md`
 
 ---
 

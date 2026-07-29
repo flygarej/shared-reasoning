@@ -2,128 +2,185 @@
 
 ## Generator
 
-A command is represented as a tree of typed fields.
+COMND and the application cooperate to execute a typed interactive
+grammar.
 
-Each COMND call parses one field and advances command processing along one valid branch of that tree.
+COMND owns the interactive parsing process.
 
-## Consequences
+The application owns the command grammar and the command semantics.
 
-Because the current field has a declared type and context, COMND can provide:
+Each call to COMND parses one field and advances the parse state.
 
-- recognition;
-- completion;
-- context-sensitive help;
-- validation;
-- prompting;
-- field-appropriate terminal behavior.
+------------------------------------------------------------------------
 
-## Field roles introduced
+## Command State
 
-- keywords select command branches;
-- noise words improve readability without supplying application data;
-- values provide arguments to the program.
+The application owns the command state block.
 
-## Boundary
+The state block preserves the dialogue between successive COMND calls.
 
-COMND parses one field per call, not an entire command line in one operation.
+Accepted components include:
 
-The exact data structures and calling sequence used to describe fields have not yet been introduced.
+-   command buffer;
+-   atom buffer;
+-   input/output JFNs;
+-   parsing pointers and counters;
+-   GTJFN argument block pointer;
+-   application reparse entry.
 
-## Parser state
+The command buffer contains the editable command.
 
-COMND maintains parsing state within a command buffer.
+The atom buffer contains the current parsed field.
 
-Observed state includes:
+------------------------------------------------------------------------
 
-- reprompt text;
-- beginning of editable input;
-- next field to parse;
-- remaining unparsed characters;
-- remaining free buffer space.
+## Parsing Model
 
-Each successful COMND call advances the parser state rather than reparsing the command from the beginning.
+COMND parses one field at a time.
 
-## Command state block
+A complete command is therefore interpreted as a sequence (or tree) of
+typed fields rather than as one monolithic command line.
 
-COMND maintains persistent command-processing state in a caller-supplied block.
+The application advances through the grammar by selecting the next
+Function Descriptor Block (FDB) chain.
 
-The block contains:
+COMND advances through the input by recognizing the next field.
 
-- input and output JFNs;
-- prompt/reprompt pointer;
-- editable-input boundary;
-- next parse position;
-- free-space and unparsed-character counts;
-- atom-buffer pointer and size;
-- GTJFN argument-block address;
-- a caller-provided reparse dispatch address.
+------------------------------------------------------------------------
 
-The command buffer holds the continuing input dialogue.  
-The atom buffer receives the contents of the current parsed field.
+## Function Descriptor Blocks
 
-## Reparse principle
+An FDB describes one expected field.
 
-COMND preserves its parsing state, while the application supplies a reparse
-entry point for restoring application control state.
+Accepted FDB responsibilities include:
 
-An observed pattern saves a known stack pointer before parsing and restores
-it at the reparse entry.
+-   field type;
+-   function-specific data;
+-   help text;
+-   default value;
+-   alternate FDB;
+-   optional break handling.
 
-## Function descriptor blocks
+Alternate FDB chains allow one grammar position to accept several
+different field types.
 
-Each COMND call describes the next expected field with a Function
-Descriptor Block.
+------------------------------------------------------------------------
 
-An FDB contains:
+## Command Tables
 
-- field function code and flags;
-- optional link to another FDB;
-- function-specific data;
-- help text;
-- default text;
-- optional break-mask information.
+Keyword tables associate recognized command words with application data.
 
-`FLDDB.` constructs these blocks.
+Application data commonly identifies the command server.
 
-## Keyword dispatch pattern
+Recognition policy is controlled by keyword flags such as:
 
-A `.CMKEY` field may refer to an alphabetically ordered command table.
+-   explicit abbreviations;
+-   invisible aliases;
+-   non-recognized entries.
 
-The table associates recognized keywords with command-server addresses.
-After COMND identifies an entry, the program obtains its server address
-from the entry and dispatches indirectly.
+The table therefore describes both recognition and dispatch.
 
-This makes command recognition and execution data-driven rather than a
-sequence of explicit string comparisons.
+------------------------------------------------------------------------
 
-## Interactive field behavior
+## Responsibility Split
 
-Observed in the verified Small Executive session:
+COMND owns:
 
-- `?` displays help appropriate to the current field.
-- `ESC` performs recognition or completion for the current field.
-- A field default may be selected by completion when the user supplies no explicit value.
-- Noise words may be emitted as part of completion to make the command readable.
-- After help output, COMND redisplays the current command line and resumes at the same field.
+-   command-line editing;
+-   recognition;
+-   completion;
+-   contextual help;
+-   defaults;
+-   field parsing;
+-   textual parse state.
 
-Example:
+The application owns:
 
-`co<ESC><ESC>?`
+-   grammar;
+-   FDB selection;
+-   dispatch;
+-   persistent state;
+-   command semantics.
 
-progresses through:
+------------------------------------------------------------------------
 
-- `COUNT`
-- default direction `UP`
-- noise word `(TO)`
-- help for the required numeric field
+## Interactive Behaviour
 
-## Return convention
+Accepted behaviour includes:
 
-COMND normally returns +1.
+-   `?` displays help for the current field.
+-   `ESC` performs recognition or completion.
+-   Defaults may be supplied.
+-   Noise words improve readability.
+-   Confirmation is parsed explicitly.
+-   Reparsing resumes from application-defined state.
 
-- AC1: status flags in the left half and the command-state-block address in the right half.
-- AC2: data produced by the parsed field; if parsing failed, an error code and `CM%NOP` is set.
-- AC3: address of the first alternate FDB in the left half and address of the FDB actually used in the right half.
+------------------------------------------------------------------------
 
-If reparsing is required and the command state block provides a reparse
-address, COMND transfers control there instead of returning normally.
+## Return Convention
+
+Normally COMND returns:
+
+-   AC1: status flags and command-state-block address.
+-   AC2: parsed value or error code.
+-   AC3: first supplied FDB and FDB actually used.
+
+The FDB actually used identifies which alternative matched.
+
+If reparsing is required and the command-state block supplies a reparse
+entry, COMND transfers there instead of returning normally.
+
+------------------------------------------------------------------------
+
+## Conceptual Model
+
+``` text
+User
+   ↓
+Command buffer
+   ↓
+COMND
+   ↓
+Current FDB chain
+   ↓
+Parsed field
+   ↓
+Application
+   ↓
+Next FDB chain
+   ↓
+COMND
+```
+
+The monitor and the application jointly execute the command grammar.
+
+------------------------------------------------------------------------
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+-   every COMND function code;
+-   every field type;
+-   internal parser implementation;
+-   detailed interaction between `.CMIFI` and long-form `GTJFN`;
+-   all command-state flags.
+
+Do not infer undocumented COMND behaviour from the accepted model alone.
+
+------------------------------------------------------------------------
+
+## Open Questions
+
+-   Detailed long-form `GTJFN` integration.
+-   Complete FDB catalogue.
+-   Reparse behaviour in more complex grammars.
+-   Additional COMND field types introduced later in Gorin.
+
+------------------------------------------------------------------------
+
+## Related Capsules
+
+-   `files-and-jfns.md`
+-   `program-memory.md`
+-   `anchors.md`

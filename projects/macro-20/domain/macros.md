@@ -1,49 +1,185 @@
-# Macros
+# Macros (projects/macro-20/domain/macros.md)
 
 ## Generator
 
-Macros transform assembly source into assembly source during assembly.
+MACRO-20 macros transform assembly source into assembly source during
+assembly.
 
 They do not execute at program runtime.
 
-## Structure
+A macro packages a source-generation rule so that one accepted
+relationship can produce many consistent pieces of assembled code or
+data.
 
-- `DEFINE name <body>`
-- `DEFINE name(parameters) <body>`
+---
 
-Actual arguments are substituted into the macro body, and the expanded source is then assembled normally.
+## Definition and Expansion
 
-## Conditional assembly
+Accepted forms include:
 
-Conditional assembly compares an expression with zero and either includes or omits enclosed source.
+```asm
+DEFINE NAME <BODY>
+```
 
-It reuses the JUMP/SKIP relation vocabulary.
+and:
 
-`IFNDEF` may provide a default definition for a symbol that is otherwise undefined.
+```asm
+DEFINE NAME (ARGUMENTS) <BODY>
+```
 
-## Observed pattern
+When the macro is invoked:
 
-Macros may encode a relationship once and generate multiple consistent representations.
+1. actual arguments are associated with formal parameters;
+2. the macro body is expanded;
+3. the resulting source is assembled normally.
 
-Gorin's `OPMAC`/`XX` example:
+The expansion is therefore part of assembly-time source construction,
+not a runtime call.
 
-- stores operator/instruction pairs once;
-- defines `XX` to select the character and emits `OPTAB`;
-- redefines `XX` to select the instruction and emits `OPINS`;
-- the completed program executes the selected instruction through `XCT`.
+---
 
-This is one demonstrated use, not the defining purpose of all macros.
+## Parameters
 
-## Boundaries and open questions
+Macro parameters allow one source pattern to be reused with different
+values or source fragments.
 
-Angle brackets delimit and protect macro text, including arguments containing commas.
+Angle brackets delimit macro text and protect arguments that contain
+characters such as commas.
 
-Not yet established:
+The current project model establishes substitution at a conceptual level.
 
-- exact nested-delimiter rules;
-- quoting;
-- rescanning;
-- expansion order;
-- redefinition details.
+It does not yet establish the complete rescan, quoting, or nested
+delimiter semantics of the macro processor.
 
-Revisit the macro processor when later examples require these semantics.
+---
+
+## Conditional Assembly
+
+Conditional assembly selects whether source is included during assembly.
+
+Accepted relation tests include:
+
+- greater;
+- greater or equal;
+- equal;
+- not equal;
+- less;
+- less or equal.
+
+These reuse the same relation vocabulary found in runtime JUMP and SKIP
+families.
+
+The relation keeps its meaning.
+
+The controlled action changes from runtime control flow to assembly-time
+source inclusion.
+
+`IFNDEF` may provide a default definition when a symbol has not already
+been defined.
+
+---
+
+## Relationship Generation
+
+A macro may preserve one relationship and emit several synchronized
+representations.
+
+Gorin's accepted `OPMAC` / `XX` pattern demonstrates this:
+
+1. operator and instruction pairs are written once;
+2. `XX` is defined to emit the operator representation;
+3. the relationship is expanded to generate `OPTAB`;
+4. `XX` is redefined to emit the instruction representation;
+5. the same relationship is expanded to generate `OPINS`;
+6. the selected instruction is later executed through `XCT`.
+
+This avoids maintaining parallel tables independently.
+
+The general generator is:
+
+```text
+One accepted relationship
+          ↓
+Different macro interpretations
+          ↓
+Several synchronized artefacts
+```
+
+This is one powerful use of macros, not the defining purpose of every
+macro.
+
+---
+
+## Interface Construction
+
+Macros may also hide repeated source-level protocol.
+
+Accepted examples include:
+
+- `CALL` and `RET` operation definitions;
+- COMND helpers such as `NOISE` and `CONFIRM`;
+- table-construction helpers such as `TBL`;
+- symbolic instruction interfaces created with `OPDEF`.
+
+The value of such macros is not merely shorter source.
+
+They preserve a repeated structural rule in one place.
+
+---
+
+## Conceptual Model
+
+```text
+Source relationship
+        ↓
+Macro definition
+        ↓
+Invocation and substitution
+        ↓
+Generated source
+        ↓
+Normal assembly
+```
+
+Macros generate source structure.
+
+The assembler then interprets the generated source exactly as though it
+had been written directly.
+
+---
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+- exact nested-angle-bracket rules;
+- quoting rules;
+- complete rescanning behaviour;
+- expansion order in complex nested macros;
+- redefinition semantics in all cases;
+- the exact boundary between textual substitution and assembler
+  expression evaluation.
+
+Do not infer these local semantics from the high-level source-generation
+model.
+
+---
+
+## Open Questions
+
+- Nested delimiters.
+- Argument substitution details.
+- Rescanning.
+- Macro redefinition.
+- Expansion order.
+- Emitted-source inspection and listing behaviour.
+
+---
+
+## Related Capsules
+
+- `instruction-families.md`
+- `source-organization.md`
+- `luuos.md`
+- `comnd.md`
+- `anchors.md`

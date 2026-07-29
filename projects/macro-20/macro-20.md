@@ -743,45 +743,85 @@ Questions, experiments, and discussion are therefore considered productive respo
 
 ## Purpose
 
-Restore reasoning habits for maintaining domain knowledge.
+Restore reasoning habits for reconstructing and maintaining domain
+knowledge.
 
--   Store generators rather than enumerations.
--   Promote generators conservatively.
--   A repeated pattern is evidence for a capability, not necessarily for the defining purpose of the mechanism.
--   Store relationships rather than isolated facts.
--   Add structural details only when they prevent important incorrect
-    inference.
--   High-information-density knowledge constrains many future
-    inferences.
--   Reasoning failures identify missing capsule constraints.
--   Maintain capsules from observed failures rather than anticipated
-    ones.
--   Preserve open questions explicitly.
--   Prefer one structural constraint over many factual details.
+- Store generators rather than enumerations.
+- Promote generators conservatively.
+- A repeated pattern is evidence for a capability, not necessarily for
+  the defining purpose of the mechanism.
+- Store relationships rather than isolated facts.
+- Add structural details only when they prevent important incorrect
+  inference.
+- High-information-density knowledge should constrain many future
+  inferences.
+- Preserve open questions explicitly.
+- Prefer one general constraint over many incident-specific prohibitions.
 
 ---
 
-## Example Generation Under Incomplete Local Semantics
+## Structural and Local Knowledge
 
-Generating executable examples requires both:
+A correct structural model does not establish exact local semantics.
+
+Structural generators may explain:
+
+- how a mechanism is organized;
+- which relationships are regular;
+- which outcomes should be expected.
+
+They do not establish the exact behaviour of every local operator,
+instruction, command, or option.
+
+When exact local semantics affect correctness:
+
+- use verified project knowledge;
+- use an accepted semantic anchor;
+- consult authoritative documentation;
+- or propose the smallest discriminating experiment.
+
+Do not replace uncertain local semantics with a plausible approximation.
+
+---
+
+## Executable Examples
+
+Generating an executable example requires both:
 
 - a correct structural model;
-- verified local semantics for every operator affecting correctness.
+- established local semantics for every operation whose precise behaviour
+  affects correctness.
 
-Do not silently replace uncertain local semantics with plausible
-approximations.
+When local semantics are incomplete:
 
-Instead:
-
-- identify the uncertain semantics;
-- preserve competing interpretations;
-- separate verified structure from candidate implementation;
-- propose the smallest discriminating experiment;
-- finalize examples only after local semantics are established.
-
-Observed inference failures identify missing reasoning constraints.
+1. identify the uncertain operation;
+2. separate verified structure from candidate implementation;
+3. preserve competing interpretations where evidence does not
+   discriminate;
+4. obtain the missing semantics through documentation or experiment;
+5. finalize the example only after the uncertainty is resolved.
 
 ---
+
+## Failure-Guided Refinement
+
+Reasoning failures reveal missing constraints in the knowledge
+representation.
+
+When a failure occurs:
+
+1. identify whether the structural model or a local semantic assumption
+   failed;
+2. find the smallest missing constraint;
+3. decide whether it belongs in a generator, anchor, boundary, or open
+   question;
+4. prefer a reusable correction over an incident-specific warning.
+
+Maintain capsules from observed failures rather than anticipated
+possibilities.
+
+---
+
 
 
 
@@ -812,7 +852,7 @@ They do not replace them.
 An anchor should:
 
 - represent a semantically important distinction;
-- prevent a known or plausible inference drift;
+- prevent an observed or plausible inference drift;
 - be substantially smaller than the documentation it replaces;
 - support multiple future reasoning tasks.
 
@@ -896,44 +936,51 @@ Both are necessary.
 
 ## Evolution
 
-Anchors should usually be discovered.
+Anchors should usually be discovered through use rather than created for
+coverage.
 
-Do not create anchors preemptively.
-
-Instead:
+A typical sequence is:
 
 1. Observe successful reasoning.
-2. Observe failures or ambiguity.
+2. Observe a failure, recurring ambiguity, or credible nearby
+   misinterpretation.
 3. Identify the smallest missing semantic constraint.
-4. Add that constraint as an anchor.
-5. Re-evaluate whether it continues to provide value.
-
-Unused anchors should be removed.
+4. Add that constraint as a candidate anchor.
+5. Test whether it improves reconstruction.
+6. Merge or remove it when it no longer contributes.
 
 The objective is the smallest accepted anchor set that reliably supports
 the generators.
 
+---
+
+
 
 <!-- projects/common/knowledge-architecture.md -->
 
-# Knowledge Representation (common/knowledge-architecture.md)
+# Knowledge Architecture (common/knowledge-architecture.md)
 
 ## Purpose
 
 Restore the project knowledge architecture.
 
--   Protocol defines collaboration.
--   Rationale explains design intent.
--   Project-State contains accepted knowledge.
--   Session-Log preserves historical reasoning.
--   Domain knowledge capsules restore conceptual models.
--   Common knowledge-representation artefacts (generators, anchors,
-    boundaries, etc.) define how conceptual models are reconstructed.
--   Human documentation and reasoning capsules have different
-    optimization goals.
--   Serialization preserves artefact identity while enabling transport.
--   Do not silently promote history or TODO items into accepted
-    knowledge.
+- Protocol defines collaboration.
+- Rationale explains design intent.
+- Project-State contains accepted project knowledge and current
+  direction.
+- Session-Log preserves historical reasoning and provenance.
+- Domain capsules restore conceptual models through generators,
+  boundaries, anchors, and explicit unknowns.
+- Rosetta/reference artefacts anchor composition in verified examples.
+- Common knowledge artefacts define how project knowledge is represented
+  and maintained.
+- Human documentation and reasoning capsules have different optimization
+  goals.
+- Serialization preserves artefact identity while enabling transport.
+- Do not silently promote history or TODO items into accepted knowledge.
+
+---
+
 
 
 <!-- projects/common/knowledge-maintenance.md -->
@@ -945,9 +992,9 @@ Restore the project knowledge architecture.
 Maintain the knowledge base so that it remains compact, internally
 consistent, and suitable for reliable reconstruction.
 
-Knowledge maintenance preserves accepted understanding.
+Knowledge maintenance preserves and restructures accepted understanding.
 
-It does not expand the domain.
+It does not expand the domain through unsupported inference.
 
 ---
 
@@ -955,24 +1002,29 @@ It does not expand the domain.
 
 Maintenance applies to all knowledge artefacts, including:
 
-- project-state;
-- domain knowledge capsules;
+- project state;
+- session history;
+- domain capsules;
 - generators;
 - anchors;
 - boundaries;
+- open questions;
 - Rosetta/reference artefacts;
-- supporting common knowledge artefacts.
+- supporting common artefacts.
 
 ---
 
-## General Principles
+## General Principle
 
 Maintain the smallest accepted representation that reliably reconstructs
 the project understanding.
 
-Prefer restructuring over expansion.
+Prefer:
 
-Prefer consolidation over duplication.
+- restructuring over expansion;
+- consolidation over duplication;
+- accepted concepts over historical wording;
+- one authoritative location for each responsibility.
 
 Every retained artefact should contribute to future reasoning.
 
@@ -982,123 +1034,135 @@ Every retained artefact should contribute to future reasoning.
 
 ### Promote
 
-Promote verified knowledge into accepted artefacts.
+Promote knowledge when it has become:
 
-Do not promote:
+- experimentally verified;
+- explicitly accepted;
+- or intentionally retained as a working model.
 
-- unresolved questions;
-- TODO items;
-- historical reasoning;
-- discarded hypotheses.
-
----
+Do not promote unresolved questions, discarded hypotheses, or historical
+reasoning as accepted knowledge.
 
 ### Consolidate
 
-Merge overlapping concepts.
+Merge overlapping concepts and parallel descriptions.
 
 Merge concepts rather than wording.
 
-Avoid parallel descriptions of the same accepted knowledge.
-
----
+Preserve provenance in the Session-Log or version history rather than
+duplicating it in current domain knowledge.
 
 ### Compact
 
-Reduce representation while preserving reconstruction quality.
+Remove redundancy while preserving reconstruction quality.
 
-Compression should remove redundancy rather than information.
+Compression must not erase:
 
----
+- important semantic distinctions;
+- accepted boundaries;
+- unresolved alternatives;
+- provenance needed to understand accepted conclusions.
 
 ### Prune
 
-Remove knowledge that no longer contributes.
+Remove artefacts or content that no longer contributes.
 
 Candidates include:
 
-- obsolete examples;
 - superseded models;
-- redundant explanations;
-- anchors no longer required;
-- generators fully subsumed by others.
+- obsolete examples;
+- repeated explanations;
+- anchors that no longer constrain plausible drift;
+- generators fully subsumed by stronger generators;
+- boundaries made obsolete by accepted knowledge.
 
-Removal should not reduce reconstruction quality.
+### Relocate
 
----
+Move content when its current artefact no longer matches its role.
 
-### Review
+Examples:
 
-Review artefacts after significant project milestones.
-
-Typical review questions:
-
-- Does this still contribute?
-- Is there unnecessary duplication?
-- Can two concepts be merged?
-- Has new evidence changed the accepted model?
-- Has an inference become verified?
-- Does this belong in another artefact?
+- history belongs in Session-Log;
+- accepted project direction belongs in Project-State;
+- conceptual reconstruction belongs in domain capsules;
+- exact drift-preventing facts belong in anchors;
+- verified integrative examples belong in reference artefacts.
 
 ---
 
-## Generator Maintenance
+## Maintenance Triggers
 
-Generators should:
+Review the knowledge base after observable milestones such as:
 
-- reconstruct conceptual models;
-- remain domain-oriented rather than documentation-oriented;
-- avoid unnecessary implementation detail;
-- preserve accepted abstractions.
+- completion of a chapter, subsystem, or investigation;
+- acceptance or rejection of a major working model;
+- accumulation of several new domain capsules;
+- discovery of repeated inference drift;
+- addition of a Rosetta/reference artefact;
+- substantial mismatch between Project-State and current domain
+  knowledge;
+- preparation for handover or release.
 
-If a generator repeatedly permits incorrect reconstruction,
-consider introducing an anchor rather than expanding the generator.
-
----
-
-## Anchor Maintenance
-
-Anchors should exist only where they measurably constrain
-incorrect inference.
-
-Candidate anchors usually originate from:
-
-- verified failures;
-- repeated ambiguity;
-- semantic distinctions;
-- structural relationships;
-- behavioural invariants.
-
-Each anchor should ideally have recorded provenance describing
-why it exists.
-
-Review anchors periodically.
-
-Merge overlapping anchors.
-
-Remove anchors that no longer improve reconstruction.
+Use observable project changes rather than attempting to infer internal
+context-window pressure.
 
 ---
 
-## Boundary Maintenance
+## Mechanism Review
 
-Boundaries should identify where reconstruction becomes unsafe.
+### Generators
 
-Add boundaries when repeated over-inference is observed.
+Generators should reconstruct conceptual models without becoming
+reference documentation.
 
-Remove boundaries that unnecessarily restrict correct reasoning.
+When a generator repeatedly permits a nearby incorrect reconstruction,
+consider adding an anchor or boundary rather than expanding the generator
+indefinitely.
 
----
+### Anchors
 
-## Rosetta Artefacts
+Anchors should preserve only load-bearing distinctions.
 
-Reference programs and canonical examples should remain:
+Prefer anchors motivated by observed failure, recurring ambiguity, or a
+credible close alternative.
+
+Record provenance when it explains why an anchor exists.
+
+### Boundaries
+
+Boundaries should identify where reconstruction is unsafe.
+
+Retain them while the uncertainty remains relevant; remove or narrow them
+when later accepted knowledge resolves it.
+
+### Rosetta/reference artefacts
+
+Reference artefacts should remain:
 
 - verified;
 - representative;
-- stable.
+- stable;
+- clearly separate from generator capsules.
 
-Prefer one authoritative example over many partial examples.
+Prefer a small number of authoritative examples over many partial ones.
+
+---
+
+## Reconstruction Check
+
+After substantial maintenance, test whether the revised artefacts still
+reconstruct the accepted model.
+
+Useful checks include:
+
+- a fresh conversation or model can explain the core mechanisms;
+- accepted boundaries remain visible;
+- known failure cases are constrained;
+- reference artefacts remain understandable from the capsules;
+- deleted material is either regenerable or preserved as history.
+
+A failure of reconstruction is evidence that compaction removed a
+load-bearing concept or anchor.
 
 ---
 
@@ -1109,6 +1173,7 @@ A well-maintained knowledge base:
 - reconstructs accepted understanding;
 - minimizes inference drift;
 - minimizes redundancy;
+- preserves important uncertainty;
 - remains easy to extend;
 - remains substantially smaller than the documentation from which it
   originated.
@@ -1117,33 +1182,9 @@ A well-maintained knowledge base:
 
 
 
-<!-- projects/common/reasoning-constraints.md -->
-
-# Reasoning Constraints (common/reasoning-constraints.md)
-
-## Purpose
-
-Constrain inference where observed failures show that plausible reasoning
-can outrun accepted knowledge.
-
-- A correct structural model does not establish exact local semantics.
-- Executable examples require verified semantics for every operation whose
-  precise behaviour affects correctness.
-- Do not replace uncertain local semantics with plausible approximations.
-- Separate verified structure from candidate implementation.
-- Preserve competing interpretations when evidence does not discriminate.
-- Prefer the smallest discriminating experiment.
-- Add constraints in response to observed failure classes rather than
-  anticipated possibilities.
-- Prefer one general constraint over many incident-specific prohibitions.
-
----
-
-
-
 <!-- projects/macro-20/state/project-state.md -->
 
-# Project State
+# Project State (projects/macro-20/state/project-state.md)
 
 ## Project
 
@@ -1151,82 +1192,403 @@ can outrun accepted knowledge.
 
 ## Objective
 
-Develop a rigorous, testable understanding of MACRO-20, the PDP-10 architecture it exposes, and the TOPS-20 monitor interface through documentation and experiment.
+Develop a rigorous, testable understanding of:
 
-## Collaboration method
+- MACRO-20;
+- the PDP-10 architecture exposed through MACRO-20;
+- the TOPS-20 monitor interface;
+- characteristic TOPS-20 program-construction techniques.
+
+The project proceeds breadth-first through Gorin, using documentation,
+verified programs, and small experiments to establish a reusable
+conceptual model.
+
+---
+
+## Collaboration Method
 
 - Follow the shared protocol and rationale.
-- Distinguish observation, documentation, inference, hypothesis, prediction, working model, and verified conclusion.
-- Prefer small experiments over attractive inference.
-- Treat domain files as compact reasoning capsules: preserve generators, boundaries, and open questions rather than exhaustive lists.
+- Distinguish observation, documentation, inference, hypothesis,
+  prediction, working model, and verified conclusion.
+- Prefer small discriminating experiments over attractive inference.
+- Treat domain capsules as compact reasoning artefacts rather than
+  reference manuals.
+- Preserve generators, anchors, boundaries, and explicit unknowns.
+- Use verified reference programs to anchor how mechanisms compose.
+- Do not infer exact local instruction or JSYS semantics from structural
+  generators alone.
 
-## Verified environment
+---
+
+## Verified Environment
 
 - Panda KLH10 running TOPS-20.
 - Native MACRO-20 toolchain works.
-- Verified workflow:
-  - `.MAC` → `COMPILE` → `.REL`
-  - `LOAD`
-  - `SAVE`
-  - execute with `@program`
-- A missing final newline after `END` causes `?MCRNES NO END STATEMENT ENCOUNTERED`.
-- Gorin explicitly states that `END` requires its own CRLF.
 
-## Current phase
+Verified workflow:
 
-The introductory machine-architecture portion of Gorin has been covered through:
+1. `COMPILE` assembles `.MAC` source into `.REL`.
+2. `LOAD` links the relocatable program.
+3. `SAVE` writes an executable `.EXE`.
+4. The program is executed from the TOPS-20 command level.
 
-- representation and instruction format;
-- effective addressing;
-- movement, jumps, tests, Boolean operations;
-- block transfer and shifts;
-- fixed and floating-point arithmetic;
+A missing final newline after `END` causes:
+
+`?MCRNES NO END STATEMENT ENCOUNTERED`
+
+Gorin explicitly states that `END` requires its own CRLF.
+
+---
+
+## Current Phase
+
+Gorin has been covered through Chapter 26, Command Scanning.
+
+Accepted areas now include:
+
+- machine representation and instruction format;
+- recursive effective-address calculation;
+- movement, control-flow, test, Boolean, shift, and arithmetic families;
+- block transfer;
 - macros and conditional assembly;
-- local UUOs.
+- local UUOs;
+- files and JFNs;
+- string and byte I/O;
+- arrays;
+- lists and record-layout construction;
+- program memory and mapped file pages;
+- COMND command scanning.
 
-The project is moving from core machine architecture into:
+The verified Small Executive has been entered, assembled, linked, saved,
+executed, and debugged.
 
-- operating-system facilities;
-- file I/O;
-- arrays, lists, and records;
-- command scanning with COMND.
+The next major subject is Chapter 27, process handling and structure,
+including implementation of the currently empty `PUSH` command server.
 
-## Accepted high-level model
+Later chapters are expected to add:
 
-- PDP-10 instructions are best understood as regular families generated by small grammars.
-- Effective address calculation precedes instruction semantics.
-- Some instructions and facilities are irregular where the underlying operation has extra outputs or state.
-- MACRO-20 macros transform assembly source during assembly.
-- LUUOs let a program define application-specific instructions while the processor supplies dispatch only.
-- Domain knowledge is maintained separately from project state.
+- interprocess communication;
+- pseudo-interrupts and traps;
+- further TOPS-20 file-system and I/O facilities;
+- additional servers to the Small Executive reference program.
 
-## Domain knowledge files
+---
 
-- `data-representation.md`
-- `addressing.md`
-- `instruction-families.md`
-- `memory-operations.md`
-- `arithmetic.md`
-- `macros.md`
-- `luuos.md`
-- `source-organization.md`
+## Accepted High-Level Model
 
-## Open questions
+### PDP-10 instruction architecture
+
+PDP-10 instructions are often best understood as regular, family-local
+grammars.
+
+Mnemonic components may encode:
+
+- source form;
+- destination form;
+- value transformation;
+- test relation;
+- result width;
+- operand placement.
+
+A mnemonic letter must not be assumed to carry the same meaning across
+unrelated families.
+
+Effective-address calculation occurs before instruction semantics.
+
+Some instructions remain irregular where an operation naturally has
+additional outputs, state, or architectural constraints.
+
+---
+
+### MACRO-20 as a construction language
+
+MACRO-20 is more than a direct instruction assembler.
+
+Accepted compile-time mechanisms include:
+
+- macros;
+- conditional assembly;
+- `OPDEF`;
+- `PHASE` and `DEPHASE`;
+- `.ORG`;
+- generated command tables;
+- symbolic field placement.
+
+Macros may encode relationships once and generate multiple consistent
+representations.
+
+Repeated use of a mechanism does not by itself establish the mechanism's
+defining purpose.
+
+---
+
+### LUUOs
+
+Local Unimplemented User Operations allow a program to define
+application-specific instructions.
+
+The processor:
+
+- calculates the effective address;
+- saves a normalized instruction image;
+- transfers through the instruction at location 41.
+
+Software remains responsible for:
+
+- saving accumulators;
+- decoding the local opcode;
+- dispatching;
+- defining argument conventions;
+- implementing the operation.
+
+LUUOs are local program mechanisms and are not equivalent to TOPS-20
+monitor calls.
+
+---
+
+### Files and JFNs
+
+A Job File Number is a compact monitor-maintained handle associated with
+a pathname.
+
+The accepted lifecycle is broadly:
+
+pathname → `GTJFN` → JFN → `OPENF` → I/O → `CLOSF` / `RLJFN`
+
+Obtaining a JFN identifies a file but does not itself establish access.
+
+TOPS-20 presents different devices through a largely common JFN-based
+file interface.
+
+Accepted access styles include:
+
+- byte I/O;
+- string I/O;
+- memory mapping through `PMAP`.
+
+Wildcarded JFNs may be advanced using `GNJFN`.
+
+The exact sharing relationship between JOBs, FORKs, and JFN tables remains
+open.
+
+---
+
+### Data structures
+
+Arrays occupy linear memory and use ordinary effective-address
+calculation.
+
+Multidimensional arrays may be represented through:
+
+- side tables of row or column origins;
+- computed address polynomials.
+
+Record layouts may be generated at assembly time using `PHASE`,
+`DEPHASE`, and `.ORG`.
+
+Field symbols generated under `PHASE 0` are offsets rather than runtime
+addresses.
+
+Lists are represented through elements containing links to successor
+elements, with a null value terminating the list.
+
+---
+
+### Program memory and mapping
+
+A program may locate free storage above its loaded image using information
+associated with `.JBSA`.
+
+`PMAP` associates file pages with pages in a fork's virtual address
+space.
+
+Mapped pages are accessed through ordinary memory references.
+
+TOPS-20 pages contain 512 words and begin at addresses that are multiples
+of octal `1000`.
+
+Copy-on-write mapping permits private modification without altering the
+mapped file.
+
+---
+
+### COMND
+
+COMND is a stateful command-interface facility rather than a simple
+command-line tokenizer.
+
+A command is represented as a sequence or tree of typed fields.
+
+Each COMND call parses one field and advances through the command
+grammar.
+
+Accepted COMND mechanisms include:
+
+- caller-maintained command state block;
+- command and atom buffers;
+- Function Descriptor Blocks;
+- alternate FDB chains;
+- keyword tables;
+- recognition policy;
+- defaults;
+- noise words;
+- confirmation;
+- contextual help;
+- completion;
+- reparsing;
+- file-field parsing integrated with JFN acquisition.
+
+COMND normally returns:
+
+- AC1: status flags and state-block address;
+- AC2: parsed field data or an error code;
+- AC3: first supplied FDB and FDB actually used.
+
+COMND maintains textual parse state.
+
+The application supplies a reparse entry that restores application
+control state.
+
+---
+
+## Verified Reference Programs
+
+### Basic programs
+
+Verified programs include:
+
+- Hello World using `PSOUT`;
+- repeated output using a loop;
+- equivalent terminal output using `.PRIOU` and `SOUT`;
+- file output using `GTJFN`, `OPENF`, `SOUT`, and `CLOSF`.
+
+### Factorial program
+
+The factorial program through `100!` was transcribed, corrected, assembled,
+and run.
+
+It anchors:
+
+- arrays;
+- indexed addressing;
+- `BLT` initialization;
+- byte-pointer string construction;
+- multiprecision decimal arithmetic.
+
+### Small Executive
+
+The Mark Crispin Small Executive was transcribed, assembled, linked,
+saved, and run.
+
+It is the primary Rosetta/reference program for:
+
+- COMND initialization;
+- reparsing;
+- FDBs and FDB alternatives;
+- keyword tables and recognition flags;
+- dispatch;
+- defaults;
+- noise words;
+- confirmation;
+- numeric parsing;
+- file parsing;
+- JFN-based input;
+- resource cleanup;
+- ordinary and fatal JSYS error handling.
+
+A transcription error changed:
+
+`SETOM UDFLAG`
+
+to:
+
+`SETM UDFLAG`
+
+causing `COUNT DOWN` to count upward.
+
+The correction established the need for semantic anchors that constrain
+nearby mnemonic interpretations.
+
+---
+
+## Knowledge Representation Status
+
+The project uses:
+
+- generator-oriented domain capsules;
+- semantic, structural, and behavioural anchors;
+- explicit boundaries and open questions;
+- verified Rosetta/reference programs.
+
+The first broad MACRO-20 anchor set has been created.
+
+It is intentionally a candidate superset and should later be compacted
+through reconstruction testing and observed inference failures.
+
+The project domain is undergoing maintenance to:
+
+- remove duplication;
+- align names with conceptual scope;
+- separate reference artefacts from domain generators;
+- update state and history to reflect Chapters 19–26.
+
+---
+
+## Open Questions
+
+### Processor and instruction semantics
 
 - Hexadecimal constant syntax in MACRO-20.
-- Detailed JSYS encoding.
-- Processor flags: AROV, FOV, CRY0, CRY1.
-- Stack instruction conventions and later procedure-linkage details.
-- Byte-pointer internals.
-- Exact `IDIVM` and `DIVM` remainder behavior.
-- Exact floating-point bit layout where the chapter transcription was ambiguous.
+- Detailed JSYS instruction encoding.
+- Processor flags: AROV, FOV, CRY0, and CRY1.
 - Architectural relationship between accumulators and low memory.
-- Detailed macro expansion rules: nested delimiters, rescanning, redefinition, and expansion order.
-- Common design patterns from Gorin's complete LUUO example beyond the handler structure already extracted.
+- Exact `IDIVM` and `DIVM` remainder behaviour.
+- Exact floating-point field boundaries where the chapter transcription
+  was ambiguous.
+- Detailed stack instruction and procedure-linkage conventions.
+- Byte-pointer bit-level representation.
+
+### Macro processing
+
+- Nested delimiter handling.
+- Argument substitution and rescanning.
+- Macro redefinition.
+- Expansion order.
+- Exact boundaries between textual substitution and assembler evaluation.
+
+### Operating-system facilities
+
+- Exact relationship between JOBs, FORKs, and JFN ownership.
+- Whether and how JFNs are shared between FORKs.
+- Detailed `OPENF` access and sharing semantics.
+- Detailed `.CMIFI` interaction with the COMND GTJFN argument block.
+- Process creation, fork control, and program invocation.
+- IPCF conventions and Quasar interaction.
+- PSI, traps, and asynchronous control transfer.
+
+### Knowledge representation
+
+- Minimum useful MACRO-20 instruction-family anchor set.
+- Which broad candidate anchors remain necessary after fresh-session
+  reconstruction tests.
+- Whether additional reference programs are needed beyond the factorial
+  program and Small Executive.
+
+---
 
 ## Next
 
-Continue with Gorin Chapter 19, operating-system facilities, files, and JFNs. Preserve new knowledge in inference-friendly domain capsules and verify uncertain details experimentally where practical.
+1. Complete maintenance of project state, session history, TODO, domain
+   capsules, anchors, and reference artefacts.
+2. Continue with Gorin Chapter 27 on process handling and structure.
+3. Add the real `PUSH` server to the verified Small Executive.
+4. Continue expanding the reference program as Gorin introduces IPC and
+   related facilities.
+5. Conduct instruction-family anchor sessions and compact the candidate
+   anchor set using verified semantics and reconstruction tests.
+   
+---
+
 
 
 <!-- projects/macro-20/state/session-log.md -->
@@ -1298,161 +1660,316 @@ Continue with Gorin Chapter 19, operating-system facilities, files, and JFNs. Pr
 
 ## Current status
 
-Maintenance save completed after Chapter 18 and its worked example. Ready to continue with operating-system facilities.
+Chapter 18 complete.
+
+Chapter 19–22
+-------------
+- Verified string I/O using SOUT and SIN.
+- Established accepted JFN lifecycle.
+- GTSTS introduced for post-I/O status inspection.
+- RDTTY examined as terminal-oriented string input.
+
+Chapter 23
+----------
+- Introduced wildcard iteration with GTJFN/GNJFN.
+- Accepted working model of dynamic allocation using .JBSA.
+- Deferred detailed directory iteration pending later need.
+
+Chapter 24
+----------
+- Accepted conceptual model for linked lists.
+- Verified PHASE/DEPHASE/.ORG record-layout mechanism.
+- Established record-field offsets as compile-time abstraction.
+
+Chapter 25
+----------
+- Accepted PMAP working model.
+- Distinguished stream I/O from mapped I/O.
+- Discussed copy-on-write semantics.
+- Noted historical password-side-channel example illustrating
+  consequences of virtual-memory mapping.
+
+Chapter 26
+----------
+- COMND accepted as stateful parser rather than tokenizer.
+- State block, FDBs, command tables and reparsing established.
+- Small Executive selected as project Rosetta program.
+- Program transcribed, assembled, linked and executed.
+- Transcription error (SETM vs SETOM) discovered and corrected.
+- The verified Small Executive shifted the project from isolated mechanism 
+  studies to a stable reference program used to understand the composition
+  of multiple TOPS-20 facilities.
+
+Knowledge Representation
+------------------------
+- Introduced semantic anchors as complement to generators.
+- Distinguished:
+    generators
+    anchors
+    Rosetta/reference artefacts
+- Added common knowledge-maintenance methodology.
+- Began maintenance pass over repository.
+
+---
+
+
 
 
 <!-- projects/macro-20/state/TODO.md -->
 
 # Potential changes to protocol.md
 
-### Candidate protocol evolution: Separate conceptual models
-
-Observation:
-Some projects appear to develop an architectural or conceptual model that is
-neither accepted project state nor historical reasoning.
-
-Hypothesis:
-Introduce a fourth artefact (Mental-Model.md) if this distinction repeatedly
-proves useful across multiple projects.
-
-Evidence:
-Currently observed during the MACRO-20 project.
-
-### Candidate protocol evolution: Observable maintenance triggers
-
-Observation:
-The assistant rarely initiates maintenance based on perceived context load,
-even when the protocol encourages it.
-
-Possible reason:
-Internal context utilization is not directly observable.
-
-Hypothesis:
-Maintenance recommendations should be based on observable project milestones
-rather than inferred internal state.
-
-Examples:
-- accepted architectural model changes
-- elimination of major competing hypotheses
-- completion of a chapter or subsystem
-- Project-State requires substantial revision
-
 ## Project TODO's
 
-### Dig deeper into macro processing
-
-Revisit MACRO-20 macro expansion semantics after the introductory chapters: nested angle brackets, argument substitution, rescanning, redefinition, and emitted source.
+- Continue with Chapter 27. 
+  Expand the Small Executive as later chapters introduce process handling,
+  IPC, interrupts and related facilities.
+- Revisit MACRO-20 macro expansion semantics after the introductory chapters: 
+  nested angle brackets, argument substitution, rescanning, redefinition, 
+  and emitted source.
+- Develop the minimum MACRO-20 instruction-family anchor set.
+  Validate candidate anchors against fresh-session reconstruction before
+  accepting them.
+- Complete maintenance pass over common, state, domain and reference artefacts
+- After major maintenance, test reconstruction using a fresh session
+  before further compaction.
+- Evaluate whether later chapters introduce additional reference artefacts
+  worthy of Rosetta status.
+- Long-term
+  Maintain the smallest accepted knowledge base that reliably reconstructs
+  the project.
+  
+---
 
 
 <!-- projects/macro-20/domain/addressing.md -->
 
-# Addressing
+# Addressing (projects/macro-20/domain/addressing.md)
 
-## Invariant
+## Generator
 
-Effective address calculation occurs before instruction semantics.
+The PDP-10 separates **address calculation** from **instruction
+semantics**.
 
-## Instruction structure
+Before an instruction performs its operation, the processor computes an
+effective address (EA).
+
+The instruction family then operates on the resolved operand.
+
+------------------------------------------------------------------------
+
+## Instruction Address Fields
+
+A memory reference is determined by the instruction's addressing fields.
+
+Accepted components include:
+
+-   address field;
+-   indirect bit;
+-   index field.
+
+These fields describe **how to locate an operand**, not what the
+instruction ultimately does with it.
+
+------------------------------------------------------------------------
+
+## Effective Address Calculation
 
 Normal instructions contain:
 
-- opcode;
-- accumulator field;
-- indirect bit `I`;
-- index field `X`;
-- address field `Y`.
+- an indirect bit `I`;
+- an index field `X`;
+- an address field `Y`.
 
-## Effective-address generator
+The effective-address generator is:
 
-- `X=0, I=0` → `EA=Y`
-- `X≠0` → add the selected accumulator to `Y`
-- `I=1` → fetch an indirect word and repeat until `I=0`
+1. Begin with `Y`.
+2. If `X` is nonzero, add the contents of accumulator `X`.
+3. If `I` is zero, the resulting value is the effective address.
+4. If `I` is one, fetch the word at the resulting address and repeat the
+   process using that word's `I`, `X`, and `Y` fields.
 
-Indirection is therefore recursive, not restricted to one level.
+Indirection is therefore recursive rather than limited to one additional
+memory reference.
 
-## Immediate operands
+Only after this process terminates does instruction-family semantics
+begin.
 
-Immediate forms use the resolved address value rather than fetching `C(E)`.
+------------------------------------------------------------------------
 
-Example:
+## Immediate Forms
 
-- `MOVEI AC,E` loads `0,,E`.
+Immediate instructions embed a value within the instruction itself.
 
-## JSYS calling convention
+The operand value is therefore obtained directly rather than through a
+memory reference.
 
-Current introductory model:
+Immediate addressing changes operand acquisition but does not change the
+conceptual operation performed by the instruction family.
 
-- low accumulators, normally AC1–AC4, carry JSYS arguments;
-- `PSOUT` receives a byte pointer in AC1;
-- `HRROI` constructs the common pointer form used in the first example.
+Immediate forms use the resolved address value rather than fetching the
+contents of the resolved address.
 
-## Boundary: effective-address stability
+For example:
 
-An instruction must not unpredictably change values needed for its own effective-address calculation.
+`MOVEI AC,E`
 
-Verified example:
+loads `0,,E` after effective-address calculation.
 
-- `BLT` updates its accumulator while executing;
-- that accumulator must never also serve as the `BLT` index register.
+------------------------------------------------------------------------
 
-## Open questions
+## Address Stability
 
-- Byte-pointer bit structure.
-- Architectural relationship between accumulators and low memory.
+Once an effective address has been calculated, it remains the operand
+address for the instruction.
+
+Instructions such as `BLT` repeatedly operate using the established
+addressing rules rather than recalculating new effective addresses for
+each transferred word.
+
+This distinction explains why address calculation belongs outside the
+instruction-family generators.
+
+------------------------------------------------------------------------
+
+## Relationship to Other Generators
+
+Addressing answers:
+
+> Where does the operand come from?
+
+Instruction families answer:
+
+> What operation is performed on that operand?
+
+Keeping these mechanisms separate greatly reduces inference drift.
+
+------------------------------------------------------------------------
+
+## Conceptual Model
+
+``` text
+Instruction
+      ↓
+Address fields
+      ↓
+Effective address calculation
+      ↓
+Operand located
+      ↓
+Instruction-family semantics
+```
+
+Addressing determines the operand.
+
+Instruction families determine the operation.
+
+------------------------------------------------------------------------
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+-   complete byte-pointer encoding;
+-   all indexed-indirect corner cases;
+-   architectural relationship between accumulators and low memory;
+-   every specialised addressing mode.
+
+Do not infer instruction semantics from addressing behaviour alone.
+
+------------------------------------------------------------------------
+
+## Open Questions
+
+-   Exact byte-pointer representation.
+-   Remaining specialised addressing forms.
+-   Detailed interaction between addressing and selected monitor
+    instructions.
+
+------------------------------------------------------------------------
+
+## Related Capsules
+
+-   `instruction-families.md`
+-   `arrays.md`
+-   `records.md`
+-   `program-memory.md`
+-   `anchors.md`
+
+---
+
 
 
 <!-- projects/macro-20/domain/arithmetic.md -->
 
-# Arithmetic
+# Arithmetic (projects/macro-20/domain/arithmetic.md)
 
-## Fixed-point width model
+## Generator
 
-Arithmetic scales through:
+PDP-10 arithmetic is organised into related instruction families.
 
-- one word;
-- doubleword;
-- four-word quantities.
+Families vary independently along dimensions such as:
 
-## Multiplication
+-   operand source;
+-   destination;
+-   result width;
+-   numeric representation.
 
-- `IMUL` keeps a one-word result and assumes the useful product fits.
-- `MUL` produces the full doubleword product in `AC,AC+1`.
-- `DMUL` multiplies doubleword operands and produces a four-word result.
+Learning the family structure allows many instructions to be
+reconstructed from a small set of rules.
 
-## Division
+------------------------------------------------------------------------
 
-Division naturally produces two outputs:
+## Destination Grammar
 
-- quotient;
-- remainder.
+Several fixed-point arithmetic families share a common destination
+grammar.
 
-Placement:
+Destination forms include:
 
-- quotient begins in `AC`;
-- remainder follows in `AC+1` for the documented AC-result forms.
+-   blank: memory operand, result to AC;
+-   `I`: immediate operand, result to AC;
+-   `M`: result to memory;
+-   `B`: result to both AC and memory.
 
-## Boundary
+This grammar is shared by families such as:
 
-The memory forms are not fully predicted by the ordinary destination grammar.
+-   `ADD`;
+-   `SUB`;
+-   `IMUL`.
 
-Open:
+Individual families may introduce exceptions.
 
-- exact `IDIVM` remainder behavior;
-- exact `DIVM` remainder behavior.
+------------------------------------------------------------------------
 
-## Doubleword moves
+## Width Hierarchy
 
-Selected doubleword MOVE operations transfer or negate consecutive word pairs rather than generating the complete single-word MOVE matrix.
+Arithmetic families frequently scale by operand and result width.
 
-## Floating point
+Accepted examples include:
 
-Single precision uses one word.
+### Multiplication
 
-Double precision uses two words, extending the fraction into the second word.
+-   `IMUL` --- one-word result.
+-   `MUL` --- doubleword result.
+-   `DMUL` --- four-word result.
 
-The photographed/transcribed chapter description left an apparent bit-position overlap, so exact field boundaries remain unaccepted pending verification.
+### Division
 
-## Floating instruction generator
+-   `IDIV` --- single-word dividend with quotient and remainder.
+-   `DIV` --- doubleword dividend.
+-   `DDIV` --- four-word dividend divided by a doubleword divisor.
+
+Increasing width changes representation requirements and may introduce
+additional architectural state.
+
+------------------------------------------------------------------------
+
+## Floating-Point Grammar
+
+Floating-point instructions form their own family.
+
+Accepted structure:
 
 Single precision:
 
@@ -1462,57 +1979,350 @@ Double precision:
 
 `DF` + operation
 
-Operations:
+Common operations include:
 
-- add;
-- subtract;
-- multiply;
-- divide.
+-   addition;
+-   subtraction;
+-   multiplication;
+-   division.
 
-## Conversion and scaling
+------------------------------------------------------------------------
 
-- `FIX`: floating to fixed without rounding.
-- `FIXR`: floating to fixed with rounding.
-- `FLTR`: fixed to floating with rounding.
-- `FSC`: adjust the exponent by `E` and normalize.
+## Irregularities
+
+Arithmetic families are highly regular but not perfectly uniform.
+
+Operations producing more than one logical result, such as quotient and
+remainder, naturally introduce architectural irregularities.
+
+Treat these as explicit exceptions rather than forcing them into the
+general family grammar.
+
+------------------------------------------------------------------------
+
+## Relationship to Other Generators
+
+Instruction families describe the grammatical structure shared by
+arithmetic instructions.
+
+This capsule captures arithmetic-specific regularities and known
+exceptions.
+
+Exact instruction semantics remain anchored by verified documentation,
+experiments, and semantic anchors where necessary.
+
+------------------------------------------------------------------------
+
+## Conceptual Model
+
+``` text
+Arithmetic instruction
+        ↓
+Identify family
+        ↓
+Determine width
+        ↓
+Determine destination form
+        ↓
+Apply family semantics
+        ↓
+Check family-specific irregularities
+```
+
+------------------------------------------------------------------------
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+-   every floating-point detail;
+-   exact remainder placement for every division variant;
+-   overflow handling for every arithmetic instruction;
+-   all specialised arithmetic extensions.
+
+Do not infer complete semantic equivalence across related families.
+
+------------------------------------------------------------------------
+
+## Open Questions
+
+-   Exact semantics of `DIVM` and `IDIVM`.
+-   Floating-point field details where documentation was ambiguous.
+-   Overflow and processor flag interactions across arithmetic families.
+
+------------------------------------------------------------------------
+
+## Related Capsules
+
+-   `instruction-families.md`
+-   `data-representation.md`
+-   `anchors.md`
+
+---
+
 
 
 <!-- projects/macro-20/domain/arrays.md -->
 
-# Arrays
+# Arrays (projects/macro-20/domain/arrays.md)
 
 ## Generator
 
-Arrays map collections of elements onto contiguous memory.
+An array is a contiguous region of memory whose elements are accessed
+through effective-address calculation.
 
-Element selection is performed by computing an effective address from a base location and one or more indices.
+The PDP-10 instruction set has no dedicated array mechanism.
 
-## One-dimensional arrays
+Arrays are constructed from ordinary memory together with address
+calculation.
 
-A one-dimensional array occupies a contiguous block of words.
+------------------------------------------------------------------------
 
-Indexed addressing selects an element relative to the array origin.
+## Linear Arrays
 
-## Multidimensional arrays
+A one-dimensional array occupies consecutive PDP-10 words.
 
-Multidimensional arrays are represented in linear memory.
+The address of an element is determined from:
 
-Observed implementation techniques:
+-   array origin;
+-   element index.
 
-- side-table containing row or column origins;
-- computed address polynomial.
+Iteration normally advances by changing the index rather than modifying
+the array itself.
 
-Both generate the effective address of the selected element.
+------------------------------------------------------------------------
 
-## Principles
+## Multidimensional Arrays
 
-Array access builds on the ordinary effective-address mechanism rather than introducing special array instructions.
+Multidimensional arrays remain linear in memory.
+
+Accepted construction techniques include:
+
+-   row-major or column-major address calculations;
+-   tables of row or column origins.
+
+The chosen mapping determines how multidimensional indices become linear
+addresses.
+
+------------------------------------------------------------------------
+
+## Address Calculation
+
+Array access is an application of the addressing generator.
+
+Conceptually:
+
+``` text
+Array base
+     ↓
+Element index
+     ↓
+Effective address
+     ↓
+Memory operand
+```
+
+The instruction family then operates on the resolved operand.
+
+------------------------------------------------------------------------
+
+## Relationship to Records
+
+Arrays organise homogeneous collections.
+
+Records organise heterogeneous fields.
+
+Arrays answer:
+
+> Which element?
+
+Records answer:
+
+> Which field?
+
+The two mechanisms are complementary.
+
+------------------------------------------------------------------------
+
+## Relationship to BLT
+
+`BLT` efficiently copies or initializes contiguous regions of memory.
+
+It therefore naturally complements array construction and bulk array
+operations without changing the conceptual array model.
+
+------------------------------------------------------------------------
+
+## Conceptual Model
+
+``` text
+Linear memory
+      ↓
+Choose origin
+      ↓
+Apply index calculation
+      ↓
+Effective address
+      ↓
+Element
+```
+
+Arrays are a view of memory rather than a distinct architectural object.
+
+------------------------------------------------------------------------
 
 ## Boundaries
 
-This chapter introduces array organization and addressing techniques.
+Current project knowledge does **not** establish:
 
-Performance trade-offs and implementation preferences beyond the presented techniques are outside the current project model.
+-   language-specific array descriptors;
+-   runtime bounds checking;
+-   dynamically resized arrays;
+-   compiler-generated array layouts.
+
+Do not infer higher-level language features from the assembly model.
+
+------------------------------------------------------------------------
+
+## Open Questions
+
+-   Common TOPS-20 runtime conventions for multidimensional arrays.
+-   Typical library support for dynamic arrays, if any.
+
+------------------------------------------------------------------------
+
+## Related Capsules
+
+-   `addressing.md`
+-   `records.md`
+-   `program-memory.md`
+-   `blt.md`
+-   `anchors.md`
+
+---
+
+
+
+<!-- projects/macro-20/domain/blt.md -->
+
+# BLT (projects/macro-20/domain/blt.md)
+
+## Generator
+
+`BLT` performs bulk transfer over a contiguous region of memory.
+
+It treats memory as a sequence of words rather than as individual
+variables.
+
+The instruction preserves the relationship between source and destination
+while advancing through both regions automatically.
+
+---
+
+## Contiguous Memory
+
+`BLT` operates on contiguous PDP-10 words.
+
+Typical uses include:
+
+- copying arrays;
+- initializing storage;
+- moving records;
+- clearing work areas.
+
+The data being copied is interpreted only by the surrounding program.
+
+`BLT` copies words.
+
+---
+
+## Address Progression
+
+The instruction establishes its effective source and destination
+addresses before transfer begins.
+
+Transfer then proceeds sequentially through memory.
+
+This explains why effective-address calculation belongs to the
+addressing generator rather than to `BLT` itself.
+
+---
+
+## Relationship Preservation
+
+`BLT` preserves spatial relationships within the copied region.
+
+If two fields are adjacent before the transfer, they remain adjacent
+after the transfer.
+
+The operation therefore preserves structure as well as contents.
+
+---
+
+## Source Organization
+
+Programs sometimes place related storage definitions contiguously because
+they are intended to be initialized or copied by a single `BLT`.
+
+Source order may therefore express runtime relationships.
+
+---
+
+## Relationship to Other Generators
+
+- `program-memory.md` explains the address space.
+- `addressing.md` explains effective-address calculation.
+- `arrays.md` explains contiguous collections.
+- `records.md` explains symbolic layouts.
+
+`BLT` provides an efficient operation over those structures.
+
+---
+
+## Conceptual Model
+
+```text
+Contiguous memory region
+          ↓
+Source / destination pair
+          ↓
+Sequential word transfer
+          ↓
+Equivalent contiguous region
+```
+
+The operation copies layout and contents together.
+
+---
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+- optimal overlap strategies;
+- interruptibility during long transfers;
+- microarchitectural implementation;
+- every corner case involving self-overlapping regions.
+
+Do not infer byte-oriented behaviour from the word-transfer model.
+
+---
+
+## Open Questions
+
+- Exact overlap semantics.
+- Performance characteristics on different PDP-10 implementations.
+- Typical monitor and library uses beyond the accepted examples.
+
+---
+
+## Related Capsules
+
+- `addressing.md`
+- `arrays.md`
+- `records.md`
+- `program-memory.md`
+- `anchors.md`
 
 ---
 
@@ -1524,131 +2334,188 @@ Performance trade-offs and implementation preferences beyond the presented techn
 
 ## Generator
 
-A command is represented as a tree of typed fields.
+COMND and the application cooperate to execute a typed interactive
+grammar.
 
-Each COMND call parses one field and advances command processing along one valid branch of that tree.
+COMND owns the interactive parsing process.
 
-## Consequences
+The application owns the command grammar and the command semantics.
 
-Because the current field has a declared type and context, COMND can provide:
+Each call to COMND parses one field and advances the parse state.
 
-- recognition;
-- completion;
-- context-sensitive help;
-- validation;
-- prompting;
-- field-appropriate terminal behavior.
+------------------------------------------------------------------------
 
-## Field roles introduced
+## Command State
 
-- keywords select command branches;
-- noise words improve readability without supplying application data;
-- values provide arguments to the program.
+The application owns the command state block.
 
-## Boundary
+The state block preserves the dialogue between successive COMND calls.
 
-COMND parses one field per call, not an entire command line in one operation.
+Accepted components include:
 
-The exact data structures and calling sequence used to describe fields have not yet been introduced.
+-   command buffer;
+-   atom buffer;
+-   input/output JFNs;
+-   parsing pointers and counters;
+-   GTJFN argument block pointer;
+-   application reparse entry.
 
-## Parser state
+The command buffer contains the editable command.
 
-COMND maintains parsing state within a command buffer.
+The atom buffer contains the current parsed field.
 
-Observed state includes:
+------------------------------------------------------------------------
 
-- reprompt text;
-- beginning of editable input;
-- next field to parse;
-- remaining unparsed characters;
-- remaining free buffer space.
+## Parsing Model
 
-Each successful COMND call advances the parser state rather than reparsing the command from the beginning.
+COMND parses one field at a time.
 
-## Command state block
+A complete command is therefore interpreted as a sequence (or tree) of
+typed fields rather than as one monolithic command line.
 
-COMND maintains persistent command-processing state in a caller-supplied block.
+The application advances through the grammar by selecting the next
+Function Descriptor Block (FDB) chain.
 
-The block contains:
+COMND advances through the input by recognizing the next field.
 
-- input and output JFNs;
-- prompt/reprompt pointer;
-- editable-input boundary;
-- next parse position;
-- free-space and unparsed-character counts;
-- atom-buffer pointer and size;
-- GTJFN argument-block address;
-- a caller-provided reparse dispatch address.
+------------------------------------------------------------------------
 
-The command buffer holds the continuing input dialogue.  
-The atom buffer receives the contents of the current parsed field.
+## Function Descriptor Blocks
 
-## Reparse principle
+An FDB describes one expected field.
 
-COMND preserves its parsing state, while the application supplies a reparse
-entry point for restoring application control state.
+Accepted FDB responsibilities include:
 
-An observed pattern saves a known stack pointer before parsing and restores
-it at the reparse entry.
+-   field type;
+-   function-specific data;
+-   help text;
+-   default value;
+-   alternate FDB;
+-   optional break handling.
 
-## Function descriptor blocks
+Alternate FDB chains allow one grammar position to accept several
+different field types.
 
-Each COMND call describes the next expected field with a Function
-Descriptor Block.
+------------------------------------------------------------------------
 
-An FDB contains:
+## Command Tables
 
-- field function code and flags;
-- optional link to another FDB;
-- function-specific data;
-- help text;
-- default text;
-- optional break-mask information.
+Keyword tables associate recognized command words with application data.
 
-`FLDDB.` constructs these blocks.
+Application data commonly identifies the command server.
 
-## Keyword dispatch pattern
+Recognition policy is controlled by keyword flags such as:
 
-A `.CMKEY` field may refer to an alphabetically ordered command table.
+-   explicit abbreviations;
+-   invisible aliases;
+-   non-recognized entries.
 
-The table associates recognized keywords with command-server addresses.
-After COMND identifies an entry, the program obtains its server address
-from the entry and dispatches indirectly.
+The table therefore describes both recognition and dispatch.
 
-This makes command recognition and execution data-driven rather than a
-sequence of explicit string comparisons.
+------------------------------------------------------------------------
 
-## Interactive field behavior
+## Responsibility Split
 
-Observed in the verified Small Executive session:
+COMND owns:
 
-- `?` displays help appropriate to the current field.
-- `ESC` performs recognition or completion for the current field.
-- A field default may be selected by completion when the user supplies no explicit value.
-- Noise words may be emitted as part of completion to make the command readable.
-- After help output, COMND redisplays the current command line and resumes at the same field.
+-   command-line editing;
+-   recognition;
+-   completion;
+-   contextual help;
+-   defaults;
+-   field parsing;
+-   textual parse state.
 
-Example:
+The application owns:
 
-`co<ESC><ESC>?`
+-   grammar;
+-   FDB selection;
+-   dispatch;
+-   persistent state;
+-   command semantics.
 
-progresses through:
+------------------------------------------------------------------------
 
-- `COUNT`
-- default direction `UP`
-- noise word `(TO)`
-- help for the required numeric field
+## Interactive Behaviour
 
-## Return convention
+Accepted behaviour includes:
 
-COMND normally returns +1.
+-   `?` displays help for the current field.
+-   `ESC` performs recognition or completion.
+-   Defaults may be supplied.
+-   Noise words improve readability.
+-   Confirmation is parsed explicitly.
+-   Reparsing resumes from application-defined state.
 
-- AC1: status flags in the left half and the command-state-block address in the right half.
-- AC2: data produced by the parsed field; if parsing failed, an error code and `CM%NOP` is set.
-- AC3: address of the first alternate FDB in the left half and address of the FDB actually used in the right half.
+------------------------------------------------------------------------
 
-If reparsing is required and the command state block provides a reparse
-address, COMND transfers control there instead of returning normally.
+## Return Convention
+
+Normally COMND returns:
+
+-   AC1: status flags and command-state-block address.
+-   AC2: parsed value or error code.
+-   AC3: first supplied FDB and FDB actually used.
+
+The FDB actually used identifies which alternative matched.
+
+If reparsing is required and the command-state block supplies a reparse
+entry, COMND transfers there instead of returning normally.
+
+------------------------------------------------------------------------
+
+## Conceptual Model
+
+``` text
+User
+   ↓
+Command buffer
+   ↓
+COMND
+   ↓
+Current FDB chain
+   ↓
+Parsed field
+   ↓
+Application
+   ↓
+Next FDB chain
+   ↓
+COMND
+```
+
+The monitor and the application jointly execute the command grammar.
+
+------------------------------------------------------------------------
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+-   every COMND function code;
+-   every field type;
+-   internal parser implementation;
+-   detailed interaction between `.CMIFI` and long-form `GTJFN`;
+-   all command-state flags.
+
+Do not infer undocumented COMND behaviour from the accepted model alone.
+
+------------------------------------------------------------------------
+
+## Open Questions
+
+-   Detailed long-form `GTJFN` integration.
+-   Complete FDB catalogue.
+-   Reparse behaviour in more complex grammars.
+-   Additional COMND field types introduced later in Gorin.
+
+------------------------------------------------------------------------
+
+## Related Capsules
+
+-   `files-and-jfns.md`
+-   `program-memory.md`
+-   `anchors.md`
 
 
 <!-- projects/macro-20/domain/comnd-reference-program.md -->
@@ -2052,55 +2919,207 @@ Small Executive>exit
 
 <!-- projects/macro-20/domain/data-representation.md -->
 
-# Data Representation
+# Data Representation (projects/macro-20/domain/data-representation.md)
 
 ## Generator
 
 The PDP-10 is a 36-bit, word-oriented machine.
 
+Program data is represented by interpreting those 36 bits according to
+the needs of the operation.
+
+The architecture does not impose one universal meaning on a word.
+
+A word may represent:
+
+-   a signed integer;
+-   packed characters;
+-   an instruction;
+-   a byte pointer;
+-   two halfwords;
+-   part of a larger numeric value;
+-   a bit field or flag set.
+
+------------------------------------------------------------------------
+
 ## Integers
 
-- Signed integers use two's complement.
-- Gorin documents decimal, octal, and binary notation.
-- Hexadecimal assembler syntax remains unverified.
+Signed integers use two's-complement representation.
 
-## Character packing
+Important consequences include:
 
-Five 7-bit ASCII characters fit in one 36-bit word; the remaining bit is zero.
+-   zero is represented by all zero bits;
+-   `-1` is represented by all one bits;
+-   negation changes the bit pattern according to two's-complement
+    rules.
 
-## ASCII and ASCIZ
+Arithmetic generators operate on these representations according to
+their family semantics.
 
-- `ASCII` packs characters and zero-fills unused space in a partial final word.
-- `ASCII` does not append a separate terminator when the string exactly fills the final word.
-- `ASCIZ` appends a zero byte and may therefore require an additional word.
+------------------------------------------------------------------------
 
-## Numeric radix prefixes
+## Numeric Radix
 
-Unmarked numeric constants normally use the assembler's prevailing radix.
+Unmarked numeric constants normally use the assembler's prevailing
+radix.
 
-`^D` marks the following constant as decimal.
+Accepted explicit radix prefixes include:
+
+-   `^D` for decimal;
+-   documented octal and binary notation.
 
 Verified experimentally:
 
-`BLOCK ^D100` allocates 100 decimal words
+``` asm
+TABLE: BLOCK ^D100
+```
 
-## Boundary
+allocates 100 decimal words.
 
-Do not infer byte-pointer representation from character packing alone. Byte pointers are a separate mechanism.
+Hexadecimal constant syntax remains unverified.
+
+------------------------------------------------------------------------
+
+## Character Packing
+
+Five 7-bit ASCII characters fit in one 36-bit word.
+
+The remaining bit is zero.
+
+Character strings may therefore occupy one or more words while still
+being accessed through byte pointers rather than as ordinary word-sized
+integers.
+
+------------------------------------------------------------------------
+
+## ASCII and ASCIZ
+
+`ASCII`
+
+packs characters into words and zero-fills unused space in a partial
+final word.
+
+It does not append a separate terminator when the final word is exactly
+full.
+
+`ASCIZ`
+
+packs characters and appends a zero byte.
+
+A zero-terminated string may therefore require an additional word when
+the preceding characters exactly fill the available byte positions.
+
+------------------------------------------------------------------------
+
+## Halfwords and Fields
+
+A 36-bit word may also be treated as two 18-bit halfwords.
+
+Many instructions, pointers, tables, and monitor interfaces rely on this
+structure.
+
+Fields may occupy arbitrary bit ranges within a word.
+
+The exact meaning of those fields is defined by the instruction family,
+assembler construct, or monitor interface using them.
+
+------------------------------------------------------------------------
+
+## Wider Values
+
+Larger values may occupy consecutive words.
+
+Accepted examples include:
+
+-   doubleword arithmetic;
+-   four-word arithmetic;
+-   double-precision floating point;
+-   arrays of digits used for multiprecision arithmetic.
+
+The representation determines how the words combine into one logical
+value.
+
+------------------------------------------------------------------------
+
+## Conceptual Model
+
+``` text
+36-bit word
+     ↓
+Interpretation supplied by context
+     ↓
+integer
+characters
+instruction
+pointer
+halfwords
+bit fields
+part of wider value
+```
+
+The bit pattern is primary.
+
+Meaning comes from the operation that interprets it.
+
+------------------------------------------------------------------------
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+-   complete byte-pointer encoding;
+-   exact floating-point field boundaries;
+-   hexadecimal assembler syntax;
+-   every character-set or packed-string convention.
+
+Do not infer byte-pointer structure from ASCII packing alone.
+
+Do not infer exact numeric layout from width alone.
+
+------------------------------------------------------------------------
+
+## Open Questions
+
+-   Exact byte-pointer bit representation.
+-   Exact floating-point field boundaries.
+-   Hexadecimal constant syntax in MACRO-20.
+-   Additional packed-data conventions used by TOPS-20 libraries.
+
+------------------------------------------------------------------------
+
+## Related Capsules
+
+-   `arithmetic.md`
+-   `addressing.md`
+-   `records.md`
+-   `anchors.md`
+
+---
+
 
 
 <!-- projects/macro-20/domain/files-and-jfns.md -->
 
-# Files and JFNs
+# Files and JFNs (projects/macro-20/domain/files-and-jfns.md)
 
 ## Generator
 
-A Job File Number (JFN) is a job-local shorthand for a pathname.
+TOPS-20 separates **file identity** from **file access**.
 
-The monitor maintains the mapping between pathnames and JFNs so that almost all file operations use compact JFN identifiers rather than textual file names.
+A pathname names a file.
 
-## Lifecycle
+A Job File Number (JFN) is the monitor-managed handle used by nearly all
+subsequent file operations.
 
+Applications normally manipulate JFNs rather than pathnames.
+
+------------------------------------------------------------------------
+
+## File Lifecycle
+
+The accepted lifecycle is:
+
+``` text
 pathname
     ↓
 GTJFN
@@ -2109,239 +3128,243 @@ JFN
     ↓
 OPENF
     ↓
-File I/O
+File access
+    ↓
+GTSTS (optional status)
     ↓
 CLOSF
     ↓
 RLJFN
+```
 
-## Principles
+Each stage has a distinct responsibility.
 
-- TOPS-20 attempts to present different storage devices through a common file interface.
-- Most file-related JSYSes operate on JFNs rather than pathnames.
-- Once a JFN has been obtained, the pathname normally disappears from subsequent file operations.
+-   `GTJFN` establishes file identity.
+-   `OPENF` establishes access characteristics.
+-   I/O JSYSes operate on the JFN.
+-   `GTSTS` reports status associated with the JFN.
+-   `CLOSF` terminates file access.
+-   `RLJFN` releases the JFN.
 
-## Observed Patterns
+------------------------------------------------------------------------
 
-### Translation
+## Identity
 
-- GTJFN translates pathname → JFN.
-- JFNS translates JFN → pathname.
+`GTJFN`
 
-These form complementary operations.
+-   translates pathname → JFN.
 
-### Iteration
+`JFNS`
 
-GNJFN advances through wildcard matches using an existing JFN.
+-   translates JFN → pathname.
 
-The JFN itself carries the iteration state.
+These are complementary operations.
 
-### I/O
+Obtaining a JFN does **not** itself establish read or write access.
 
-Most file I/O follows the pattern
+------------------------------------------------------------------------
 
-JFN
-    ↓
-OPENF
-    ↓
-String/Byte input and output
-    ↓
-GTSTS (status)
-    ↓
-CLOSF
-    ↓
-RLJFN
+## Access
 
-### Predefined JFNs
+Once a JFN has been obtained, most operations use that JFN directly.
+
+Accepted access styles currently include:
+
+-   byte I/O;
+-   string I/O;
+-   mapped-file access.
+
+The pathname normally disappears from subsequent operations.
+
+------------------------------------------------------------------------
+
+## String I/O
+
+### Output
+
+`SOUT`
+
+-   AC1: output JFN
+-   AC2: source byte pointer
+-   AC3: character count or termination rule
+
+With AC3 equal to zero, output continues until a null byte.
+
+Verified experimentally:
+
+`.PRIOU` together with `SOUT` reproduces the terminal output normally
+performed through `PSOUT`.
+
+### Input
+
+`SIN`
+
+-   AC1: source JFN
+-   AC2: destination byte pointer
+-   AC3: character count and stopping mode
+-   AC4: break character when AC3 is positive
+
+Negative AC3 requests a fixed-length transfer.
+
+Positive AC3 terminates when either:
+
+-   the requested count is exhausted; or
+-   the break character is encountered.
+
+On return AC3 moves toward zero by the number of transferred characters.
+
+------------------------------------------------------------------------
+
+## Terminal I/O
+
+TOPS-20 also provides higher-level terminal-oriented JSYSes.
+
+Accepted examples include:
+
+-   `PSOUT`
+-   `RDTTY`
+
+These build upon the same underlying file abstraction.
+
+------------------------------------------------------------------------
+
+## Status
+
+`GTSTS`
+
+returns monitor status associated with a JFN.
+
+Current accepted use:
+
+-   distinguish end-of-file from other I/O failures following `SIN` or
+    similar operations.
+
+------------------------------------------------------------------------
+
+## Wildcard Iteration
+
+Wildcarded file specifications produce an initial JFN.
+
+`GNJFN`
+
+advances that JFN through subsequent wildcard matches.
+
+The iteration state is therefore associated with the JFN rather than
+with a pathname string.
+
+------------------------------------------------------------------------
+
+## Predefined JFNs
 
 The monitor provides predefined JFNs.
 
-This chapter introduces:
+Current project knowledge includes:
 
-- .PRIIN
-- .PRIOU
+-   `.PRIIN`
+-   `.PRIOU`
 
-Higher-level monitor calls (for example PSOUT) may internally operate using these predefined JFNs.
+These provide the conventional primary input and output streams.
 
-### Verified pattern
+------------------------------------------------------------------------
 
-.PRIOU plus SOUT reproduces the primary-output behaviour of PSOUT.
+## Conceptual Model
 
-## Vocabulary
+TOPS-20 attempts to present diverse devices through a common JFN-based
+interface.
 
-JOB
+The accepted abstraction is therefore:
 
-- Execution environment owning JFNs.
+``` text
+pathname
+        ↓
+   file identity
+        ↓
+       JFN
+        ↓
+ common file interface
+        ↓
+byte I/O
+string I/O
+mapped pages
+status
+iteration
+```
 
-FORK
+The JFN is the conceptual centre of the model.
 
-- Creates another process within a JOB.
-
-(The relationship between FORKs and JFN ownership has not yet been established.)
+------------------------------------------------------------------------
 
 ## Boundaries
 
-This chapter introduces the file abstraction and common JSYS workflow.
+Current project knowledge does **not** establish:
 
-It does not yet establish:
-
-- detailed OPENF modes;
-- sharing semantics;
-- buffering behaviour;
-- relationship between multiple FORKs and JFN mappings.
+-   detailed `OPENF` sharing modes;
+-   buffering policy;
+-   precise JOB/FORK ownership rules;
+-   lifetime rules for predefined JFNs;
+-   interaction between multiple FORKs and shared JFN tables.
 
 Do not infer these from other operating systems.
 
+------------------------------------------------------------------------
+
 ## Open Questions
 
-- Are JFN tables shared by all FORKs within a JOB?
-- Can a JFN migrate between FORKs?
-- What exactly constitutes a JOB?
-- Lifetime rules for predefined JFNs.
-- Detailed OPENF access flags and byte-size handling.
+-   Are JFN tables shared between FORKs?
+-   Can JFNs migrate between FORKs?
+-   Exact relationship between JOB and FORK ownership.
+-   Detailed `OPENF` access flags.
+-   Detailed `.CMIFI` interaction with COMND.
 
-## String input
+------------------------------------------------------------------------
 
-`SIN` transfers bytes from a JFN into a caller-supplied buffer.
+## Related Capsules
 
-AC registers:
-
-- AC1: source JFN
-- AC2: destination byte pointer
-- AC3: character count and stopping mode
-- AC4: break character when AC3 is positive
-
-The sign of AC3 selects the stopping rule:
-
-- Negative AC3: attempt to read exactly the specified number of characters. A short count occurs only on an error condition.
-- Positive AC3: stop when the count is exhausted or when an input character matches the break character in AC4.
-
-After the call, AC3 is moved toward zero by the number of characters actually transferred.
-
-## File status
-
-`GTSTS` accepts a JFN in AC1 and returns its status in AC2.
-
-Observed use:
-
-- after `SIN`, inspect the JFN status to distinguish the cause of an input condition.
-
-## Terminal input
-
-Observed use of `RDTTY`:
-
-- AC1 supplies the destination buffer pointer;
-- AC2 supplies the maximum input length;
-- AC3 may supply a reprompt string.
-
-The monitor supports redisplaying the reprompt when requested by the user, for example with `^R`.
-
-## Input principle
-
-For string input, the caller supplies both the destination storage and the stopping policy.
-
-## Wildcard iteration
-
-`GTJFN` may be called with flags permitting wildcard matching.
-
-Observed pattern:
-
-GTJFN (wildcard specification)
-    ↓
-GNJFN repeatedly advances through the matching files.
-
-Iteration terminates when GNJFN reports no further matches and releases the exhausted JFN.
-
-
-
-<!-- projects/macro-20/domain/handover-notes.md -->
-
-# Handover Notes for Other LLMs
-
-## Isolation rule
-
-Treat this package as the authoritative project context.
-
-Do not assume access to:
-
-- earlier chats;
-- sibling chats;
-- another model's conversation history;
-- unstated personal memory.
-
-Some systems, including tested Copilot workflows, may have no access to other chats at all.
-
-## Required reading order
-
-1. shared protocol;
-2. shared rationale;
-3. `project-state.md`;
-4. relevant domain files;
-5. `session-log.md` only when historical reasoning is needed.
-
-## Reasoning objective
-
-Reconstruct the accepted conceptual model with minimal incorrect inference.
-
-Use domain capsules as:
-
-- generators for reliable reconstruction;
-- boundaries against over-generalization;
-- explicit unknowns where guessing is unwelcome.
-
-## Domain capsules
-
-Domain capsules intentionally preserve conceptual generators rather than complete reference material.
-
-Do not interpret omitted detail as missing knowledge.
-
-Attempt to reconstruct the accepted conceptual model from the stored generators before assuming additional facts are required.
-
-## Authority
-
-Prefer, in order:
-
-1. verified experiments;
-2. accepted project state;
-3. domain capsules;
-4. source documentation confirmed by the project;
-5. current conversation;
-6. general knowledge;
-7. plausible inference.
-
-Do not silently convert a plausible explanation into accepted project knowledge.
-
-## Interaction rule
-
-When information is missing:
-
-- identify the missing premise;
-- ask for documentation or propose a small discriminating experiment;
-- do not compensate by importing a similar mechanism from another architecture or language.
-
-## Maintenance rule
-
-At coherent milestones, update:
-
-- project state for current position;
-- session log for history;
-- domain capsules for stable conceptual knowledge;
-- TODO for deferred investigation.
-
-Fresh-chat tests may be used to reveal missing capsule knowledge: if an unprimed model gives a materially weaker or evasive answer, identify which generator, boundary, or structural fact is absent from the package.
+-   `program-memory.md`
+-   `comnd.md`
+-   `anchors.md`
 
 
 <!-- projects/macro-20/domain/instruction-families.md -->
 
-# Instruction Families
+# Instruction Families (projects/macro-20/domain/instruction-families.md)
 
-## Principle
+## Generator
 
-Mnemonic grammars are family-local. Reuse a family generator where documented, but do not assume that a letter has the same meaning in unrelated families.
+The PDP-10 instruction set is highly regular.
 
-Many PDP-10 instruction families combine an operation prefix (e.g. AOJ, SOJ, CAM) with the common relation suffix grammar (G, GE, E, N, L, LE).
+Many instructions are best understood as members of instruction families
+rather than as isolated operations.
 
-## MOVE family
+A family consists of related instructions that share a common conceptual
+operation while varying one or more orthogonal properties.
+
+Learning the family allows many individual instructions to be
+reconstructed from a small number of semantic rules.
+
+------------------------------------------------------------------------
+
+## Family-Local Grammar
+
+Mnemonic grammars are family-local.
+
+A mnemonic letter may describe:
+
+-   a source form;
+-   a destination form;
+-   a value transformation;
+-   a test relation;
+-   a result width;
+-   an operand placement.
+
+Do not assume that a letter has the same meaning in unrelated families.
+
+Instruction-family semantics begin only after effective-address
+calculation has completed.
+
+------------------------------------------------------------------------
+
+## MOVE Family
 
 Generator:
 
@@ -2349,101 +3372,162 @@ Generator:
 
 Value transformations:
 
-- blank: unchanged;
-- `N`: negate;
-- `M`: magnitude;
-- `S`: swap halfwords.
+-   blank: unchanged;
+-   `N`: negate;
+-   `M`: magnitude;
+-   `S`: swap halfwords.
 
 Destination forms:
 
-- blank: memory to AC;
-- `I`: immediate value to AC;
-- `M`: AC to memory;
-- `S`: self/memory form.
+-   blank: memory to AC;
+-   `I`: immediate value to AC;
+-   `M`: AC to memory;
+-   `S`: self/memory form.
 
-## TEST family
+The two dimensions are independent within this family.
+
+------------------------------------------------------------------------
+
+## TEST Family
 
 Generator:
 
 `T` + mask source + AC modification + skip relation
 
-Mask source:
+### Mask source
 
-- `R`: immediate right-half mask;
-- `L`: immediate left-half mask;
-- `D`: direct memory mask;
-- `S`: swapped memory mask.
+-   `R`: immediate right-half mask;
+-   `L`: immediate left-half mask;
+-   `D`: direct memory mask;
+-   `S`: swapped memory mask.
 
-AC modification:
+### AC modification
 
-- `N`: no modification;
-- `Z`: zero selected bits;
-- `O`: set selected bits;
-- `C`: complement selected bits.
+-   `N`: no modification;
+-   `Z`: zero selected bits;
+-   `O`: set selected bits;
+-   `C`: complement selected bits.
 
-Skip relation:
+### Skip relation
 
-- blank: do not skip;
-- `N`: skip if not all selected bits are zero;
-- `E`: skip if all selected bits are zero;
-- `A`: always skip.
+-   blank: do not skip;
+-   `N`: skip if not all selected bits are zero;
+-   `E`: skip if all selected bits are zero;
+-   `A`: always skip.
 
-## Boolean family
+This generator explains families such as:
 
-The processor implements all sixteen Boolean functions of two one-bit variables.
+-   `TRNE`
+-   `TLON`
+-   `TDZA`
+-   `TSC`
 
-Each operation has destination/source forms:
+The exact instruction is reconstructed by selecting one value from each
+dimension.
 
-- blank: memory operand, result to AC;
-- `I`: immediate operand, result to AC;
-- `M`: result to memory;
-- `B`: result to both AC and memory.
+------------------------------------------------------------------------
 
-## Shift family
+## Relational Vocabulary
 
-Two dimensions generate the family:
+Several runtime instruction families combine an operation prefix with a
+common relation suffix:
 
-Operation:
+-   `G`: greater;
+-   `GE`: greater or equal;
+-   `E`: equal;
+-   `N`: not equal;
+-   `L`: less;
+-   `LE`: less or equal.
 
-- logical;
-- arithmetic;
-- rotate.
+Families using this vocabulary include forms of:
 
-Width:
+-   `JUMP`;
+-   `SKIP`;
+-   `AOJ`;
+-   `SOJ`;
+-   `CAI`;
+-   `CAM`.
 
-- single word;
-- combined doubleword in `AC,AC+1`.
+The same relation vocabulary is reused by conditional assembly
+directives.
 
-Resulting mnemonics:
+The relation keeps its meaning; the controlled action changes.
 
-- `LSH` / `LSHC`
-- `ASH` / `ASHC`
-- `ROT` / `ROTC`
+------------------------------------------------------------------------
 
-## Fixed arithmetic destination grammar
+## Boolean Family
 
-`ADD`, `SUB`, and `IMUL` share:
+The processor implements all sixteen Boolean functions of two one-bit
+variables.
 
-- blank: memory operand, result to AC;
-- `I`: immediate operand, result to AC;
-- `M`: result to memory;
-- `B`: result to both AC and memory.
+Each operation may use destination/source forms:
 
-## Width hierarchy
+-   blank: memory operand, result to AC;
+-   `I`: immediate operand, result to AC;
+-   `M`: result to memory;
+-   `B`: result to both AC and memory.
+
+The Boolean operation and destination form are separate dimensions.
+
+------------------------------------------------------------------------
+
+## Shift Family
+
+Two dimensions generate the main shift family.
+
+### Operation
+
+-   logical shift;
+-   arithmetic shift;
+-   rotate.
+
+### Width
+
+-   single word;
+-   combined doubleword in `AC,AC+1`.
+
+Resulting pairs include:
+
+-   `LSH` / `LSHC`;
+-   `ASH` / `ASHC`;
+-   `ROT` / `ROTC`.
+
+------------------------------------------------------------------------
+
+## Fixed Arithmetic Destination Grammar
+
+`ADD`, `SUB`, and `IMUL` share a destination grammar:
+
+-   blank: memory operand, result to AC;
+-   `I`: immediate operand, result to AC;
+-   `M`: result to memory;
+-   `B`: result to both AC and memory.
+
+This regularity does not imply that every arithmetic family supports the
+same complete matrix.
+
+------------------------------------------------------------------------
+
+## Width Hierarchy
 
 Multiplication:
 
-- `IMUL`: one-word result;
-- `MUL`: doubleword result;
-- `DMUL`: four-word result.
+-   `IMUL`: one-word result;
+-   `MUL`: doubleword result;
+-   `DMUL`: four-word result.
 
 Division:
 
-- `IDIV`: single-word dividend, quotient and remainder;
-- `DIV`: doubleword dividend;
-- `DDIV`: four-word dividend divided by a doubleword divisor.
+-   `IDIV`: single-word dividend, quotient and remainder;
+-   `DIV`: doubleword dividend;
+-   `DDIV`: four-word dividend divided by a doubleword divisor.
 
-## Floating arithmetic grammar
+Width is part of the family structure, but output placement may
+introduce irregularities.
+
+------------------------------------------------------------------------
+
+## Floating Arithmetic Grammar
 
 Single precision:
 
@@ -2455,85 +3539,311 @@ Double precision:
 
 Operations:
 
-- `AD`
-- `SB`
-- `MP`
-- `DV`
+-   `AD`;
+-   `SB`;
+-   `MP`;
+-   `DV`.
 
-## Relational vocabulary
+------------------------------------------------------------------------
 
-The assembler reuses the JUMP/SKIP relation vocabulary for conditional assembly:
+## Reconstruction Strategy
 
-- greater;
-- greater or equal;
-- equal;
-- not equal;
-- less;
-- less or equal.
+When encountering an unfamiliar instruction:
 
-The same relation semantics apply at runtime and assembly time; only the controlled action differs.
+1.  Identify its instruction family.
+2.  Determine which family dimensions vary.
+3.  Apply the accepted family generator.
+4.  Check whether the family has known irregularities.
+5.  Verify any exact local semantics that affect correctness.
+
+Generators reconstruct structure.
+
+Exact local semantics may still require anchors, documentation, or
+experiment.
+
+------------------------------------------------------------------------
+
+## Relationship to Anchors
+
+Instruction-family generators explain structural regularity.
+
+Anchors preserve exact semantic distinctions where nearby instructions
+can easily be confused.
+
+Examples include:
+
+-   similar mnemonics with different destinations;
+-   family-local meanings of mnemonic letters;
+-   instructions whose behaviour cannot safely be inferred from the
+    family alone.
+
+------------------------------------------------------------------------
+
+## Conceptual Model
+
+``` text
+Instruction
+      ↓
+Identify family
+      ↓
+Select family dimensions
+      ↓
+Recover general behaviour
+      ↓
+Check irregularities and anchors
+```
+
+Instruction families generate structure.
+
+Anchors constrain exact behaviour.
+
+------------------------------------------------------------------------
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+-   every PDP-10 instruction family;
+-   every mnemonic variant;
+-   a universal meaning for mnemonic letters;
+-   complete regularity within every family;
+-   undocumented monitor or processor extensions.
+
+Do not infer exact behaviour solely from mnemonic similarity.
+
+------------------------------------------------------------------------
+
+## Open Questions
+
+-   Minimum useful family set for reliable reconstruction.
+-   Which specialised instructions deserve their own generators.
+-   Which semantic distinctions should remain anchors permanently.
+-   Exact irregularities in memory-result division forms.
+
+------------------------------------------------------------------------
+
+## Related Capsules
+
+-   `addressing.md`
+-   `arithmetic.md`
+-   `blt.md`
+-   `anchors.md`
+
+---
+
 
 
 <!-- projects/macro-20/domain/luuos.md -->
 
-# LUUOs
+# LUUOs (projects/macro-20/domain/luuos.md)
 
 ## Generator
 
-Local Unimplemented User Operations let a program define application-specific instructions while the processor supplies only the dispatch mechanism.
+Local Unimplemented User Operations (LUUOs) let a program define
+application-specific instructions.
 
-The opcode selects the software-defined operation; the effective address supplies the operand or argument location.
+The processor supplies the dispatch mechanism.
 
-## Hardware structure
+Software defines the operation, calling convention, and semantics.
 
-When a LUUO opcode is executed:
+The opcode identifies the local operation.
 
-1. The effective address is calculated.
-2. An instruction image is stored at location 40.
-3. The saved image preserves opcode and AC fields, clears indirect/index fields, and replaces the address field with the resolved effective address.
-4. The processor executes the instruction at location 41 as though through `XCT 41`.
-5. The program's handler interprets and performs the operation.
+The resolved effective address supplies the operand or argument location.
+
+---
+
+## Processor Mechanism
+
+When a LUUO executes:
+
+1. the processor calculates the effective address;
+2. a normalized instruction image is stored at location `40`;
+3. the saved image preserves the opcode and AC fields;
+4. the indirect and index fields are cleared;
+5. the address field is replaced by the resolved effective address;
+6. the processor executes the instruction at location `41` as though
+   through `XCT 41`.
+
+The processor does not interpret the local opcode beyond invoking this
+mechanism.
+
+---
+
+## Software Responsibility
+
+The LUUO handler is responsible for:
+
+- preserving any required accumulator state;
+- recovering the opcode, AC field, and effective address;
+- validating the local opcode;
+- dispatching to the selected operation;
+- defining argument conventions;
+- performing the operation;
+- restoring state;
+- returning to the instruction following the LUUO.
+
+The CPU supplies entry.
+
+Software supplies meaning.
+
+---
+
+## Interface Construction
+
+`OPDEF` may assign symbolic instruction-like names to LUUO operations.
+
+Accepted examples from Gorin's worked program include:
+
+- `ERROR`;
+- `TTYSTR`;
+- `TTYCHR`.
+
+The main program can then use these names as compact application-level
+interfaces.
+
+This creates a local instruction vocabulary without changing the
+processor's hardware instruction set.
+
+---
+
+## Dispatch Pattern
+
+The accepted handler pattern is:
+
+```text
+LUUO executed
+      ↓
+effective address resolved
+      ↓
+instruction image saved at 40
+      ↓
+control transferred through 41
+      ↓
+handler preserves state
+      ↓
+opcode decoded
+      ↓
+software dispatch table
+      ↓
+selected operation
+      ↓
+state restored
+      ↓
+return to following instruction
+```
+
+Dispatch tables make the relationship between local opcodes and software
+handlers explicit and maintainable.
+
+---
 
 ## Invariants
 
 - Effective-address calculation occurs before handler entry.
-- The CPU does not decode the local opcode.
-- The CPU does not save accumulators for the handler.
-- Software defines the calling convention and operation semantics.
+- The processor does not define the local operation's semantics.
+- The processor does not automatically save accumulators for the handler.
+- The handler receives a normalized instruction image rather than the
+  original unresolved addressing fields.
+- Software defines the calling convention.
+- Return must continue with the instruction following the LUUO.
 
-## Cost model
+---
 
-LUUOs are more expensive than ordinary subroutine calls and should normally perform substantial work.
+## Cost Model
 
-## Worked-example pattern
+LUUOs are more expensive than ordinary subroutine calls.
 
-Gorin's photographed example defines symbolic LUUOs with `OPDEF`, including:
+They should normally justify their overhead by providing a substantial
+operation or a useful application-level interface.
 
-- `ERROR`
-- `TTYSTR`
-- `TTYCHR`
+Their value is architectural and organisational, not raw execution speed.
 
-The main program uses them as instruction-like application interfaces.
+---
 
-The handler pattern is:
+## Relationship to Subroutines
 
-1. preserve accumulator state;
-2. recover opcode, AC field, and effective address from the saved instruction;
-3. validate the local opcode;
-4. dispatch through a software table;
-5. perform the selected operation;
-6. restore state;
-7. return to the instruction following the LUUO.
+A subroutine call transfers control directly according to a calling
+convention.
 
-## Boundary
+A LUUO presents an instruction-like interface and reaches software
+through the processor's local-opcode dispatch mechanism.
 
-Do not equate LUUOs with TOPS-20 monitor calls. The chapter presents them as local, program-defined operations.
+Both may ultimately execute ordinary software.
 
-## Open questions
+They differ in how the interface is encoded and entered.
 
-- Further design patterns in the complete worked example.
-- Typical argument conventions across real programs.
-- Later interaction with other system facilities, if documented.
+---
+
+## Relationship to Monitor Calls
+
+LUUOs are local, program-defined operations.
+
+TOPS-20 JSYS calls invoke monitor services.
+
+Do not equate the two merely because both can look instruction-like at
+the source level.
+
+---
+
+## Conceptual Model
+
+```text
+Application instruction vocabulary
+              ↓
+            OPDEF
+              ↓
+          Local opcode
+              ↓
+      Processor LUUO mechanism
+              ↓
+       Software dispatcher
+              ↓
+      Application-defined semantics
+```
+
+The processor creates the doorway.
+
+The program decides what lies behind it.
+
+---
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+- a universal LUUO calling convention;
+- typical opcode allocation conventions across real programs;
+- every handler save/restore pattern;
+- interaction with later asynchronous facilities;
+- whether later Gorin chapters introduce stronger design conventions.
+
+Do not infer TOPS-20 monitor-call semantics from the LUUO model.
+
+Do not assume the processor preserves application state beyond the
+documented dispatch mechanism.
+
+---
+
+## Open Questions
+
+- Common argument conventions used by real MACRO-20 programs.
+- Common patterns for allocating local opcodes.
+- Further design lessons from Gorin's complete worked example.
+- Interaction with traps, pseudo-interrupts, or process facilities if
+  later documentation connects them.
+
+---
+
+## Related Capsules
+
+- `addressing.md`
+- `instruction-families.md`
+- `macros.md`
+- `source-organization.md`
+- `anchors.md`
+
+---
+
 
 
 <!-- projects/macro-20/domain/macro-20-anchors.md -->
@@ -3093,160 +4403,516 @@ coverage.
 
 <!-- projects/macro-20/domain/macros.md -->
 
-# Macros
+# Macros (projects/macro-20/domain/macros.md)
 
 ## Generator
 
-Macros transform assembly source into assembly source during assembly.
+MACRO-20 macros transform assembly source into assembly source during
+assembly.
 
 They do not execute at program runtime.
 
-## Structure
-
-- `DEFINE name <body>`
-- `DEFINE name(parameters) <body>`
-
-Actual arguments are substituted into the macro body, and the expanded source is then assembled normally.
-
-## Conditional assembly
-
-Conditional assembly compares an expression with zero and either includes or omits enclosed source.
-
-It reuses the JUMP/SKIP relation vocabulary.
-
-`IFNDEF` may provide a default definition for a symbol that is otherwise undefined.
-
-## Observed pattern
-
-Macros may encode a relationship once and generate multiple consistent representations.
-
-Gorin's `OPMAC`/`XX` example:
-
-- stores operator/instruction pairs once;
-- defines `XX` to select the character and emits `OPTAB`;
-- redefines `XX` to select the instruction and emits `OPINS`;
-- the completed program executes the selected instruction through `XCT`.
-
-This is one demonstrated use, not the defining purpose of all macros.
-
-## Boundaries and open questions
-
-Angle brackets delimit and protect macro text, including arguments containing commas.
-
-Not yet established:
-
-- exact nested-delimiter rules;
-- quoting;
-- rescanning;
-- expansion order;
-- redefinition details.
-
-Revisit the macro processor when later examples require these semantics.
-
-
-<!-- projects/macro-20/domain/memory-mapping.md -->
-
-# Memory Mapping
-
-## Generator
-
-Open files may be accessed either through stream I/O or by mapping file pages into a process address space.
-
-## PMAP
-
-PMAP associates a file page with a virtual memory page.
-
-Subsequent access uses ordinary memory instructions.
-
-## Observed options
-
-- read access
-- copy-on-write
-
-Copy-on-write provides a private modified page while leaving the file unchanged.
-
-## Principle
-
-Memory mapping operates on page-sized aligned regions.
+A macro packages a source-generation rule so that one accepted
+relationship can produce many consistent pieces of assembled code or
+data.
 
 ---
 
+## Definition and Expansion
 
+Accepted forms include:
 
-<!-- projects/macro-20/domain/memory-operations.md -->
+```asm
+DEFINE NAME <BODY>
+```
 
-# Memory Operations
+and:
 
-## BLT generator
+```asm
+DEFINE NAME (ARGUMENTS) <BODY>
+```
 
-The `BLT` accumulator is the moving state of the copy operation:
+When the macro is invoked:
 
-- left half: current source address;
-- right half: current destination address.
+1. actual arguments are associated with formal parameters;
+2. the macro body is expanded;
+3. the resulting source is assembled normally.
 
-The accumulator is updated as words are copied.
+The expansion is therefore part of assembly-time source construction,
+not a runtime call.
 
-## Consequences
+---
 
-- `BLT` modifies its accumulator.
-- The `BLT` accumulator cannot be used as its own index register.
-- Anything used in the instruction's effective-address calculation must remain stable.
-- Copy order is from low source addresses upward.
-- Overlapping copies must account for that direction.
-- If the destination overwrites the `BLT` accumulator, it must be the final destination.
-- If the destination overwrites the `BLT` instruction, it must be the final destination.
+## Parameters
 
-## Boundary
+Macro parameters allow one source pattern to be reused with different
+values or source fragments.
 
-`BLT` is not automatically overlap-safe in the general sense of a direction-selecting move operation.
+Angle brackets delimit macro text and protect arguments that contain
+characters such as commas.
+
+The current project model establishes substitution at a conceptual level.
+
+It does not yet establish the complete rescan, quoting, or nested
+delimiter semantics of the macro processor.
+
+---
+
+## Conditional Assembly
+
+Conditional assembly selects whether source is included during assembly.
+
+Accepted relation tests include:
+
+- greater;
+- greater or equal;
+- equal;
+- not equal;
+- less;
+- less or equal.
+
+These reuse the same relation vocabulary found in runtime JUMP and SKIP
+families.
+
+The relation keeps its meaning.
+
+The controlled action changes from runtime control flow to assembly-time
+source inclusion.
+
+`IFNDEF` may provide a default definition when a symbol has not already
+been defined.
+
+---
+
+## Relationship Generation
+
+A macro may preserve one relationship and emit several synchronized
+representations.
+
+Gorin's accepted `OPMAC` / `XX` pattern demonstrates this:
+
+1. operator and instruction pairs are written once;
+2. `XX` is defined to emit the operator representation;
+3. the relationship is expanded to generate `OPTAB`;
+4. `XX` is redefined to emit the instruction representation;
+5. the same relationship is expanded to generate `OPINS`;
+6. the selected instruction is later executed through `XCT`.
+
+This avoids maintaining parallel tables independently.
+
+The general generator is:
+
+```text
+One accepted relationship
+          ↓
+Different macro interpretations
+          ↓
+Several synchronized artefacts
+```
+
+This is one powerful use of macros, not the defining purpose of every
+macro.
+
+---
+
+## Interface Construction
+
+Macros may also hide repeated source-level protocol.
+
+Accepted examples include:
+
+- `CALL` and `RET` operation definitions;
+- COMND helpers such as `NOISE` and `CONFIRM`;
+- table-construction helpers such as `TBL`;
+- symbolic instruction interfaces created with `OPDEF`.
+
+The value of such macros is not merely shorter source.
+
+They preserve a repeated structural rule in one place.
+
+---
+
+## Conceptual Model
+
+```text
+Source relationship
+        ↓
+Macro definition
+        ↓
+Invocation and substitution
+        ↓
+Generated source
+        ↓
+Normal assembly
+```
+
+Macros generate source structure.
+
+The assembler then interprets the generated source exactly as though it
+had been written directly.
+
+---
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+- exact nested-angle-bracket rules;
+- quoting rules;
+- complete rescanning behaviour;
+- expansion order in complex nested macros;
+- redefinition semantics in all cases;
+- the exact boundary between textual substitution and assembler
+  expression evaluation.
+
+Do not infer these local semantics from the high-level source-generation
+model.
+
+---
+
+## Open Questions
+
+- Nested delimiters.
+- Argument substitution details.
+- Rescanning.
+- Macro redefinition.
+- Expansion order.
+- Emitted-source inspection and listing behaviour.
+
+---
+
+## Related Capsules
+
+- `instruction-families.md`
+- `source-organization.md`
+- `luuos.md`
+- `comnd.md`
+- `anchors.md`
 
 
 <!-- projects/macro-20/domain/program-memory.md -->
 
-# Program Memory
+# Program Memory (projects/macro-20/domain/program-memory.md)
 
 ## Generator
 
-The running program occupies a contiguous region of memory.
+A TOPS-20 program executes within a virtual address space.
 
-Observed mechanism:
+Program code, data, stack, dynamically allocated storage, and mapped
+file pages all occupy locations within this address space.
 
-`.JBSA` contains information describing the program image.
+Different mechanisms establish these regions, but ordinary memory
+references access them uniformly.
 
-The left half identifies the first free word above the program, allowing a program to allocate additional storage dynamically.
+------------------------------------------------------------------------
 
-## Boundary
+## Program Layout
 
-Only the allocation origin has been introduced.
-Memory management policy has not yet been investigated.
+The loaded program occupies the lowest portion of the address space.
 
----
+Accepted components include:
 
+-   executable code;
+-   static data;
+-   literal pools;
+-   pushdown lists (stacks).
+
+The linker supplies information describing the loaded image.
+
+------------------------------------------------------------------------
+
+## Available Storage
+
+The linker maintains `.JBSA`.
+
+Accepted working model:
+
+-   right half: program starting address;
+-   left half: first free location above the loaded program.
+
+Programs may use the first free address as the beginning of dynamically
+allocated storage.
+
+Current project knowledge does not yet establish a general-purpose
+memory allocator.
+
+------------------------------------------------------------------------
+
+## Address Space
+
+Memory is viewed as one linear sequence of PDP-10 words.
+
+Arrays, records, stacks and mapped pages all occupy ordinary addresses.
+
+Once an address has been established, the instruction set does not
+distinguish how that storage was obtained.
+
+------------------------------------------------------------------------
+
+## Memory Mapping
+
+`PMAP`
+
+associates pages of an open file with pages in the current fork's
+virtual address space.
+
+After mapping, the program accesses the file contents using ordinary
+memory references.
+
+No explicit read operation is required for each word.
+
+------------------------------------------------------------------------
+
+## Page Model
+
+Accepted project knowledge:
+
+-   TOPS-20 pages contain 512 words.
+-   Page boundaries occur at addresses that are multiples of octal
+    `1000`.
+-   Several consecutive pages may be mapped by one PMAP request.
+
+------------------------------------------------------------------------
+
+## Copy-on-Write
+
+PMAP may request copy-on-write access.
+
+Reads access the original mapped page.
+
+The first write creates a private copy.
+
+Subsequent writes affect only the private page.
+
+The underlying file remains unchanged.
+
+------------------------------------------------------------------------
+
+## Stream versus Mapping
+
+TOPS-20 supports two complementary access models.
+
+### Stream I/O
+
+Data moves explicitly between file and program through JSYSes such as:
+
+-   `SIN`
+-   `SOUT`
+
+### Memory Mapping
+
+The monitor establishes an address-space mapping.
+
+The program thereafter accesses the file using ordinary load and store
+instructions.
+
+------------------------------------------------------------------------
+
+## Conceptual Model
+
+The accepted abstraction is:
+
+``` text
+Program address space
+
+    executable image
+            │
+     static storage
+            │
+      dynamic storage
+            │
+     mapped file pages
+            │
+ordinary PDP-10 memory references
+```
+
+The instruction set operates on addresses.
+
+The operating system determines what those addresses represent.
+
+------------------------------------------------------------------------
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+-   page replacement policy;
+-   cache behaviour;
+-   detailed page-table structure;
+-   sharing semantics between multiple forks;
+-   page protection beyond accepted PMAP access modes.
+
+Do not infer these from other virtual-memory systems.
+
+------------------------------------------------------------------------
+
+## Open Questions
+
+-   Exact relationship between FORKs and mapped address spaces.
+-   Detailed PMAP access flags.
+-   Interaction between PMAP and program growth.
+-   Allocation strategy beyond `.JBSA`.
+
+------------------------------------------------------------------------
+
+## Related Capsules
+
+-   `addressing.md`
+-   `files-and-jfns.md`
+-   `records.md`
+-   `anchors.md`
 
 
 <!-- projects/macro-20/domain/records.md -->
 
-# Records
+# Records (projects/macro-20/domain/records.md)
 
 ## Generator
 
-A record layout is represented by symbolic field offsets rather than absolute addresses.
+Records provide symbolic structure for heterogeneous data stored in
+ordinary PDP-10 memory.
 
-`PHASE` allows field offsets to be generated automatically while assembling.
+A record describes the relationship between fields.
 
-`DEPHASE` restores normal location counting.
+It does not create a new runtime object.
 
-`.ORG` may reclaim the temporary storage used during layout generation.
+---
 
-## Principle
+## Layout Generation
 
-Compile-time layout descriptions need not occupy runtime memory.
+Record layout is constructed during assembly.
 
-## Boundary
+Accepted mechanisms include:
 
-The current model describes record layout generation only.
+- `PHASE`
+- `.ORG`
+- `DEPHASE`
 
-Record allocation, traversal, and list manipulation are introduced later.
+These allow symbolic field offsets to be generated without allocating
+storage.
+
+The generated offsets may later be applied to any compatible record
+instance.
+
+---
+
+## Symbolic Fields
+
+Fields are accessed symbolically rather than by numeric offsets.
+
+The assembler performs the offset calculation.
+
+Programs therefore express:
+
+- field identity;
+- record structure;
+
+instead of embedding literal addresses.
+
+---
+
+## Record Instances
+
+A record definition may describe many independent instances.
+
+Each instance shares one layout while occupying different storage.
+
+Conceptually:
+
+```text
+Record definition
+        ↓
+Field offsets
+        ↓
+Instance base address
+        ↓
+Effective address
+        ↓
+Field
+```
+
+The layout is constant.
+
+Only the instance base changes.
+
+---
+
+## Relationship to Arrays
+
+Records organize heterogeneous fields.
+
+Arrays organize homogeneous elements.
+
+A program frequently combines both:
+
+- arrays of records;
+- records containing arrays.
+
+The two abstractions are complementary.
+
+---
+
+## Relationship to Addressing
+
+Record access is ultimately ordinary effective-address calculation.
+
+The record definition contributes the field offset.
+
+The current instance contributes the base address.
+
+The addressing mechanism computes the final effective address.
+
+---
+
+## Conceptual Model
+
+```text
+Record layout
+      ↓
+Symbolic field
+      ↓
+Field offset
+      ↓
+Instance base
+      ↓
+Effective address
+      ↓
+Memory
+```
+
+Records generate structure rather than storage.
+
+---
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+- variable-length record layouts;
+- compiler-generated record descriptors;
+- runtime type information;
+- automatic alignment or padding rules.
+
+Do not infer higher-level language record semantics from the assembly
+model.
+
+---
+
+## Open Questions
+
+- Common TOPS-20 library conventions for record layouts.
+- Typical use of records together with dynamically allocated storage.
+- Additional assembler facilities related to symbolic layout.
+
+---
+
+## Related Capsules
+
+- `addressing.md`
+- `arrays.md`
+- `program-memory.md`
+- `macros.md`
+- `anchors.md`
 
 ---
 
@@ -3254,20 +4920,139 @@ Record allocation, traversal, and list manipulation are introduced later.
 
 <!-- projects/macro-20/domain/source-organization.md -->
 
-# Source Organization
+# Source Organization (projects/macro-20/domain/source-organization.md)
 
 ## Generator
 
-Large assembly programs should be divided into functionally related source components.
+MACRO-20 source may be organized so that program structure is visible in
+both the source text and the assembler listing.
 
-## Observed tools
+Organizational directives do not change runtime semantics.
 
-- `SUBTTL` gives a major section a subtitle in the assembly listing.
-- A form-feed starts a new source/listing page.
-- Gorin commonly places a `SUBTTL` near the start of a new component.
+They preserve the human-readable structure of the program.
 
-## Boundary
+---
 
-These constructs organize source and printed listings; they do not change runtime program behavior.
+## Sections
+
+`SUBTTL` names a major source section.
+
+Accepted uses include separating:
+
+- data definitions;
+- top-level control;
+- command servers;
+- subroutines;
+- error handling;
+- entry and version information.
+
+Section titles make large listings easier to navigate and preserve the
+intended architecture of the source.
+
+---
+
+## Listing Pages
+
+A form-feed may begin a new listing page.
+
+This allows related source material to remain together while major
+sections start cleanly in printed or generated listings.
+
+The source file and assembler listing therefore have related but
+distinct organization.
+
+---
+
+## Local Structure
+
+Labels, comments, indentation, and nearby definitions should make local
+relationships visible.
+
+Accepted examples include:
+
+- keeping storage locations together when a `BLT` depends on their
+  contiguity;
+- placing command tables near their dispatch logic;
+- keeping a record-layout definition together;
+- placing constants and helper strings near the routines that use them
+  when this improves clarity.
+
+Source order may therefore preserve semantic relationships even when the
+assembler does not require that order.
+
+---
+
+## Reference-Program Pattern
+
+The verified Small Executive demonstrates a useful large-program
+organization:
+
+```text
+title and searches
+        ↓
+accumulator and macro definitions
+        ↓
+data storage
+        ↓
+top-level control and command table
+        ↓
+command servers
+        ↓
+error handling and miscellany
+        ↓
+entry vector and END
+```
+
+This is an accepted example, not a required universal layout.
+
+---
+
+## Conceptual Model
+
+```text
+Program architecture
+        ↓
+Source sections
+        ↓
+Assembler listing structure
+        ↓
+Human navigation and maintenance
+```
+
+Source organization externalizes the program's conceptual structure.
+
+---
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+- a mandatory MACRO-20 source layout;
+- complete listing-control semantics;
+- all effects of `SALL`, `XALL`, and `LALL`;
+- standard conventions across all TOPS-20 programs.
+
+Do not infer runtime behaviour from source or listing organization.
+
+---
+
+## Open Questions
+
+- Detailed listing controls and macro-expansion display.
+- Common source-layout conventions in larger TOPS-20 programs.
+- Entry-vector and version-layout conventions as later chapters expand
+  the reference program.
+
+---
+
+## Related Capsules
+
+- `macros.md`
+- `records.md`
+- `comnd.md`
+- `luuos.md`
+
+---
+
 
 

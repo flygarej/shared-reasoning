@@ -65,4 +65,56 @@
 
 ## Current status
 
-Maintenance save completed after Chapter 18 and its worked example. Ready to continue with operating-system facilities.
+Chapter 18 complete.
+
+Chapter 19–22
+-------------
+- Verified string I/O using SOUT and SIN.
+- Established accepted JFN lifecycle.
+- GTSTS introduced for post-I/O status inspection.
+- RDTTY examined as terminal-oriented string input.
+
+Chapter 23
+----------
+- Introduced wildcard iteration with GTJFN/GNJFN.
+- Accepted working model of dynamic allocation using .JBSA.
+- Deferred detailed directory iteration pending later need.
+
+Chapter 24
+----------
+- Accepted conceptual model for linked lists.
+- Verified PHASE/DEPHASE/.ORG record-layout mechanism.
+- Established record-field offsets as compile-time abstraction.
+
+Chapter 25
+----------
+- Accepted PMAP working model.
+- Distinguished stream I/O from mapped I/O.
+- Discussed copy-on-write semantics.
+- Noted historical password-side-channel example illustrating
+  consequences of virtual-memory mapping.
+
+Chapter 26
+----------
+- COMND accepted as stateful parser rather than tokenizer.
+- State block, FDBs, command tables and reparsing established.
+- Small Executive selected as project Rosetta program.
+- Program transcribed, assembled, linked and executed.
+- Transcription error (SETM vs SETOM) discovered and corrected.
+- The verified Small Executive shifted the project from isolated mechanism 
+  studies to a stable reference program used to understand the composition
+  of multiple TOPS-20 facilities.
+
+Knowledge Representation
+------------------------
+- Introduced semantic anchors as complement to generators.
+- Distinguished:
+    generators
+    anchors
+    Rosetta/reference artefacts
+- Added common knowledge-maintenance methodology.
+- Began maintenance pass over repository.
+
+---
+
+

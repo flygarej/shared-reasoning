@@ -1,53 +1,71 @@
-# Arithmetic
+# Arithmetic (projects/macro-20/domain/arithmetic.md)
 
-## Fixed-point width model
+## Generator
 
-Arithmetic scales through:
+PDP-10 arithmetic is organised into related instruction families.
 
-- one word;
-- doubleword;
-- four-word quantities.
+Families vary independently along dimensions such as:
 
-## Multiplication
+-   operand source;
+-   destination;
+-   result width;
+-   numeric representation.
 
-- `IMUL` keeps a one-word result and assumes the useful product fits.
-- `MUL` produces the full doubleword product in `AC,AC+1`.
-- `DMUL` multiplies doubleword operands and produces a four-word result.
+Learning the family structure allows many instructions to be
+reconstructed from a small set of rules.
 
-## Division
+------------------------------------------------------------------------
 
-Division naturally produces two outputs:
+## Destination Grammar
 
-- quotient;
-- remainder.
+Several fixed-point arithmetic families share a common destination
+grammar.
 
-Placement:
+Destination forms include:
 
-- quotient begins in `AC`;
-- remainder follows in `AC+1` for the documented AC-result forms.
+-   blank: memory operand, result to AC;
+-   `I`: immediate operand, result to AC;
+-   `M`: result to memory;
+-   `B`: result to both AC and memory.
 
-## Boundary
+This grammar is shared by families such as:
 
-The memory forms are not fully predicted by the ordinary destination grammar.
+-   `ADD`;
+-   `SUB`;
+-   `IMUL`.
 
-Open:
+Individual families may introduce exceptions.
 
-- exact `IDIVM` remainder behavior;
-- exact `DIVM` remainder behavior.
+------------------------------------------------------------------------
 
-## Doubleword moves
+## Width Hierarchy
 
-Selected doubleword MOVE operations transfer or negate consecutive word pairs rather than generating the complete single-word MOVE matrix.
+Arithmetic families frequently scale by operand and result width.
 
-## Floating point
+Accepted examples include:
 
-Single precision uses one word.
+### Multiplication
 
-Double precision uses two words, extending the fraction into the second word.
+-   `IMUL` --- one-word result.
+-   `MUL` --- doubleword result.
+-   `DMUL` --- four-word result.
 
-The photographed/transcribed chapter description left an apparent bit-position overlap, so exact field boundaries remain unaccepted pending verification.
+### Division
 
-## Floating instruction generator
+-   `IDIV` --- single-word dividend with quotient and remainder.
+-   `DIV` --- doubleword dividend.
+-   `DDIV` --- four-word dividend divided by a doubleword divisor.
+
+Increasing width changes representation requirements and may introduce
+additional architectural state.
+
+------------------------------------------------------------------------
+
+## Floating-Point Grammar
+
+Floating-point instructions form their own family.
+
+Accepted structure:
 
 Single precision:
 
@@ -57,16 +75,84 @@ Double precision:
 
 `DF` + operation
 
-Operations:
+Common operations include:
 
-- add;
-- subtract;
-- multiply;
-- divide.
+-   addition;
+-   subtraction;
+-   multiplication;
+-   division.
 
-## Conversion and scaling
+------------------------------------------------------------------------
 
-- `FIX`: floating to fixed without rounding.
-- `FIXR`: floating to fixed with rounding.
-- `FLTR`: fixed to floating with rounding.
-- `FSC`: adjust the exponent by `E` and normalize.
+## Irregularities
+
+Arithmetic families are highly regular but not perfectly uniform.
+
+Operations producing more than one logical result, such as quotient and
+remainder, naturally introduce architectural irregularities.
+
+Treat these as explicit exceptions rather than forcing them into the
+general family grammar.
+
+------------------------------------------------------------------------
+
+## Relationship to Other Generators
+
+Instruction families describe the grammatical structure shared by
+arithmetic instructions.
+
+This capsule captures arithmetic-specific regularities and known
+exceptions.
+
+Exact instruction semantics remain anchored by verified documentation,
+experiments, and semantic anchors where necessary.
+
+------------------------------------------------------------------------
+
+## Conceptual Model
+
+``` text
+Arithmetic instruction
+        ↓
+Identify family
+        ↓
+Determine width
+        ↓
+Determine destination form
+        ↓
+Apply family semantics
+        ↓
+Check family-specific irregularities
+```
+
+------------------------------------------------------------------------
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+-   every floating-point detail;
+-   exact remainder placement for every division variant;
+-   overflow handling for every arithmetic instruction;
+-   all specialised arithmetic extensions.
+
+Do not infer complete semantic equivalence across related families.
+
+------------------------------------------------------------------------
+
+## Open Questions
+
+-   Exact semantics of `DIVM` and `IDIVM`.
+-   Floating-point field details where documentation was ambiguous.
+-   Overflow and processor flag interactions across arithmetic families.
+
+------------------------------------------------------------------------
+
+## Related Capsules
+
+-   `instruction-families.md`
+-   `data-representation.md`
+-   `anchors.md`
+
+---
+

@@ -1,58 +1,209 @@
-# LUUOs
+# LUUOs (projects/macro-20/domain/luuos.md)
 
 ## Generator
 
-Local Unimplemented User Operations let a program define application-specific instructions while the processor supplies only the dispatch mechanism.
+Local Unimplemented User Operations (LUUOs) let a program define
+application-specific instructions.
 
-The opcode selects the software-defined operation; the effective address supplies the operand or argument location.
+The processor supplies the dispatch mechanism.
 
-## Hardware structure
+Software defines the operation, calling convention, and semantics.
 
-When a LUUO opcode is executed:
+The opcode identifies the local operation.
 
-1. The effective address is calculated.
-2. An instruction image is stored at location 40.
-3. The saved image preserves opcode and AC fields, clears indirect/index fields, and replaces the address field with the resolved effective address.
-4. The processor executes the instruction at location 41 as though through `XCT 41`.
-5. The program's handler interprets and performs the operation.
+The resolved effective address supplies the operand or argument location.
+
+---
+
+## Processor Mechanism
+
+When a LUUO executes:
+
+1. the processor calculates the effective address;
+2. a normalized instruction image is stored at location `40`;
+3. the saved image preserves the opcode and AC fields;
+4. the indirect and index fields are cleared;
+5. the address field is replaced by the resolved effective address;
+6. the processor executes the instruction at location `41` as though
+   through `XCT 41`.
+
+The processor does not interpret the local opcode beyond invoking this
+mechanism.
+
+---
+
+## Software Responsibility
+
+The LUUO handler is responsible for:
+
+- preserving any required accumulator state;
+- recovering the opcode, AC field, and effective address;
+- validating the local opcode;
+- dispatching to the selected operation;
+- defining argument conventions;
+- performing the operation;
+- restoring state;
+- returning to the instruction following the LUUO.
+
+The CPU supplies entry.
+
+Software supplies meaning.
+
+---
+
+## Interface Construction
+
+`OPDEF` may assign symbolic instruction-like names to LUUO operations.
+
+Accepted examples from Gorin's worked program include:
+
+- `ERROR`;
+- `TTYSTR`;
+- `TTYCHR`.
+
+The main program can then use these names as compact application-level
+interfaces.
+
+This creates a local instruction vocabulary without changing the
+processor's hardware instruction set.
+
+---
+
+## Dispatch Pattern
+
+The accepted handler pattern is:
+
+```text
+LUUO executed
+      ↓
+effective address resolved
+      ↓
+instruction image saved at 40
+      ↓
+control transferred through 41
+      ↓
+handler preserves state
+      ↓
+opcode decoded
+      ↓
+software dispatch table
+      ↓
+selected operation
+      ↓
+state restored
+      ↓
+return to following instruction
+```
+
+Dispatch tables make the relationship between local opcodes and software
+handlers explicit and maintainable.
+
+---
 
 ## Invariants
 
 - Effective-address calculation occurs before handler entry.
-- The CPU does not decode the local opcode.
-- The CPU does not save accumulators for the handler.
-- Software defines the calling convention and operation semantics.
+- The processor does not define the local operation's semantics.
+- The processor does not automatically save accumulators for the handler.
+- The handler receives a normalized instruction image rather than the
+  original unresolved addressing fields.
+- Software defines the calling convention.
+- Return must continue with the instruction following the LUUO.
 
-## Cost model
+---
 
-LUUOs are more expensive than ordinary subroutine calls and should normally perform substantial work.
+## Cost Model
 
-## Worked-example pattern
+LUUOs are more expensive than ordinary subroutine calls.
 
-Gorin's photographed example defines symbolic LUUOs with `OPDEF`, including:
+They should normally justify their overhead by providing a substantial
+operation or a useful application-level interface.
 
-- `ERROR`
-- `TTYSTR`
-- `TTYCHR`
+Their value is architectural and organisational, not raw execution speed.
 
-The main program uses them as instruction-like application interfaces.
+---
 
-The handler pattern is:
+## Relationship to Subroutines
 
-1. preserve accumulator state;
-2. recover opcode, AC field, and effective address from the saved instruction;
-3. validate the local opcode;
-4. dispatch through a software table;
-5. perform the selected operation;
-6. restore state;
-7. return to the instruction following the LUUO.
+A subroutine call transfers control directly according to a calling
+convention.
 
-## Boundary
+A LUUO presents an instruction-like interface and reaches software
+through the processor's local-opcode dispatch mechanism.
 
-Do not equate LUUOs with TOPS-20 monitor calls. The chapter presents them as local, program-defined operations.
+Both may ultimately execute ordinary software.
 
-## Open questions
+They differ in how the interface is encoded and entered.
 
-- Further design patterns in the complete worked example.
-- Typical argument conventions across real programs.
-- Later interaction with other system facilities, if documented.
+---
+
+## Relationship to Monitor Calls
+
+LUUOs are local, program-defined operations.
+
+TOPS-20 JSYS calls invoke monitor services.
+
+Do not equate the two merely because both can look instruction-like at
+the source level.
+
+---
+
+## Conceptual Model
+
+```text
+Application instruction vocabulary
+              ↓
+            OPDEF
+              ↓
+          Local opcode
+              ↓
+      Processor LUUO mechanism
+              ↓
+       Software dispatcher
+              ↓
+      Application-defined semantics
+```
+
+The processor creates the doorway.
+
+The program decides what lies behind it.
+
+---
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+- a universal LUUO calling convention;
+- typical opcode allocation conventions across real programs;
+- every handler save/restore pattern;
+- interaction with later asynchronous facilities;
+- whether later Gorin chapters introduce stronger design conventions.
+
+Do not infer TOPS-20 monitor-call semantics from the LUUO model.
+
+Do not assume the processor preserves application state beyond the
+documented dispatch mechanism.
+
+---
+
+## Open Questions
+
+- Common argument conventions used by real MACRO-20 programs.
+- Common patterns for allocating local opcodes.
+- Further design lessons from Gorin's complete worked example.
+- Interaction with traps, pseudo-interrupts, or process facilities if
+  later documentation connects them.
+
+---
+
+## Related Capsules
+
+- `addressing.md`
+- `instruction-families.md`
+- `macros.md`
+- `source-organization.md`
+- `anchors.md`
+
+---
+

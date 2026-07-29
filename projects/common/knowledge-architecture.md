@@ -9,6 +9,8 @@ Restore the project knowledge architecture.
 -   Project-State contains accepted knowledge.
 -   Session-Log preserves historical reasoning.
 -   Domain knowledge capsules restore conceptual models.
+-   Common knowledge-representation artefacts (generators, anchors,
+    boundaries, etc.) define how conceptual models are reconstructed.
 -   Human documentation and reasoning capsules have different
     optimization goals.
 -   Serialization preserves artefact identity while enabling transport.

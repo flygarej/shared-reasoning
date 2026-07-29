@@ -176,6 +176,29 @@ address of a record field.
 
 ---
 
+## LUUO semantic anchors
+
+- PDP-10 reserves opcodes 001–037 (octal) for LUUOs.
+- Before dispatching an LUUO, the processor completes effective-address 
+  calculation.
+- LUUO dispatch does not modify accumulators.
+- The processor stores a normalized instruction image at location 40:
+  - opcode and AC fields preserved;
+  - index field cleared;
+  - address field replaced by the resolved effective address.
+- The instruction at location 41 is executed via XCT.
+  Consequently, the return PC established by JSR/PUSHJ refers to the 
+  instruction following the LUUO.
+- The processor dispatches the LUUO but does not interpret it.
+  Opcode decoding and operation semantics are entirely the responsibility
+  of the LUUO handler.
+
+### Guarded distinction
+
+Do not infer that the processor interprets local operations or preserves the original instruction unchanged. LUUO dispatch normalizes the instruction and transfers control; all interpretation belongs to the handler.
+
+---
+
 ## File and JFN Semantics
 
 ### JFN identity and access

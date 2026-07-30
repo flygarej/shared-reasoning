@@ -256,10 +256,34 @@ capabilities of the COMND JSYS. Try typing ? to see what commands are
 available.
 /
 
-; The actual server for the PUSH command will be presented in section
+; The actual server for the PUSH command is presented in section
 ; 27, page 387
 .PUSH:	NOISE (COMMAND LEVEL)
-	CONFIRM
+	CONFIRM		; Tie off command
+	MOVX	A,GJ%OLD!GJ%SHT	; Try to get an EXEC
+	HRROI	B,[ASCIZ/SYSTEM:EXEC.EXE/]
+	GTJFN
+	ERJMP	ERROR
+	MOVEM	A,EXCJFN		; Save JFN we got for EXEC
+	
+	MOVX	A,CR%CAP	; Make a fork, give it our capabilities
+	CFORK			; Create FORK
+	ERJMP	ERROR
+	MOVEM	A,FKHAN		; Save fork handle
+				; form JFN,,fork handle
+	HRL	A,EXCJFN	; stuff fork with JFN for EXEC
+	MOVS	A,A		; GET wants to see fork handle,,JFN
+	GET			; Copy exec.exe into inferior fork
+	ERCAL	FATAL
+	
+	MOVE	A,FKHAN		; Get fork handle back
+	SETZ	B,		; Start at offset 0 in entry vector
+	SFRKV			; Start fork
+	ERCAL	FATAL
+	WFORK			; Wait for it to complete
+	ERCAL	FATAL
+	KFORK			; Now kill that fork
+	ERCAL	FATAL
 	RET
 
 ; The actual server for the QUEUE program will be presented in 

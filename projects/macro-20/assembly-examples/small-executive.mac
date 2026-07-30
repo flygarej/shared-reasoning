@@ -1,5 +1,5 @@
 	TITLE	SMALL EXECUTIVE		; Mark R. Crispin 12/79
-	SEARCH MACSYM,MONSYM,QSRMAC
+	SEARCH	MACSYM,MONSYM,QSRMAC
 	SALL
 
 ;  Accumulator defs
@@ -43,18 +43,18 @@ DEFINE	CONFIRM <
 	COMND
 	ERCAL	FATAL
 	TXNE	A,CM%NOP
-	JRST	ERROR
+	JRST	ERROR	>	; definition of CONFIRM
 
 ; Call this macro to help build the command table. This macro is more complex
 ;(and more useful) than the CMD macro decribed earlier
 ;This macro explained in 26.2.9, page 380
 DEFINE	TBL (NAME,FLAGS,DISP) <
-IFNB <DISP>,<..DISP==DISP>	; If a dispatch is given, use it
-IFB  <DISP>,<..DISP==.'NAME>	; If none, default to .NAME
-IFB  <FLAGS>,<[ASCIZ/NAME/],,..DISP>	; If no flags assemble name
-IFNB <FLAGS>,<[FLAGS!CM%FW		; if flags use them and set CM%FW
-	ASCIZ/NAME/],,..DISP>	;;
-	PURGE	DISP >		;; TBL MACRO
+IFNB <DISP>,<..DISP==DISP>		;; If a dispatch is given, use it
+IFB  <DISP>,<..DISP==.'NAME>		;; If none, default to .NAME
+IFB  <FLAGS>,<[ASCIZ/NAME/],,..DISP>	;; If no flags assemble name
+IFNB <FLAGS>,<[FLAGS!CM%FW		;; if flags use them and set CM%FW
+	ASCIZ/NAME/],,..DISP>		;;
+	PURGE	..DISP >		; TBL MACRO
 
 	SUBTTL	Data Storage Area
 
@@ -94,7 +94,7 @@ CMDBLK:	0,,CMRPRS		; flags,,address of reparse routine
 	CMDBSZ*5-1		; size of command buffer in bytes
 	0			; number of unparsed characters
 	-1,,ATMBUF		; ptr to start of atom buffer
-	ATMBSF*5-1		; size of atom buffer in bytes
+	ATMBSZ*5-1		; size of atom buffer in bytes
 	GTJBLK			; pointer to GTJFN block
 
 	SUBTTL	Top level, first command dispatch and command table
@@ -115,8 +115,8 @@ GETCMD:	MOVEI	A,CMDBLK	; Register A points to state block
 	MOVEI	B,[FLDDB. .CMINI]	; Initialize state block, watch for
 	COMND			; CTRL/H. Do output prompt
 	ERCAL	FATAL		; Should never happen
-	MOVEM	P,SAVPOL	; Save stack ptr for reparse
-CMRPRS:	MOVE	P,SAVPOL	; Restore stack ptr for reparse
+	MOVEM	P,SAVPDL	; Save stack ptr for reparse
+CMRPRS:	MOVE	P,SAVPDL	; Restore stack ptr for reparse
 	MOVEI	B,[FLDDB. .CMKEY,,CMDTAB,<A command>]
 	COMND
 	ERCAL	FATAL
@@ -139,7 +139,7 @@ CMDTAB:	CMDTBL,,CMDTBL	;Actual,,max no of entries
 $QUEUE:	TBL(QUEUE)
 	TBL(QUIT,CM%INV,.EXIT)	; Quit is an invisible alias for EXIT
 	TBL(TYPE)
-CMDTBL==<.-CMDTAB>-1	.	; Entries in table
+CMDTBL==<.-CMDTAB>-1		; Entries in table
 
 	SUBTTL	Command Servers
 ; Server for count command
@@ -162,10 +162,10 @@ UDCTAB:	UDCTLN,,UDCTLN	;Secondary kbd table for count command
 	TBL	(UP)
 UDCTLN==<.-UDCTAB>-1
 
-.UP	NOISE	(TO)
+.UP:	NOISE	(TO)
 	MOVEI	B,[FLDDB. .CMNUM,CM%SDH,^D10,a number to count up to,20]
 	JRST	CNUM
-.DOWN	NOISE	(FROM)
+.DOWN:	NOISE	(FROM)
 	SETOM	UDFLAG
 	MOVEI	B,[FLDDB. .CMNUM,CM%SDH,^D10,a number to count down from,20]
 CNUM:	COMND
@@ -177,12 +177,195 @@ CNUM2:	JUMPLE	B,NONEG	; A negative argument makes no sense
 	CONFIRM		; Tie off command
 			; here to actually do the counting
 	SKIPGE	UDFLAG	;Counting up or down, skip if up
-	JRST	COUNTO	; counting down, udflag=-1, max value
+	JRST	COUNT0	; counting down, udflag=-1, max value
 	MOVEM	D,UDFLAG	; UDFLAG is now upper bound
 	SKIPA	D,[1]	;and for up counting D is initially 1
-COUNTO:	MOVN	D,D	;down count, D is initially -n
+COUNT0:	MOVN	D,D	;down count, D is initially -n
 			; D is lower boudn, UDFLAG is 
 			; upper bound. For counting down we'll
 			; actually cound a neg num up to -1
 	MOVEI	A,.PRIOU	; Set up to output to terminal
-COUNT1:	MOVM
+COUNT1:	MOVM	B,D		; get magnitude of number to output
+	MOVEI	C,^D10		; decimal radix
+	NOUT			; output it
+	ERCAL	FATAL	
+	HRROI	B,CRLF		; output delimiting crlf
+	SETZ	C,		; terminate on null
+	SOUT
+	CAMGE	D,UDFLAG	; if counting down UDFLAG is -1
+	AOJA	D,COUNT1
+	RET
+
+NONEG:	HRROI	A,[ASCIZ/?I can't count down that far!
+/]
+	PSOUT
+	RET
+
+; Server for EXIT command to have a graceful way of getting out
+.EXIT:	NOISE	(FROM SMALL EXECUTIVE)
+	CONFIRM
+	HALTF
+	RET
+
+; Server for HELLO command
+; Format for printing version is MAJOR.MINOR(EDIT)-WHO
+.HELLO:	CONFIRM
+	HRROI	A,[ASCIZ/Hello this is the Small Executive.
+Version /]
+	PSOUT
+	MOVEI	A,.PRIOU	; Numeric object to terminal
+	MOVEI	C,10	;radix 8
+	LDB	B,[POINT 9,VERSIO,11]
+	NOUT
+	ERJMP	.+1
+	MOVEI	B,"."
+	BOUT
+	LDB	B,[POINT 6,VERSIO,17]	; Minor version
+	NOUT
+	ERJMP	.+1
+	MOVEI	B,"("
+	BOUT
+	HRRZ	B,VERSIO	; edit number in parens
+	NOUT
+	ERJMP	.+1
+	HRROI	A,[ASCIZ/)-/]
+	PSOUT
+	MOVEI	A,.PRIOU
+	LDB	B,[POINT 3,VERSIO,2]	;Finally, who edited
+	NOUT
+	ERJMP	.+1
+	HRROI	A,CRLF
+	PSOUT
+	RET
+
+; Server for HELP command
+.HELP:	NOISE (IN USING THE SMALL EXECUTIVE)
+	CONFIRM
+	HRROI	A,HLPMSG
+	PSOUT
+	RET
+
+HLPMSG:	ASCIZ/
+The Small Executive is a simple command processor that demonstrate the
+capabilities of the COMND JSYS. Try typing ? to see what commands are 
+available.
+/
+
+; The actual server for the PUSH command is presented in section
+; 27, page 387
+.PUSH:	NOISE (COMMAND LEVEL)
+	CONFIRM		; Tie off command
+	MOVX	A,GJ%OLD!GJ%SHT	; Try to get an EXEC
+	HRROI	B,[ASCIZ/SYSTEM:EXEC.EXE/]
+	GTJFN
+	ERJMP	ERROR
+	MOVEM	A,EXCJFN		; Save JFN we got for EXEC
+	
+	MOVX	A,CR%CAP	; Make a fork, give it our capabilities
+	CFORK			; Create FORK
+	ERJMP	ERROR
+	MOVEM	A,FKHAN		; Save fork handle
+				; form JFN,,fork handle
+	HRL	A,EXCJFN	; stuff fork with JFN for EXEC
+	MOVS	A,A		; GET wants to see fork handle,,JFN
+	GET			; Copy exec.exe into inferior fork
+	ERCAL	FATAL
+	
+	MOVE	A,FKHAN		; Get fork handle back
+	SETZ	B,		; Start at offset 0 in entry vector
+	SFRKV			; Start fork
+	ERCAL	FATAL
+	WFORK			; Wait for it to complete
+	ERCAL	FATAL
+	KFORK			; Now kill that fork
+	ERCAL	FATAL
+	RET
+
+; The actual server for the QUEUE program will be presented in 
+; section 28.1, page 397
+.QUEUE:	NOISE (STATUS DISPLAY)
+	CONFIRM
+	RET
+
+.TYPE:	NOISE	(FILE ON TERMINAL)
+	SKIPE	A,INPJFN	; Any JFN lying around
+	CLOSF		; Yes, try to close it
+	ERJMP	.+1	; Ignore any failure
+	SETZM	INPJFN	; and don't try to do it again
+	MOVEI	A,CMDBLK	; Reload A with ptr to state block
+	MOVEI	B,[FLDDB. .CMIFI,CM%SDH,,name of the file you want to type]
+	COMND	; get an input file
+	ERCAL	FATAL
+	TXNE	A,CM%NOP	; Maybe not found or something?
+	JRST	ERROR
+	HRRZM	B,INPJFN	; Save the JFN we got
+	CONFIRM			; Tie off command
+	MOVE	A,INPJFN	; Open the file, using JFN from COMND
+	MOVX	B,<FLD(7,OF%BSZ)+OF%RD>	; Read access, 7-bit bytes
+	OPENF
+	JRST	ERROR		;OPENF failed for some reason...
+TYPE1:	MOVE	A,INPJFN
+	BIN			; Simple byte-by-byte copy loop
+	ERJMP	TYPE2
+	MOVEI	A,.PRIOU	; brevity, not speed...
+	BOUT
+	JRST	TYPE1
+
+TYPE2:	MOVE	A,INPJFN	; Error here, EOF?
+	GTSTS
+	TLNN	B,(GS%EOF)	
+	CALL	ERROR		; Some serious problem; report it.
+	MOVE	A,INPJFN
+	CLOSF			; Close file
+	ERCAL	FATAL
+	SETZM	INPJFN		; Zero JFN storage
+	RET
+
+	SUBTTL Error handlers and miscellany
+
+; Fatal error routine, for "impossible errors" only.
+; Called by ERCAL FATAL after failing JSYS
+
+FATAL:	CALL	ERROR	; First output reason JSYS died
+	HRROI	A,[ASCIZ/, JSYS at PC=/]
+	PSOUT
+	MOVEI	A,.PRIOU	; Output PC
+	POP	P,B		; get PC back from stack
+	SUBI	B,2		; Back up over ERCAL to JSYS address
+	MOVX	C,NO%MAG!10	; Output free format unsigned octal
+	NOUT
+	ERJMP	.+1		; This can't happen but avoid recursion
+	HRROI	A,CRLF
+	PSOUT
+	MOVEI	A,.PRIIN	; Flush TTY input handler
+	CFIBF
+FATAL0: HALTF
+	HRROI	A,[ASCIZ/?Can't continue
+/]
+	PSOUT
+	JRST	FATAL0	; Disallow continue command
+
+; Ordinary JSYS routine. Just outputs the error string for the 
+; failing JSYS and returns
+
+ERROR:	HRROI	A,[ASCIZ/Error: /]
+	ESOUT
+	MOVEI	A,.PRIOU	; Errmsg to primary output
+	HRLOI	B,.FHSLF	; This fork, last error
+	SETZ	C,		; No limit
+	ERSTR
+	ERJMP	.+1		; Neither of these are supposed to happen
+	ERJMP	.+1
+	HRROI	A,CRLF
+	PSOUT
+	RET
+
+CRLF:	BYTE(7)15,12
+
+;Entry vector
+EVEC:	JRST	START		; START entry point
+	JRST	START		; REENTER entry point
+VERSIO:	BYTE	(3)VWHO(9)VMAJOR(6)VMINOR(18)VEDIT ;version #. Label for Hello
+EVECL==.-EVEC
+
+	END	<EVECL,,EVEC>

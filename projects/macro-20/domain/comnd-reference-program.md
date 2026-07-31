@@ -7,6 +7,9 @@
 	SEARCH	MACSYM,MONSYM,QSRMAC
 	SALL
 
+; Compatibility definition: some QSRMAC.UNV versions lack .OFLAG
+IFNDEF	.OFLAG,.OFLAG==.OHDRS-2
+
 ;  Accumulator defs
 A=1			; JSYS Args and temp AC's 
 B=2
@@ -256,7 +259,9 @@ capabilities of the COMND JSYS. Try typing ? to see what commands are
 available.
 /
 
-; The actual server for the PUSH command is presented in section
+
+	SUBTTL PUSH command
+; The actual server for the PUSH command will be presented in section
 ; 27, page 387
 .PUSH:	NOISE (COMMAND LEVEL)
 	CONFIRM		; Tie off command
@@ -286,11 +291,91 @@ available.
 	ERCAL	FATAL
 	RET
 
-; The actual server for the QUEUE program will be presented in 
+	SUBTTL	QUEUE Command
+; The actual server for the QUEUE program is presented in 
 ; section 28.1, page 397
+
+; Select a page for IPCF replies from QUASAR
+IFNDEF	MSGPAG,MSGPAG==670 ; Put replies on page 670
+MSGLOC=MSGPAG_^D9 ; First location on MSGPAG
+
+; This is the message we send to QUASAR to make it divulge the queues
+QSRMSG:	QSRLEN,,.QOLIS	; Length of block,,list queues
+	0,,'SYS'	; flags,,3 letter mnemonic
+	0		; acknowledge word
+	LS.ALL		; flags - I want to see everything
+	1		; one argument following
+	2,,.LSQUE	; 2 words this argument,,queues I want
+	LIQALL		; list all queues
+QSRLEN==.-QSRMSG	; Length of message.
+
 .QUEUE:	NOISE (STATUS DISPLAY)
 	CONFIRM
-	RET
+; First we need to get PIDs for QUASAR and for this process
+	MOVEI	A,3		; Length of argument block for MUTIL
+	MOVEI	B,IPCBLK	; Address of block for MUTIL
+	MOVEI	C,.MURSP	; Read a PID from system PID table
+	MOVEM	C,IPCBLK	; Store as function or MUTIL
+; Get QUASAR's PID
+	MOVEI	C,.SPQSR	; Code to reuest QUASAR PID
+	MOVEM	C,IPCBLK+1	; from system PID table
+	MUTIL	
+	ERJMP	QERR1
+	MOVE	C,IPCBLK+2	; QUASARS PID returned in argument BLK
+	MOVEM	C,QSRPID	; Save QUASAR's PID
+
+; Now get own PID
+	SKIPE	MYPID		; Is there a pid for me already?
+	JRST	QUEUE3		; Yes, ready to send off a message
+	MOVEI	C,.MUCRE	; no, must create one
+	MOVEM	C,IPCBLK	; Set Create PID function for MUTIL
+	MOVEI	C,.FHSLF	; PID for this fork, no flags
+	MOVEM	C,IPCBLK+1	; Required: supply .FHSLF argument to .MUCRE
+	MUTIL
+	ERJMP	QERR2
+	MOVE	C,IPCBLK+2	; Returned value from .MUCRE
+	MOVEM	C,MYPID		; Save as my PID
+; Here we have the PIDs we need. Now tell Quasar to send us the information
+QUEUE3:	SETZM	IPCBLK		; no flags
+	MOVE	C,MYPID
+	MOVEM	C,IPCBLK+1	; My PID
+	MOVE	C,QSRPID
+	MOVEM	C,IPCBLK+2	; QUASAR's PID
+	MOVE	C,[QSRLEN,,QSRMSG]
+	MOVEM	C,IPCBLK+3
+	MOVEI	A,.IPCFP+1	; Length of packed descriptor block
+	MSEND
+	ERJMP	QERR3		; report an error and return to user
+	SETOM	FIRSTP		;Set this is first time through GETGRP
+; Loop, reading the replies from QUASAR
+GETQRP:	MOVX	C,IP%CFV	;flag to request one page of data
+	MOVEM	C,IPCBLK+.IPCFL	; in the packet descriptor flag
+	SETZM	IPCBLK+.IPCFS	; sender (filled in by system)
+	MOVE	C,MYPID		; My PID is
+	MOVEM	C,IPCBLK+.IPCFR	; the receiver
+	MOVE	C,[1000,,MSGPAG]	;put data on message page
+	MOVEM	C,IPCBLK+.IPCFP	; Verified correction:
+                            ; Gorin prints .IPCFD here;
+							; .IPCFP is required by MRECV.
+	MOVEI	A,.IPCFP+1		; length of packet descriptor block
+	MOVEI	B,IPCBLK	; Address of our block
+	MRECV			; get the reply
+	ERJMP	QERR4
+	MOVE	C,IPCBLK+.IPCFS	; Get sender PID for this message
+	CAME	C,QSRPID	; Was it QUASAR
+	JRST	[HRROI A,[ASCIZ/%Ignoring irrelevant IPCF message
+/]
+		PSOUT		; someone other than QUASAR sent to us
+	JRST GETQRP]		; try again to get QUASAR's reply
+	HRROI	A,MSGLOC+.OHDRS+1	; get ptr to text block
+	HLRZ	B,MSGLOC+.OHDRS		; get block's size
+	AOSN	FIRSTP		; is this the first message?
+	ADD	A,B		; Yes, point past header message
+	PSOUT
+	MOVE	B,MSGLOC+.OFLAG	; Get flags from QUASAR
+	TXNE	B,WT.MOR	; Are there more messages?
+	JRST	GETQRP		; Yes, handle
+	RET			; No, return
 
 .TYPE:	NOISE	(FILE ON TERMINAL)
 	SKIPE	A,INPJFN	; Any JFN lying around
@@ -350,6 +435,25 @@ FATAL0: HALTF
 	PSOUT
 	JRST	FATAL0	; Disallow continue command
 
+QERR1:	HRROI	A,[ASCIZ/MUTIL .MURSP failed: /]
+	PSOUT
+	JRST	ERROR
+
+
+QERR2:	HRROI	A,[ASCIZ/MUTIL .MUCRE failed: /]
+	PSOUT
+	JRST	ERROR
+
+
+QERR3:	HRROI	A,[ASCIZ/MSEND failed: /]
+	PSOUT
+	JRST	ERROR
+
+
+QERR4:	HRROI	A,[ASCIZ/MRECV failed: /]
+	PSOUT
+	JRST	ERROR
+
 ; Ordinary JSYS routine. Just outputs the error string for the 
 ; failing JSYS and returns
 
@@ -374,8 +478,6 @@ VERSIO:	BYTE	(3)VWHO(9)VMAJOR(6)VMINOR(18)VEDIT ;version #. Label for Hello
 EVECL==.-EVEC
 
 	END	<EVECL,,EVEC>
-	
-	
 ```
 
 ### Sample session
@@ -415,5 +517,14 @@ Small Executive>hello ? confirm with carriage return
 Small Executive>hello 
 Hello this is the Small Executive.
 Version 2.7(13)-2
+Small Executive>quEUE (STATUS DISPLAY) 
+
+Batch Queue:
+Job Name   Req#   Run Time            User
+--------  ------  --------  ------------------------
+  BSEND        4  00:05:00  FLAX                  /After:31-Jul-2026 09:
+	  /Uniq:Yes  /Restart:No  /Assist:Yes  /Output:Log
+	  /Batlog:Append  /Seq:1711
+There is 1 job in the queue (none in progress)
 Small Executive>exit
 ```

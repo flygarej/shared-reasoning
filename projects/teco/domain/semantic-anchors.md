@@ -28,6 +28,14 @@ Structural correctness therefore does not imply executable correctness.
 When generating executable programs, command-local semantics take
 precedence over structural plausibility.
 
+### `ER` and `EI` use different input paths
+
+`ER` selects a file for the **text input stream**. It does not execute the file as TECO commands.
+
+`EI` executes a file as an **indirect TECO command stream**.
+
+Do not infer command execution merely because both commands operate on files.
+
 ---
 
 ## Modifier presence is not modifier accumulation

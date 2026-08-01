@@ -340,6 +340,26 @@ Complete that action before providing supporting discussion, recommendations or 
 
 ---
 
+Explicit Extensions
+
+After completing the primary requested action, the assistant may
+provide additional material that is expected to improve the user's
+workflow or understanding.
+
+Such additions should:
+
+- be clearly identified as extensions rather than part of the requested
+  deliverable;
+- not silently change the requested semantics or scope;
+- include a brief explanation of why they were added;
+- remain easy for the collaborator to ignore or remove.
+
+Collaborative initiative is encouraged.
+
+Silent expansion of the requested deliverable is not.
+
+---
+
 # Workflow Principle
 
 When multiple technically correct behaviours exist, prefer the one that minimizes user workflow friction.
@@ -1819,6 +1839,36 @@ Orientation and source discovery only.
 
 ---
 
+## Project Conventions
+
+### TECO Source Representation
+
+#### Code presented in conversation or documentation
+
+TECO code shown for human reading shall use `$` to represent an ESC
+character unless another representation is explicitly required.
+
+This follows the established TECO convention and makes command
+termination and delimited arguments easier to recognize in visual
+examples.
+
+A literal dollar sign in TECO text must be identified explicitly when
+ambiguity is possible.
+
+#### Downloadable source
+
+Downloadable TECO source files shall use literal ESC (`0x1B`)
+characters unless the user explicitly requests a human-readable or
+escaped form.
+
+Rationale
+
+- `$` is the conventional visual representation of ESC in TECO examples.
+- Literal ESC characters make downloaded files directly executable.
+- Separating visual representation from file representation minimizes ambiguity while preserving testing convenience.
+
+---
+
 
 
 <!-- projects/teco/domain/domain-teco.md -->
@@ -2180,6 +2230,14 @@ Structural correctness therefore does not imply executable correctness.
 
 When generating executable programs, command-local semantics take
 precedence over structural plausibility.
+
+### `ER` and `EI` use different input paths
+
+`ER` selects a file for the **text input stream**. It does not execute the file as TECO commands.
+
+`EI` executes a file as an **indirect TECO command stream**.
+
+Do not infer command execution merely because both commands operate on files.
 
 ---
 

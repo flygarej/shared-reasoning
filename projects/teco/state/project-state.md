@@ -467,3 +467,33 @@ Orientation and source discovery only.
 
 ---
 
+## Project Conventions
+
+### TECO Source Representation
+
+#### Code presented in conversation or documentation
+
+TECO code shown for human reading shall use `$` to represent an ESC
+character unless another representation is explicitly required.
+
+This follows the established TECO convention and makes command
+termination and delimited arguments easier to recognize in visual
+examples.
+
+A literal dollar sign in TECO text must be identified explicitly when
+ambiguity is possible.
+
+#### Downloadable source
+
+Downloadable TECO source files shall use literal ESC (`0x1B`)
+characters unless the user explicitly requests a human-readable or
+escaped form.
+
+Rationale
+
+- `$` is the conventional visual representation of ESC in TECO examples.
+- Literal ESC characters make downloaded files directly executable.
+- Separating visual representation from file representation minimizes ambiguity while preserving testing convenience.
+
+---
+

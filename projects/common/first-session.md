@@ -23,7 +23,7 @@ A project is normally introduced by concatenating:
 -   `rationale.md`
 -   `projects/common/*.md`
 -   `projects/<project>/state/*.md`
--   `projects/<project>/observations.md`
+-   `projects/<project>/observations/*.md` (optional)
 -   `projects/<project>/domain/*.md`
 
 Treat this concatenated prompt as the authoritative working context for
@@ -90,7 +90,7 @@ Determine:
 Do not promote information from historical reasoning over accepted
 project state.
 
-After reading project state, inspect any project-local observations/ files.
+After reading project state, inspect any project-local files in the ```observations/`` directory.
 Treat them as organized evidence and candidate findings, not as authoritative project knowledge.
 Do not promote them unless the project state or current collaboration explicitly accepts them.
 

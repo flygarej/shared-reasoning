@@ -1,4 +1,4 @@
-# project-state.md (projects/fresh-project/state/project.state.md)
+# project-state.md
 
 ## Placeholder
 

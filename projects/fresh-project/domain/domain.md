@@ -1,6 +1,6 @@
-# Fresh project domain knowledge (projects/fresh-project/domain/domain.md)
+# Domain knowledge
 
-## Fresh project - empty domain knowledge
+## Placeholder
 
 Since this is a fresh project, there is no domain knowledge at the moment.
 Add files with generators, boundaries and anchors as you explore the

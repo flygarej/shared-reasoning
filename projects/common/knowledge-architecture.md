@@ -9,8 +9,7 @@ Restore the project knowledge architecture.
 - Project-State contains accepted project knowledge and current
   direction.
 - Session-Log preserves historical reasoning and provenance.
-- Project-local observations preserve organized evidence and candidate
-  findings that have not yet been promoted into accepted knowledge.
+- Project-local observations preserve candidate knowledge pending promotion.
 - Domain capsules restore conceptual models through generators,
   boundaries, anchors, and explicit unknowns.
 - Rosetta/reference artefacts anchor composition in verified examples.

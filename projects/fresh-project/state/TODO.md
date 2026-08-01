@@ -105,3 +105,16 @@ artefact.
 - Compact only after successful reconstruction has been demonstrated.
 
 ---
+
+## Bootstrap Completion
+
+Once the project has completed its first successful maintenance:
+
+- Replace state/TODO.md with the contents of state/standard-project-TODO.md, 
+  then delete state/standard-project-TODO.md.
+- Remove bootstrap-specific instructions that no longer apply.
+- Keep only work items relevant to the active project.
+
+The TODO should thereafter function as the project's active work queue,
+not as bootstrap documentation.
+

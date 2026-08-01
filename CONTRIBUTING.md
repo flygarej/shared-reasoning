@@ -19,7 +19,7 @@ Whenever possible, describe **observations** rather than opinions.
 
 Shared Reasoning is intended to be adapted.
 
-If your work is specific to a domain—such as reverse engineering, software engineering, legal reasoning, scientific research, or another field—you are encouraged to **fork the repository** and evolve the protocol to suit your needs.
+If your work is specific to a domain—such as reverse engineering, software engineering, legal reasoning, scientific research, or another field—you are encouraged to **fork the repository** and adapt the method to fit that domain.
 
 Different domains may legitimately require different collaboration patterns.
 
@@ -74,4 +74,7 @@ The protocol should evolve because experience shows that it should—not because
 The purpose of this repository is not to create the perfect protocol.
 
 It is to discover, through practical experience, how humans and reasoning systems collaborate most effectively on long-running investigations.
-tory.
+
+## Community
+
+Shared Reasoning users who want to exchange observations and findings are informally known as the **SHRUG** — the Shared Reasoning User Group.

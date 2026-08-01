@@ -1,4 +1,4 @@
-# session-log.md
+# session-log.md (projects/fresh-project/state/session-log.md)
 
 ## Placeholder
 

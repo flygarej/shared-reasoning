@@ -2,22 +2,24 @@
 
 ## Project TODO's
 
-- Continue with Chapter 27. 
-  Expand the Small Executive as later chapters introduce process handling,
-  IPC, interrupts and related facilities.
-- Revisit MACRO-20 macro expansion semantics after the introductory chapters: 
-  nested angle brackets, argument substitution, rescanning, redefinition, 
+- Continue with Chapter 29, traps and interrupts.
+  Expand the Small Executive as later chapters introduce pseudo-interrupts,
+  traps, asynchronous control transfer and related facilities.
+- Revisit MACRO-20 macro expansion semantics after the introductory chapters:
+  nested angle brackets, argument substitution, rescanning, redefinition,
   and emitted source.
 - Develop the minimum MACRO-20 instruction-family anchor set.
   Validate candidate anchors against fresh-session reconstruction before
   accepting them.
-- Complete maintenance pass over common, state, domain and reference artefacts
+- Complete maintenance pass over common, state, domain and reference artefacts.
 - After major maintenance, test reconstruction using a fresh session
   before further compaction.
 - Evaluate whether later chapters introduce additional reference artefacts
   worthy of Rosetta status.
-- Long-term
+- Revisit exact JOB/FORK/JFN ownership when later chapters or primary
+  documentation provide direct evidence.
+- Long-term:
   Maintain the smallest accepted knowledge base that reliably reconstructs
   the project.
-  
+
 ---

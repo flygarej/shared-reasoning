@@ -70,11 +70,36 @@ Accepted access styles currently include:
 
 -   byte I/O;
 -   string I/O;
--   mapped-file access.
+-   mapped-file access;
+-   shared thawed writable access.
 
 The pathname normally disappears from subsequent operations.
 
 ------------------------------------------------------------------------
+
+## Writable Sharing
+
+Normal writable access is frozen.
+
+A frozen writable open excludes every other writable open.
+
+`OF%THW` requests thawed writable access.
+
+Thawed access permits multiple simultaneous writers when every writer
+requests `OF%RD`, `OF%WR`, and `OF%THW`.
+
+While thawed writers hold the file, frozen writable access is denied.
+
+While a frozen writer holds the file, all further writable opens are
+denied, whether frozen or thawed.
+
+Thawed access permits concurrent writers but does not provide
+synchronization.
+
+Processes may combine thawed access with `PMAP` so the same file pages
+appear in multiple address spaces.
+
+---
 
 ## String I/O
 
@@ -196,8 +221,9 @@ The JFN is the conceptual centre of the model.
 
 Current project knowledge does **not** establish:
 
--   detailed `OPENF` sharing modes;
+-   complete `OPENF` sharing modes beyond accepted frozen/thawed access;
 -   buffering policy;
+-   synchronization between thawed writers;
 -   precise JOB/FORK ownership rules;
 -   lifetime rules for predefined JFNs;
 -   interaction between multiple FORKs and shared JFN tables.
@@ -211,7 +237,7 @@ Do not infer these from other operating systems.
 -   Are JFN tables shared between FORKs?
 -   Can JFNs migrate between FORKs?
 -   Exact relationship between JOB and FORK ownership.
--   Detailed `OPENF` access flags.
+-   Detailed `OPENF` flags beyond `OF%RD`, `OF%WR`, and `OF%THW`.
 -   Detailed `.CMIFI` interaction with COMND.
 
 ------------------------------------------------------------------------
@@ -220,4 +246,7 @@ Do not infer these from other operating systems.
 
 -   `program-memory.md`
 -   `comnd.md`
+-   `program-memory.md`
+-   `processes.md`
+-   `ipcf.md`
 -   `anchors.md`

@@ -1,67 +1,220 @@
 # Quick Start
 
-## Quick quick-start
+This guide gets a Shared Reasoning project into a new LLM conversation with
+the least possible ceremony.
 
-Use one of the packaged capsules to start up a pre-defined reasoning session, such as capsules/teco.md, capsules/new-reasoning.md or capsules/learn-collaboration.md
+You do not need to understand the complete knowledge architecture before
+trying it.
 
-A capsule consists of protocol.md, rationale.md and a specific project-state and session-log concatenated together.  
-That capsule can be uploaded or pasted into a chat to get things up and running.
-Suggested initial prompt to get an overview of the project:
+---
 
-"Read this capsule. Describe the collaboration methodology, the current project state, and explain how you distinguish accepted knowledge from historical reasoning."
+## Try an existing project
 
-## Starting a new investigation
+From the repository root, generate the project bootstrap:
+
+```bash
+./create-project-prompt.sh macro-20
+```
+
+The script creates:
+
+```text
+projects/macro-20/macro-20.md
+```
+
+Upload that generated file to a new LLM conversation.
+
+A useful first message is:
+
+> Read the supplied project bootstrap. Briefly describe the collaboration
+> method, the current project state, and the distinction between accepted
+> knowledge and historical reasoning.
+
+Then begin working on the project normally.
+
+To test reconstruction more thoroughly, also upload:
+
+```text
+validation/handover-validation.md
+```
+
+and ask the collaborator to answer it.
+
+---
+
+## Continue your own existing project
+
+A project normally has this structure:
+
+```text
+projects/<project>/
+├── state/
+│   ├── project-state.md
+│   ├── session-log.md
+│   └── TODO.md
+└── domain/
+    └── one or more Markdown files
+```
+
+Generate the bootstrap:
+
+```bash
+./create-project-prompt.sh <project>
+```
 
 Upload:
 
-- protocol.md
-- rationale.md
-- projects/common/*.md
-- templates/new-project-state.md
-- templates/new-session-log.md
+```text
+projects/<project>/<project>.md
+```
 
-Then describe:
+The generated file includes:
+
+- `protocol.md`;
+- `rationale.md`;
+- `projects/common/*.md`;
+- `projects/<project>/state/*.md`;
+- `projects/<project>/domain/*.md`.
+
+The individual source files remain authoritative. Regenerate the bootstrap
+after maintenance.
+
+---
+
+## Start a new project
+
+Copy the supplied starter project:
+
+```bash
+cp -a projects/fresh-project projects/my-project
+```
+
+Choose a short project name and replace `my-project` in the command as
+needed.
+
+At minimum, edit:
+
+```text
+projects/my-project/state/project-state.md
+projects/my-project/state/session-log.md
+projects/my-project/state/TODO.md
+projects/my-project/domain/
+```
+
+Describe:
 
 - what you are investigating;
 - why it matters;
-- any existing evidence or documentation.
+- the environment or system involved;
+- available documentation;
+- known observations;
+- current uncertainties;
+- the first useful experiment.
 
-The protocol will establish a collaborative workflow and request additional context if needed.
+Instead of editing these files manually, you may generate the project
+bootstrap first and upload it to an LLM.
 
-You can also concatenate all the files into one prompt, and upload that.
+Ask it to help establish:
 
-The capsule capsules/new-reasoning.md is prepared with the above concatenation.
+- the initial project state;
+- the first session log;
+- the initial domain structure;
+- the first TODO list.
 
----
+Review the generated files before accepting them as the project's starting
+point.
 
-## Continuing an investigation
+Then generate the bootstrap:
+
+```bash
+./create-project-prompt.sh my-project
+```
 
 Upload:
 
-- protocol.md
-- rationale.md
-- projects/common/*.md
-- your project's project-state.md
-- your project's session-log.md
-- your project's domain knowledge markdown files.
+```text
+projects/my-project/my-project.md
+```
 
-The collaborator should resume from the accepted project state while preserving continuity.
+A useful opening message is:
 
-You can also concatenate all the files into one prompt, and upload that.
+> This is a new Shared Reasoning project. Read the supplied bootstrap,
+> identify missing initial context, and help me establish the first accepted
+> project state and domain model.
 
 ---
 
-## More information
+## During the investigation
 
-See README.md for the philosophy behind Shared Reasoning.
+Work normally with the collaborator.
 
-## A heads-up
+Ask questions, test code, inspect documentation, challenge assumptions, and
+record uncertainty.
 
-Don't optimize the protocol before you've used it.
+At natural milestones, update:
 
-The protocol evolved through practical collaboration. If something feels awkward, try it first—then decide whether the protocol or your workflow should change.
+### `project-state.md`
 
-### LLM Quirks
+What is currently accepted?
 
-I've found these prompts work really well with ChatGPT, while Copilot tends to shirk collaboration to the user. Working on that...
-This difference in behaviour was also the reason for adding domain knowledge as OpenAI tend to glance at other chats when inferring, while Copilot seem to not do that. With condensed domain knowledge it becomes easier for Copilot to participate in a discussion.
+### `session-log.md`
+
+What happened, and why were conclusions accepted or rejected?
+
+### `domain/*.md`
+
+Which compact concepts are needed to reconstruct the subject reliably?
+
+### `TODO.md`
+
+What should happen next?
+
+Regenerate the project bootstrap after maintenance.
+
+---
+
+## Validate a handover
+
+A handover is successful when a new collaborator can:
+
+- distinguish accepted knowledge from research history;
+- reconstruct the important conceptual relationships;
+- respect explicit uncertainty;
+- use exact anchors where nearby inference is unsafe;
+- continue useful work without replaying the previous conversation.
+
+Use:
+
+```text
+validation/handover-validation.md
+```
+
+for a detailed reconstruction test.
+
+---
+
+## What not to do
+
+Do not begin by optimizing or expanding the protocol.
+
+Use it first.
+
+When something fails, ask:
+
+1. What happened?
+2. Was the problem in the collaboration method, project state, domain
+   knowledge, or local workflow?
+3. What is the smallest reusable improvement?
+
+The method should evolve from observed use rather than anticipated needs.
+
+---
+
+## Next reading
+
+After the first successful trial:
+
+- read `README.md` for the overall model;
+- read `protocol.md` for collaboration rules;
+- read `rationale.md` for design intent;
+- inspect `projects/common/` for knowledge representation and maintenance.

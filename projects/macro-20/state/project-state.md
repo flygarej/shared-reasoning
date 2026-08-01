@@ -56,35 +56,22 @@ Gorin explicitly states that `END` requires its own CRLF.
 
 ## Current Phase
 
-Gorin has been covered through Chapter 26, Command Scanning.
+Gorin has been covered through Chapter 28, Interprocess Communication.
 
-Accepted areas now include:
+Accepted areas now include the existing architecture, language, file,
+memory, and COMND models, plus:
 
-- machine representation and instruction format;
-- recursive effective-address calculation;
-- movement, control-flow, test, Boolean, shift, and arithmetic families;
-- block transfer;
-- macros and conditional assembly;
-- local UUOs;
-- files and JFNs;
-- string and byte I/O;
-- arrays;
-- lists and record-layout construction;
-- program memory and mapped file pages;
-- COMND command scanning.
+- TOPS-20 jobs and process hierarchies;
+- process construction and execution;
+- entry vectors, Program Data Vectors, and PDVAs;
+- IPCF message exchange and QUASAR communication;
+- shared writable file pages using thawed access.
 
-The verified Small Executive has been entered, assembled, linked, saved,
-executed, and debugged.
+The verified Small Executive now includes working `PUSH` and `QUEUE`
+servers. It anchors process handling and IPCF composition in addition to
+COMND and JFN-based I/O.
 
-The next major subject is Chapter 27, process handling and structure,
-including implementation of the currently empty `PUSH` command server.
-
-Later chapters are expected to add:
-
-- interprocess communication;
-- pseudo-interrupts and traps;
-- further TOPS-20 file-system and I/O facilities;
-- additional servers to the Small Executive reference program.
+The next major subject is Chapter 29, traps and interrupts.
 
 ---
 
@@ -182,8 +169,121 @@ Accepted access styles include:
 
 Wildcarded JFNs may be advanced using `GNJFN`.
 
-The exact sharing relationship between JOBs, FORKs, and JFN tables remains
-open.
+The exact ownership and visibility relationship between JOBs, FORKs, and
+JFN tables remains open. Frozen and thawed writable sharing is now accepted.
+
+---
+
+### TOPS-20 jobs and processes
+
+A process or fork is the independently scheduled executable entity.
+
+A process has its own virtual address space, accumulators, program
+counter, and execution state.
+
+A JOB organizes a hierarchy of processes. The JOB itself is not scheduled
+as an executable entity.
+
+A superior may create and control inferiors.
+
+Relative fork handles are meaningful within the superior that receives
+them and are not global process identifiers. Predefined handles such as
+`.FHSLF`, `.FHSUP`, `.FHTOP`, `.FHSAI`, `.FHINF`, and `.FHJOB` express
+structural relationships.
+
+---
+
+### Process construction and execution
+
+TOPS-20 separates process construction, image installation, and execution.
+
+- `CFORK` creates an inferior and may initialize its map, capabilities,
+  accumulators, and starting state.
+- `GET` copies or maps a save file into an existing process and updates
+  entry-vector and PDVA metadata.
+- `GET` never loads accumulators.
+- `SFRKV` starts a process through an entry-vector offset.
+- `WFORK` waits for an inferior.
+- `KFORK` terminates one or more processes.
+
+`CR%MAP` shares pages through indirect pointers; it does not copy them.
+
+The process and the executable image are distinct:
+
+```text
+construct process
+      ↓
+install program image
+      ↓
+select entry
+      ↓
+begin execution
+```
+
+---
+
+### Entry vectors, PDVs, and PDVAs
+
+The entry vector describes program entry conditions. Its accepted initial
+words are the start instruction, reenter instruction, and version word.
+
+LINK writes Program Data Vectors into program memory. A PDV may describe
+program identity, exported information, memory layout, symbols, and
+toolchain metadata.
+
+The monitor retains Program Data Vector Addresses rather than complete
+PDVs. Other programs may obtain PDVAs through `PDVOP%`.
+
+The entry vector and PDVA list are distinct save-file structures.
+
+---
+
+### Interprocess communication
+
+IPCF provides asynchronous packet exchange between cooperating processes.
+
+Each participating process has an IPCF PID, distinct from a relative fork
+handle.
+
+```text
+sender
+  ↓ MSEND
+receiver input queue
+  ↓ MRECV
+receiver
+```
+
+The receiver may poll or request a software interrupt on arrival.
+
+The packet descriptor carries routing, payload, and sender-context
+information. Subsystem protocols, such as QUASAR, are layered inside the
+IPCF payload.
+
+The verified Small Executive `QUEUE` command sends one request to QUASAR
+and consumes one or more reply packets.
+
+---
+
+### Shared file pages
+
+Processes in independent JOBs that trust one another may communicate by
+mapping the same writable file pages.
+
+Each process must:
+
+- agree on the file;
+- have normal read and write permission;
+- open it with `OF%RD`, `OF%WR`, and `OF%THW`;
+- map the agreed file pages into its own address space.
+
+The process virtual page numbers need not match.
+
+Normal writable access is frozen and permits one writer.
+
+Thawed writable access permits multiple simultaneous writers only when
+every writer requests `OF%THW`.
+
+Frozen and thawed writable opens exclude one another.
 
 ---
 
@@ -223,6 +323,9 @@ of octal `1000`.
 
 Copy-on-write mapping permits private modification without altering the
 mapped file.
+
+Processes in independent JOBs may also map the same thawed writable file
+pages, providing shared state through ordinary memory references.
 
 ---
 
@@ -292,36 +395,32 @@ It anchors:
 ### Small Executive
 
 The Mark Crispin Small Executive was transcribed, assembled, linked,
-saved, and run.
+saved, run, and extended through Chapters 27–28.
 
-It is the primary Rosetta/reference program for:
+It is the primary Rosetta/reference program for COMND, JFN-based I/O,
+process construction, and IPCF/QUASAR composition.
 
-- COMND initialization;
-- reparsing;
-- FDBs and FDB alternatives;
-- keyword tables and recognition flags;
-- dispatch;
-- defaults;
-- noise words;
-- confirmation;
-- numeric parsing;
-- file parsing;
-- JFN-based input;
-- resource cleanup;
-- ordinary and fatal JSYS error handling.
+The verified `PUSH` server composes:
 
-A transcription error changed:
+`GTJFN → CFORK → GET → SFRKV → WFORK → KFORK`
 
-`SETOM UDFLAG`
+The verified `QUEUE` server composes:
 
-to:
+`MUTIL → MSEND → MRECV → QUASAR reply processing`
 
-`SETM UDFLAG`
+Verified implementation notes include:
 
-causing `COUNT DOWN` to count upward.
+- some distributed `QSRMAC.UNV` files omit `.OFLAG`;
+- `IFNDEF .OFLAG,.OFLAG==.OHDRS-2` was reconstructed and verified;
+- the tested monitor requires IPCF capability for `.MUCRE`;
+- Gorin's published receive descriptor uses `.IPCFD`;
+  `MRECV` requires `.IPCFP`, verified by successful queue output.
 
-The correction established the need for semantic anchors that constrain
-nearby mnemonic interpretations.
+The earlier `SETOM`/`SETM` transcription error remains an anchor for
+nearby mnemonic distinctions.
+
+The Small Executive is now a tested reference implementation whose
+deviations from the source are retained with provenance.
 
 ---
 
@@ -374,10 +473,9 @@ The project domain is undergoing maintenance to:
 
 - Exact relationship between JOBs, FORKs, and JFN ownership.
 - Whether and how JFNs are shared between FORKs.
-- Detailed `OPENF` access and sharing semantics.
 - Detailed `.CMIFI` interaction with the COMND GTJFN argument block.
-- Process creation, fork control, and program invocation.
-- IPCF conventions and Quasar interaction.
+- Detailed capability policy beyond observed IPCF behaviour.
+- Complete execute-only security rules.
 - PSI, traps, and asynchronous control transfer.
 
 ### Knowledge representation
@@ -392,14 +490,12 @@ The project domain is undergoing maintenance to:
 
 ## Next
 
-1. Complete maintenance of project state, session history, TODO, domain
-   capsules, anchors, and reference artefacts.
-2. Continue with Gorin Chapter 27 on process handling and structure.
-3. Add the real `PUSH` server to the verified Small Executive.
-4. Continue expanding the reference program as Gorin introduces IPC and
-   related facilities.
-5. Conduct instruction-family anchor sessions and compact the candidate
-   anchor set using verified semantics and reconstruction tests.
-   
+1. Continue with Gorin Chapter 29 on traps and interrupts.
+2. Expand the Small Executive as later chapters introduce asynchronous
+   control facilities.
+3. Complete maintenance of state, history, domain, anchors, and references.
+4. Compact the candidate anchor set after fresh-session reconstruction tests.
+5. Revisit JOB/FORK/JFN ownership when direct evidence appears.
+
 ---
 

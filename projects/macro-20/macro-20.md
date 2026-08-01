@@ -1408,35 +1408,22 @@ Gorin explicitly states that `END` requires its own CRLF.
 
 ## Current Phase
 
-Gorin has been covered through Chapter 26, Command Scanning.
+Gorin has been covered through Chapter 28, Interprocess Communication.
 
-Accepted areas now include:
+Accepted areas now include the existing architecture, language, file,
+memory, and COMND models, plus:
 
-- machine representation and instruction format;
-- recursive effective-address calculation;
-- movement, control-flow, test, Boolean, shift, and arithmetic families;
-- block transfer;
-- macros and conditional assembly;
-- local UUOs;
-- files and JFNs;
-- string and byte I/O;
-- arrays;
-- lists and record-layout construction;
-- program memory and mapped file pages;
-- COMND command scanning.
+- TOPS-20 jobs and process hierarchies;
+- process construction and execution;
+- entry vectors, Program Data Vectors, and PDVAs;
+- IPCF message exchange and QUASAR communication;
+- shared writable file pages using thawed access.
 
-The verified Small Executive has been entered, assembled, linked, saved,
-executed, and debugged.
+The verified Small Executive now includes working `PUSH` and `QUEUE`
+servers. It anchors process handling and IPCF composition in addition to
+COMND and JFN-based I/O.
 
-The next major subject is Chapter 27, process handling and structure,
-including implementation of the currently empty `PUSH` command server.
-
-Later chapters are expected to add:
-
-- interprocess communication;
-- pseudo-interrupts and traps;
-- further TOPS-20 file-system and I/O facilities;
-- additional servers to the Small Executive reference program.
+The next major subject is Chapter 29, traps and interrupts.
 
 ---
 
@@ -1534,8 +1521,121 @@ Accepted access styles include:
 
 Wildcarded JFNs may be advanced using `GNJFN`.
 
-The exact sharing relationship between JOBs, FORKs, and JFN tables remains
-open.
+The exact ownership and visibility relationship between JOBs, FORKs, and
+JFN tables remains open. Frozen and thawed writable sharing is now accepted.
+
+---
+
+### TOPS-20 jobs and processes
+
+A process or fork is the independently scheduled executable entity.
+
+A process has its own virtual address space, accumulators, program
+counter, and execution state.
+
+A JOB organizes a hierarchy of processes. The JOB itself is not scheduled
+as an executable entity.
+
+A superior may create and control inferiors.
+
+Relative fork handles are meaningful within the superior that receives
+them and are not global process identifiers. Predefined handles such as
+`.FHSLF`, `.FHSUP`, `.FHTOP`, `.FHSAI`, `.FHINF`, and `.FHJOB` express
+structural relationships.
+
+---
+
+### Process construction and execution
+
+TOPS-20 separates process construction, image installation, and execution.
+
+- `CFORK` creates an inferior and may initialize its map, capabilities,
+  accumulators, and starting state.
+- `GET` copies or maps a save file into an existing process and updates
+  entry-vector and PDVA metadata.
+- `GET` never loads accumulators.
+- `SFRKV` starts a process through an entry-vector offset.
+- `WFORK` waits for an inferior.
+- `KFORK` terminates one or more processes.
+
+`CR%MAP` shares pages through indirect pointers; it does not copy them.
+
+The process and the executable image are distinct:
+
+```text
+construct process
+      ↓
+install program image
+      ↓
+select entry
+      ↓
+begin execution
+```
+
+---
+
+### Entry vectors, PDVs, and PDVAs
+
+The entry vector describes program entry conditions. Its accepted initial
+words are the start instruction, reenter instruction, and version word.
+
+LINK writes Program Data Vectors into program memory. A PDV may describe
+program identity, exported information, memory layout, symbols, and
+toolchain metadata.
+
+The monitor retains Program Data Vector Addresses rather than complete
+PDVs. Other programs may obtain PDVAs through `PDVOP%`.
+
+The entry vector and PDVA list are distinct save-file structures.
+
+---
+
+### Interprocess communication
+
+IPCF provides asynchronous packet exchange between cooperating processes.
+
+Each participating process has an IPCF PID, distinct from a relative fork
+handle.
+
+```text
+sender
+  ↓ MSEND
+receiver input queue
+  ↓ MRECV
+receiver
+```
+
+The receiver may poll or request a software interrupt on arrival.
+
+The packet descriptor carries routing, payload, and sender-context
+information. Subsystem protocols, such as QUASAR, are layered inside the
+IPCF payload.
+
+The verified Small Executive `QUEUE` command sends one request to QUASAR
+and consumes one or more reply packets.
+
+---
+
+### Shared file pages
+
+Processes in independent JOBs that trust one another may communicate by
+mapping the same writable file pages.
+
+Each process must:
+
+- agree on the file;
+- have normal read and write permission;
+- open it with `OF%RD`, `OF%WR`, and `OF%THW`;
+- map the agreed file pages into its own address space.
+
+The process virtual page numbers need not match.
+
+Normal writable access is frozen and permits one writer.
+
+Thawed writable access permits multiple simultaneous writers only when
+every writer requests `OF%THW`.
+
+Frozen and thawed writable opens exclude one another.
 
 ---
 
@@ -1575,6 +1675,9 @@ of octal `1000`.
 
 Copy-on-write mapping permits private modification without altering the
 mapped file.
+
+Processes in independent JOBs may also map the same thawed writable file
+pages, providing shared state through ordinary memory references.
 
 ---
 
@@ -1644,36 +1747,32 @@ It anchors:
 ### Small Executive
 
 The Mark Crispin Small Executive was transcribed, assembled, linked,
-saved, and run.
+saved, run, and extended through Chapters 27–28.
 
-It is the primary Rosetta/reference program for:
+It is the primary Rosetta/reference program for COMND, JFN-based I/O,
+process construction, and IPCF/QUASAR composition.
 
-- COMND initialization;
-- reparsing;
-- FDBs and FDB alternatives;
-- keyword tables and recognition flags;
-- dispatch;
-- defaults;
-- noise words;
-- confirmation;
-- numeric parsing;
-- file parsing;
-- JFN-based input;
-- resource cleanup;
-- ordinary and fatal JSYS error handling.
+The verified `PUSH` server composes:
 
-A transcription error changed:
+`GTJFN → CFORK → GET → SFRKV → WFORK → KFORK`
 
-`SETOM UDFLAG`
+The verified `QUEUE` server composes:
 
-to:
+`MUTIL → MSEND → MRECV → QUASAR reply processing`
 
-`SETM UDFLAG`
+Verified implementation notes include:
 
-causing `COUNT DOWN` to count upward.
+- some distributed `QSRMAC.UNV` files omit `.OFLAG`;
+- `IFNDEF .OFLAG,.OFLAG==.OHDRS-2` was reconstructed and verified;
+- the tested monitor requires IPCF capability for `.MUCRE`;
+- Gorin's published receive descriptor uses `.IPCFD`;
+  `MRECV` requires `.IPCFP`, verified by successful queue output.
 
-The correction established the need for semantic anchors that constrain
-nearby mnemonic interpretations.
+The earlier `SETOM`/`SETM` transcription error remains an anchor for
+nearby mnemonic distinctions.
+
+The Small Executive is now a tested reference implementation whose
+deviations from the source are retained with provenance.
 
 ---
 
@@ -1726,10 +1825,9 @@ The project domain is undergoing maintenance to:
 
 - Exact relationship between JOBs, FORKs, and JFN ownership.
 - Whether and how JFNs are shared between FORKs.
-- Detailed `OPENF` access and sharing semantics.
 - Detailed `.CMIFI` interaction with the COMND GTJFN argument block.
-- Process creation, fork control, and program invocation.
-- IPCF conventions and Quasar interaction.
+- Detailed capability policy beyond observed IPCF behaviour.
+- Complete execute-only security rules.
 - PSI, traps, and asynchronous control transfer.
 
 ### Knowledge representation
@@ -1744,15 +1842,13 @@ The project domain is undergoing maintenance to:
 
 ## Next
 
-1. Complete maintenance of project state, session history, TODO, domain
-   capsules, anchors, and reference artefacts.
-2. Continue with Gorin Chapter 27 on process handling and structure.
-3. Add the real `PUSH` server to the verified Small Executive.
-4. Continue expanding the reference program as Gorin introduces IPC and
-   related facilities.
-5. Conduct instruction-family anchor sessions and compact the candidate
-   anchor set using verified semantics and reconstruction tests.
-   
+1. Continue with Gorin Chapter 29 on traps and interrupts.
+2. Expand the Small Executive as later chapters introduce asynchronous
+   control facilities.
+3. Complete maintenance of state, history, domain, anchors, and references.
+4. Compact the candidate anchor set after fresh-session reconstruction tests.
+5. Revisit JOB/FORK/JFN ownership when direct evidence appears.
+
 ---
 
 
@@ -1878,7 +1974,80 @@ Knowledge Representation
 
 ---
 
+## Chapter 27 — Processes, forks, and program execution
 
+- Established that a process or fork is the independently scheduled
+  executable entity, while a JOB organizes a hierarchy of processes.
+- Each process has its own 512-page virtual address space, accumulators,
+  program counter, and execution state.
+- Established superior/inferior relationships and relative fork handles.
+- Accepted predefined structural handles:
+  `.FHSLF`, `.FHSUP`, `.FHTOP`, `.FHSAI`, `.FHINF`, and `.FHJOB`.
+- Examined `CFORK` as a process constructor:
+  - `CR%MAP` shares the superior's map through indirect pointers;
+  - `CR%CAP` copies capabilities;
+  - `CR%ACS` initializes accumulators from a supplied block;
+  - `CR%ST` supplies a PC and starts the inferior.
+- Confirmed that `CR%MAP` shares pages rather than copying them.
+- Established the process/program-image split:
+  `CFORK` constructs, `GET` installs an image, and `SFRKV` starts execution.
+- Verified that `GET`:
+  - maps sharable save files and copies nonsharable save files;
+  - updates the entry vector and PDVA list;
+  - never loads accumulators.
+- Established entry-vector structure: start, reenter, version, and optional
+  additional entry information.
+- Resolved PDV/PDVA:
+  - entry vector and PDVA list are distinct;
+  - LINK writes PDVs into program memory;
+  - the monitor retains only PDVAs;
+  - `PDVOP%` exposes PDVA information.
+- Examined virgin and execute-only process constraints.
+- Implemented and verified the Small Executive `PUSH` server:
+  `GTJFN → CFORK → GET → SFRKV → WFORK → KFORK`.
+- Live demonstrations connected the model to normal use:
+  `PUSH`/`POP`, EMACS inferiors, `REENTER`, `FINGER`, `SEND`, `ADVISE`,
+  and batch submission.
+
+## Chapter 28 — IPCF, QUASAR, and shared file pages
+
+- Established IPCF as asynchronous queued packet exchange.
+- Kept IPCF PIDs distinct from relative fork handles.
+- `MSEND` enqueues a packet; `MRECV` consumes it.
+- Reception may be polled or announced through a software interrupt.
+- Distinguished the generic IPCF packet descriptor from subsystem payloads.
+- Used the Small Executive `QUEUE` server to communicate with QUASAR.
+- Verified:
+  - `.OFLAG` is absent from `QSRMAC.UNV` on two independent systems;
+  - `.OHDRS` evaluates to octal `5`;
+  - `IFNDEF .OFLAG,.OFLAG==.OHDRS-2` is a working compatibility definition;
+  - `.MUCRE` requires IPCF or WHEEL capability on the tested system;
+  - a locally omitted `MOVEM C,IPCBLK+1` caused an invalid sender PID;
+    the line is present in Gorin;
+  - Gorin's published `.IPCFD` receive descriptor causes
+    `?Error: Invalid message size`;
+  - changing it to `.IPCFP` produces correct QUASAR queue output.
+- The `.IPCFD`/`.IPCFP` correction is a verified source erratum.
+- The Small Executive now anchors COMND, JFNs, process handling, IPCF,
+  and QUASAR composition.
+- Established two complementary cooperation models:
+  - IPCF for arm's-length communication with explicit identity;
+  - shared writable file pages for mutually trusting processes.
+- Shared-file communication requires both processes to open the same file
+  with `OF%RD`, `OF%WR`, and `OF%THW`, then map the same file pages.
+- Process virtual page numbers need not match.
+- Frozen writable access permits one writer.
+- Thawed writable access permits multiple writers only when every writer
+  requests `OF%THW`.
+- Frozen and thawed writable opens exclude one another.
+
+## Current status
+
+Chapter 28 complete.
+
+Next: Chapter 29, traps and interrupts.
+
+---
 
 
 <!-- projects/macro-20/state/TODO.md -->
@@ -1887,24 +2056,26 @@ Knowledge Representation
 
 ## Project TODO's
 
-- Continue with Chapter 27. 
-  Expand the Small Executive as later chapters introduce process handling,
-  IPC, interrupts and related facilities.
-- Revisit MACRO-20 macro expansion semantics after the introductory chapters: 
-  nested angle brackets, argument substitution, rescanning, redefinition, 
+- Continue with Chapter 29, traps and interrupts.
+  Expand the Small Executive as later chapters introduce pseudo-interrupts,
+  traps, asynchronous control transfer and related facilities.
+- Revisit MACRO-20 macro expansion semantics after the introductory chapters:
+  nested angle brackets, argument substitution, rescanning, redefinition,
   and emitted source.
 - Develop the minimum MACRO-20 instruction-family anchor set.
   Validate candidate anchors against fresh-session reconstruction before
   accepting them.
-- Complete maintenance pass over common, state, domain and reference artefacts
+- Complete maintenance pass over common, state, domain and reference artefacts.
 - After major maintenance, test reconstruction using a fresh session
   before further compaction.
 - Evaluate whether later chapters introduce additional reference artefacts
   worthy of Rosetta status.
-- Long-term
+- Revisit exact JOB/FORK/JFN ownership when later chapters or primary
+  documentation provide direct evidence.
+- Long-term:
   Maintain the smallest accepted knowledge base that reliably reconstructs
   the project.
-  
+
 ---
 
 
@@ -2695,6 +2866,9 @@ Do not infer undocumented COMND behaviour from the accepted model alone.
 	SEARCH	MACSYM,MONSYM,QSRMAC
 	SALL
 
+; Compatibility definition: some QSRMAC.UNV versions lack .OFLAG
+IFNDEF	.OFLAG,.OFLAG==.OHDRS-2
+
 ;  Accumulator defs
 A=1			; JSYS Args and temp AC's 
 B=2
@@ -2944,17 +3118,123 @@ capabilities of the COMND JSYS. Try typing ? to see what commands are
 available.
 /
 
+
+	SUBTTL PUSH command
 ; The actual server for the PUSH command will be presented in section
 ; 27, page 387
 .PUSH:	NOISE (COMMAND LEVEL)
-	CONFIRM
+	CONFIRM		; Tie off command
+	MOVX	A,GJ%OLD!GJ%SHT	; Try to get an EXEC
+	HRROI	B,[ASCIZ/SYSTEM:EXEC.EXE/]
+	GTJFN
+	ERJMP	ERROR
+	MOVEM	A,EXCJFN		; Save JFN we got for EXEC
+	
+	MOVX	A,CR%CAP	; Make a fork, give it our capabilities
+	CFORK			; Create FORK
+	ERJMP	ERROR
+	MOVEM	A,FKHAN		; Save fork handle
+				; form JFN,,fork handle
+	HRL	A,EXCJFN	; stuff fork with JFN for EXEC
+	MOVS	A,A		; GET wants to see fork handle,,JFN
+	GET			; Copy exec.exe into inferior fork
+	ERCAL	FATAL
+	
+	MOVE	A,FKHAN		; Get fork handle back
+	SETZ	B,		; Start at offset 0 in entry vector
+	SFRKV			; Start fork
+	ERCAL	FATAL
+	WFORK			; Wait for it to complete
+	ERCAL	FATAL
+	KFORK			; Now kill that fork
+	ERCAL	FATAL
 	RET
 
-; The actual server for the QUEUE program will be presented in 
+	SUBTTL	QUEUE Command
+; The actual server for the QUEUE program is presented in 
 ; section 28.1, page 397
+
+; Select a page for IPCF replies from QUASAR
+IFNDEF	MSGPAG,MSGPAG==670 ; Put replies on page 670
+MSGLOC=MSGPAG_^D9 ; First location on MSGPAG
+
+; This is the message we send to QUASAR to make it divulge the queues
+QSRMSG:	QSRLEN,,.QOLIS	; Length of block,,list queues
+	0,,'SYS'	; flags,,3 letter mnemonic
+	0		; acknowledge word
+	LS.ALL		; flags - I want to see everything
+	1		; one argument following
+	2,,.LSQUE	; 2 words this argument,,queues I want
+	LIQALL		; list all queues
+QSRLEN==.-QSRMSG	; Length of message.
+
 .QUEUE:	NOISE (STATUS DISPLAY)
 	CONFIRM
-	RET
+; First we need to get PIDs for QUASAR and for this process
+	MOVEI	A,3		; Length of argument block for MUTIL
+	MOVEI	B,IPCBLK	; Address of block for MUTIL
+	MOVEI	C,.MURSP	; Read a PID from system PID table
+	MOVEM	C,IPCBLK	; Store as function or MUTIL
+; Get QUASAR's PID
+	MOVEI	C,.SPQSR	; Code to reuest QUASAR PID
+	MOVEM	C,IPCBLK+1	; from system PID table
+	MUTIL	
+	ERJMP	QERR1
+	MOVE	C,IPCBLK+2	; QUASARS PID returned in argument BLK
+	MOVEM	C,QSRPID	; Save QUASAR's PID
+
+; Now get own PID
+	SKIPE	MYPID		; Is there a pid for me already?
+	JRST	QUEUE3		; Yes, ready to send off a message
+	MOVEI	C,.MUCRE	; no, must create one
+	MOVEM	C,IPCBLK	; Set Create PID function for MUTIL
+	MOVEI	C,.FHSLF	; PID for this fork, no flags
+	MOVEM	C,IPCBLK+1	; Required: supply .FHSLF argument to .MUCRE
+	MUTIL
+	ERJMP	QERR2
+	MOVE	C,IPCBLK+2	; Returned value from .MUCRE
+	MOVEM	C,MYPID		; Save as my PID
+; Here we have the PIDs we need. Now tell Quasar to send us the information
+QUEUE3:	SETZM	IPCBLK		; no flags
+	MOVE	C,MYPID
+	MOVEM	C,IPCBLK+1	; My PID
+	MOVE	C,QSRPID
+	MOVEM	C,IPCBLK+2	; QUASAR's PID
+	MOVE	C,[QSRLEN,,QSRMSG]
+	MOVEM	C,IPCBLK+3
+	MOVEI	A,.IPCFP+1	; Length of packed descriptor block
+	MSEND
+	ERJMP	QERR3		; report an error and return to user
+	SETOM	FIRSTP		;Set this is first time through GETGRP
+; Loop, reading the replies from QUASAR
+GETQRP:	MOVX	C,IP%CFV	;flag to request one page of data
+	MOVEM	C,IPCBLK+.IPCFL	; in the packet descriptor flag
+	SETZM	IPCBLK+.IPCFS	; sender (filled in by system)
+	MOVE	C,MYPID		; My PID is
+	MOVEM	C,IPCBLK+.IPCFR	; the receiver
+	MOVE	C,[1000,,MSGPAG]	;put data on message page
+	MOVEM	C,IPCBLK+.IPCFP	; Verified correction:
+                            ; Gorin prints .IPCFD here;
+							; .IPCFP is required by MRECV.
+	MOVEI	A,.IPCFP+1		; length of packet descriptor block
+	MOVEI	B,IPCBLK	; Address of our block
+	MRECV			; get the reply
+	ERJMP	QERR4
+	MOVE	C,IPCBLK+.IPCFS	; Get sender PID for this message
+	CAME	C,QSRPID	; Was it QUASAR
+	JRST	[HRROI A,[ASCIZ/%Ignoring irrelevant IPCF message
+/]
+		PSOUT		; someone other than QUASAR sent to us
+	JRST GETQRP]		; try again to get QUASAR's reply
+	HRROI	A,MSGLOC+.OHDRS+1	; get ptr to text block
+	HLRZ	B,MSGLOC+.OHDRS		; get block's size
+	AOSN	FIRSTP		; is this the first message?
+	ADD	A,B		; Yes, point past header message
+	PSOUT
+	MOVE	B,MSGLOC+.OFLAG	; Get flags from QUASAR
+	TXNE	B,WT.MOR	; Are there more messages?
+	JRST	GETQRP		; Yes, handle
+	RET			; No, return
 
 .TYPE:	NOISE	(FILE ON TERMINAL)
 	SKIPE	A,INPJFN	; Any JFN lying around
@@ -3014,6 +3294,25 @@ FATAL0: HALTF
 	PSOUT
 	JRST	FATAL0	; Disallow continue command
 
+QERR1:	HRROI	A,[ASCIZ/MUTIL .MURSP failed: /]
+	PSOUT
+	JRST	ERROR
+
+
+QERR2:	HRROI	A,[ASCIZ/MUTIL .MUCRE failed: /]
+	PSOUT
+	JRST	ERROR
+
+
+QERR3:	HRROI	A,[ASCIZ/MSEND failed: /]
+	PSOUT
+	JRST	ERROR
+
+
+QERR4:	HRROI	A,[ASCIZ/MRECV failed: /]
+	PSOUT
+	JRST	ERROR
+
 ; Ordinary JSYS routine. Just outputs the error string for the 
 ; failing JSYS and returns
 
@@ -3038,8 +3337,6 @@ VERSIO:	BYTE	(3)VWHO(9)VMAJOR(6)VMINOR(18)VEDIT ;version #. Label for Hello
 EVECL==.-EVEC
 
 	END	<EVECL,,EVEC>
-	
-	
 ```
 
 ### Sample session
@@ -3079,6 +3376,15 @@ Small Executive>hello ? confirm with carriage return
 Small Executive>hello 
 Hello this is the Small Executive.
 Version 2.7(13)-2
+Small Executive>quEUE (STATUS DISPLAY) 
+
+Batch Queue:
+Job Name   Req#   Run Time            User
+--------  ------  --------  ------------------------
+  BSEND        4  00:05:00  FLAX                  /After:31-Jul-2026 09:
+	  /Uniq:Yes  /Restart:No  /Assist:Yes  /Output:Log
+	  /Batlog:Append  /Seq:1711
+There is 1 job in the queue (none in progress)
 Small Executive>exit
 ```
 
@@ -3338,11 +3644,36 @@ Accepted access styles currently include:
 
 -   byte I/O;
 -   string I/O;
--   mapped-file access.
+-   mapped-file access;
+-   shared thawed writable access.
 
 The pathname normally disappears from subsequent operations.
 
 ------------------------------------------------------------------------
+
+## Writable Sharing
+
+Normal writable access is frozen.
+
+A frozen writable open excludes every other writable open.
+
+`OF%THW` requests thawed writable access.
+
+Thawed access permits multiple simultaneous writers when every writer
+requests `OF%RD`, `OF%WR`, and `OF%THW`.
+
+While thawed writers hold the file, frozen writable access is denied.
+
+While a frozen writer holds the file, all further writable opens are
+denied, whether frozen or thawed.
+
+Thawed access permits concurrent writers but does not provide
+synchronization.
+
+Processes may combine thawed access with `PMAP` so the same file pages
+appear in multiple address spaces.
+
+---
 
 ## String I/O
 
@@ -3464,8 +3795,9 @@ The JFN is the conceptual centre of the model.
 
 Current project knowledge does **not** establish:
 
--   detailed `OPENF` sharing modes;
+-   complete `OPENF` sharing modes beyond accepted frozen/thawed access;
 -   buffering policy;
+-   synchronization between thawed writers;
 -   precise JOB/FORK ownership rules;
 -   lifetime rules for predefined JFNs;
 -   interaction between multiple FORKs and shared JFN tables.
@@ -3479,7 +3811,7 @@ Do not infer these from other operating systems.
 -   Are JFN tables shared between FORKs?
 -   Can JFNs migrate between FORKs?
 -   Exact relationship between JOB and FORK ownership.
--   Detailed `OPENF` access flags.
+-   Detailed `OPENF` flags beyond `OF%RD`, `OF%WR`, and `OF%THW`.
 -   Detailed `.CMIFI` interaction with COMND.
 
 ------------------------------------------------------------------------
@@ -3488,6 +3820,9 @@ Do not infer these from other operating systems.
 
 -   `program-memory.md`
 -   `comnd.md`
+-   `program-memory.md`
+-   `processes.md`
+-   `ipcf.md`
 -   `anchors.md`
 
 
@@ -3797,6 +4132,209 @@ Do not infer exact behaviour solely from mnemonic similarity.
 
 ---
 
+
+
+<!-- projects/macro-20/domain/ipcf.md -->
+
+# IPCF (projects/macro-20/domain/ipcf.md)
+
+## Generator
+
+The InterProcess Communication Facility exchanges queued message packets
+between cooperating processes.
+
+IPCF is asynchronous.
+
+The sender places a packet in the receiver's input queue.
+
+The receiver consumes it later.
+
+---
+
+## IPCF Identity
+
+Each participating process uses a system-assigned IPCF Process Identifier.
+
+An IPCF PID is distinct from a JOB number, terminal number, relative fork
+handle, or JFN.
+
+---
+
+## Message Flow
+
+```text
+sender
+  ↓ MSEND
+receiver input queue
+  ↓ MRECV
+receiver
+```
+
+The sender and receiver do not execute in lockstep.
+
+---
+
+## Reception
+
+A receiver may poll with `MRECV` or request a software interrupt when a
+packet arrives.
+
+Notification does not replace `MRECV`; it announces queued input.
+
+---
+
+## Packet Descriptor
+
+Accepted fields include:
+
+- `.IPCFL` — flags;
+- `.IPCFS` — sender PID;
+- `.IPCFR` — receiver PID;
+- `.IPCFP` — message length,,message address;
+- `.IPCFD` — sender user number;
+- `.IPCFC` — sender capabilities;
+- `.IPCSD` — sender connected directory;
+- `.IPCAS` — sender account-string pointer;
+- `.IPCLL` — sender node-name pointer.
+
+The monitor supplies sender context for received packets.
+
+---
+
+## Arm's-Length Cooperation
+
+IPCF supports cooperation between processes that need not fully trust one
+another.
+
+Routing and sender context are explicit.
+
+Applications and subsystems still define the payload protocol.
+
+The generic IPCF envelope must be kept distinct from subsystem-specific
+message layouts.
+
+---
+
+## QUASAR Example
+
+The verified Small Executive `QUEUE` command:
+
+1. obtains QUASAR's PID;
+2. creates its own IPCF PID;
+3. sends a list-queues request;
+4. receives one or more replies;
+5. rejects non-QUASAR senders;
+6. outputs returned text;
+7. tests `WT.MOR` for further packets.
+
+---
+
+## Verified Implementation Corrections
+
+Some `QSRMAC.UNV` files omit `.OFLAG`.
+
+Verified compatibility definition:
+
+```asm
+IFNDEF .OFLAG,.OFLAG==.OHDRS-2
+```
+
+For `MRECV`, the receive length and address belong in `.IPCFP`.
+
+Gorin's published `.IPCFD` form produced:
+
+`?Error: Invalid message size`
+
+Changing it to `.IPCFP` produced correct QUASAR output.
+
+On the tested system, `.MUCRE` requires IPCF or WHEEL capability.
+
+---
+
+## Shared File Pages
+
+Processes in independent JOBs that trust one another may communicate
+through shared file pages.
+
+Each process:
+
+- agrees on the file;
+- has read and write permission;
+- opens it with `OF%RD`, `OF%WR`, and `OF%THW`;
+- maps the same file pages into its own address space.
+
+The virtual page numbers need not match.
+
+Writes by one process are visible to the other.
+
+---
+
+## Frozen and Thawed Access
+
+Normal writable access is frozen and permits one writer.
+
+`OF%THW` requests thawed access.
+
+Thawed access permits multiple simultaneous writers only when every
+writer requests it.
+
+Frozen and thawed writable opens exclude one another.
+
+Thawed access permits concurrent writers but does not supply
+synchronization or locking.
+
+---
+
+## Communication Choice
+
+```text
+Arm's-length cooperation
+    → IPCF packets, identity, queues
+
+Mutual trust
+    → shared thawed file pages, shared state
+```
+
+---
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+- complete `MUTIL` semantics;
+- PID cleanup conventions;
+- queue limits;
+- complete software-interrupt integration;
+- QUASAR's full protocol;
+- synchronization for shared writers;
+- all version-specific security policy.
+
+Do not substitute fork handles for IPCF PIDs.
+
+Do not place the receive descriptor in `.IPCFD`.
+
+Do not infer that `OF%THW` supplies locking.
+
+---
+
+## Open Questions
+
+- PID deletion and cleanup.
+- Software-interrupt integration.
+- Synchronization patterns for shared pages.
+- Other subsystem IPCF protocols.
+
+---
+
+## Related Capsules
+
+- `processes.md`
+- `program-memory.md`
+- `files-and-jfns.md`
+- `comnd.md`
+- `anchors.md`
+
+---
 
 
 <!-- projects/macro-20/domain/luuos.md -->
@@ -4568,6 +5106,129 @@ generator.
 
 ---
 
+
+## Process Semantics
+
+### JOB and process distinction
+
+A process or fork is the independently scheduled executable entity.
+
+A JOB organizes a hierarchy of processes.
+
+#### Guarded distinction
+
+Do not describe a JOB as though it were itself the scheduled execution
+context. Programs execute in processes.
+
+---
+
+### Relative fork handles
+
+A returned fork handle identifies an inferior relative to the superior
+that received it.
+
+Different superiors may hold the same numeric relative handle for
+different inferiors.
+
+#### Guarded distinction
+
+Do not treat relative fork handles as system-wide process identifiers.
+
+---
+
+### Process construction is decomposed
+
+`CFORK`, `GET`, and `SFRKV` perform distinct roles:
+
+- `CFORK` constructs and initializes a process;
+- `GET` installs a program image and process metadata;
+- `SFRKV` starts execution through an entry-vector offset.
+
+`GET` never loads accumulators.
+
+#### Guarded distinction
+
+Do not collapse process creation, executable loading, accumulator
+initialization, and starting execution into one implicit operation.
+
+---
+
+### Shared maps
+
+`CR%MAP` shares the superior's mapped pages with the inferior.
+
+Changes made by either process are visible to the other.
+
+#### Guarded distinction
+
+Do not reconstruct `CR%MAP` as a one-time copy.
+
+---
+
+## IPCF and Shared-File Semantics
+
+### IPCF PID versus fork handle
+
+An IPCF PID is used by IPCF routing.
+
+A relative fork handle identifies a process within a superior's fork
+namespace.
+
+These are distinct naming systems.
+
+---
+
+### IPCF receive descriptor field
+
+For `MRECV`, the receive message length and address belong in `.IPCFP`.
+
+`.IPCFD` is the sender user-number field filled by the monitor.
+
+#### Provenance
+
+Gorin's published `QUEUE` server stores the receive descriptor in
+`.IPCFD`.
+
+This produced `?Error: Invalid message size`.
+
+Changing the field to `.IPCFP` produced correct QUASAR output.
+
+---
+
+### QUASAR output flag compatibility
+
+Some distributed `QSRMAC.UNV` files define `.OHDRS` and `WT.MOR` but omit
+`.OFLAG`.
+
+The verified compatibility definition is:
+
+```asm
+IFNDEF .OFLAG,.OFLAG==.OHDRS-2
+```
+
+#### Provenance
+
+`.OFLAG` was absent on two systems, `.OHDRS` was octal `5`, DEC GALAXY
+layout placed `.OFLAG` two words before `.OHDRS`, and the definition was
+verified by successful queue output.
+
+---
+
+### Frozen and thawed writable access
+
+Normal writable access is frozen and permits one writer.
+
+Thawed writable access permits multiple simultaneous writers only when
+every writer requests `OF%THW`.
+
+Frozen and thawed writable opens exclude one another.
+
+#### Guarded distinction
+
+One process requesting `OF%THW` does not thaw access for the others.
+
+---
+
 ## Maintenance
 
 Add an anchor when a verified failure, recurring ambiguity, or close
@@ -4779,6 +5440,199 @@ model.
 - `anchors.md`
 
 
+<!-- projects/macro-20/domain/processes.md -->
+
+# Processes (projects/macro-20/domain/processes.md)
+
+## Generator
+
+A TOPS-20 process or fork is an independently scheduled execution
+environment.
+
+A JOB organizes a hierarchy of processes.
+
+The process and the program image it executes are distinct.
+
+TOPS-20 therefore constructs, populates, and starts a process through
+separate mechanisms.
+
+---
+
+## Process Components
+
+Each process has its own virtual address space, accumulators, program
+counter, and execution state.
+
+A process may exist before a program image has been installed or before
+execution has begun.
+
+---
+
+## JOB Hierarchy
+
+A JOB contains a hierarchy of superior and inferior processes.
+
+The usual interactive JOB has an EXEC at the top level. Programs such as
+EMACS, Lisp systems, pushed EXECs, and application programs may occupy
+inferior processes.
+
+TOPS-20 schedules processes rather than whole JOBs.
+
+---
+
+## Fork Handles
+
+A relative fork handle is meaningful within the superior that receives it.
+
+Different superiors may receive the same numeric handle for different
+inferiors.
+
+Predefined handles express structural relationships:
+
+- `.FHSLF` — current process;
+- `.FHSUP` — immediate superior;
+- `.FHTOP` — top-level process;
+- `.FHSAI` — current process and all inferiors;
+- `.FHINF` — all inferiors;
+- `.FHJOB` — all processes in the JOB.
+
+---
+
+## Process Construction
+
+`CFORK` creates an inferior process.
+
+Accepted construction choices include:
+
+- `CR%MAP` — share the superior's map;
+- `CR%CAP` — copy capabilities;
+- `CR%ACS` — initialize accumulators from a supplied block;
+- `CR%ST` — supply a PC and start immediately.
+
+Without `CR%MAP`, the process initially has no mapped pages.
+
+Without `CR%ACS`, its accumulators are zero.
+
+Without `CR%ST`, it is not started.
+
+`CR%MAP` shares pages rather than copying them.
+
+---
+
+## Program Image Installation
+
+`GET` copies or maps a save file into an existing process.
+
+Sharable files are mapped.
+
+Nonsharable files are copied.
+
+`GET` updates the entry vector and PDVA list.
+
+`GET` never loads accumulators.
+
+---
+
+## Entry Vector
+
+The accepted initial entry-vector words are:
+
+1. program start instruction;
+2. program reenter instruction;
+3. program version word.
+
+Additional words may contain entry-specific data.
+
+`SFRKV` starts a process through an offset in the entry vector.
+
+---
+
+## Program Data Vectors
+
+LINK writes Program Data Vectors into program memory.
+
+The monitor retains Program Data Vector Addresses rather than complete
+PDVs.
+
+Other programs may obtain PDVAs through `PDVOP%` and then inspect the
+program-owned metadata.
+
+The entry vector and PDVA list are distinct save-file structures.
+
+---
+
+## Execution Lifecycle
+
+```text
+CFORK
+   ↓
+GET and/or PMAP
+   ↓
+SFRKV
+   ↓
+execution
+   ↓
+WFORK
+   ↓
+KFORK
+```
+
+Higher-level facilities such as `PUSH` and `CRJOB` compose these
+mechanisms.
+
+---
+
+## Virgin and Execute-Only Processes
+
+A new JOB's top-level process is virgin.
+
+An execute-only file may be mapped only into a virgin process.
+
+A process may also become execute-only by sharing the map of an
+execute-only superior.
+
+The detailed security rationale remains incomplete.
+
+---
+
+## Boundaries
+
+Current project knowledge does **not** establish:
+
+- complete capability semantics;
+- every execute-only restriction;
+- exact JOB/FORK/JFN ownership;
+- all process-state manipulation JSYSes;
+- scheduler policy.
+
+Do not treat relative fork handles as global PIDs.
+
+Do not assume `GET` initializes accumulators.
+
+Do not collapse JOB, process, and executable image into one object.
+
+---
+
+## Open Questions
+
+- Exact JOB/FORK/JFN ownership.
+- Detailed capability inheritance and enabling.
+- Complete execute-only restrictions.
+- Interaction with traps, PSI, and asynchronous control transfer.
+
+---
+
+## Related Capsules
+
+- `program-memory.md`
+- `files-and-jfns.md`
+- `ipcf.md`
+- `comnd.md`
+- `anchors.md`
+
+---
+
+
 <!-- projects/macro-20/domain/program-memory.md -->
 
 # Program Memory (projects/macro-20/domain/program-memory.md)
@@ -4842,8 +5696,8 @@ distinguish how that storage was obtained.
 
 `PMAP`
 
-associates pages of an open file with pages in the current fork's
-virtual address space.
+associates pages of an open file with pages in a fork's virtual
+address space.
 
 After mapping, the program accesses the file contents using ordinary
 memory references.
@@ -4876,6 +5730,25 @@ Subsequent writes affect only the private page.
 The underlying file remains unchanged.
 
 ------------------------------------------------------------------------
+
+## Shared File Pages
+
+Processes in independent JOBs may map the same writable file pages into
+their own virtual address spaces.
+
+The process page numbers need not match.
+
+Both mappings refer to the same underlying file pages.
+
+When the file is opened for thawed writable access, writes by one process
+are visible through the other process's mapping.
+
+Every participating writer must request `OF%THW`.
+
+This provides shared memory for cooperating processes that deliberately
+trust one another.
+
+---
 
 ## Stream versus Mapping
 
@@ -4928,8 +5801,9 @@ Current project knowledge does **not** establish:
 -   page replacement policy;
 -   cache behaviour;
 -   detailed page-table structure;
--   sharing semantics between multiple forks;
--   page protection beyond accepted PMAP access modes.
+-   all sharing semantics between related forks;
+-   page protection beyond accepted PMAP access modes;
+-   synchronization protocols for concurrent writers.
 
 Do not infer these from other virtual-memory systems.
 
@@ -4937,8 +5811,8 @@ Do not infer these from other virtual-memory systems.
 
 ## Open Questions
 
--   Exact relationship between FORKs and mapped address spaces.
--   Detailed PMAP access flags.
+-   Exact relationship between FORKs and inherited/shared maps.
+-   Detailed PMAP access flags beyond accepted examples.
 -   Interaction between PMAP and program growth.
 -   Allocation strategy beyond `.JBSA`.
 
@@ -4949,6 +5823,8 @@ Do not infer these from other virtual-memory systems.
 -   `addressing.md`
 -   `files-and-jfns.md`
 -   `records.md`
+-   `processes.md`
+-   `ipcf.md`
 -   `anchors.md`
 
 

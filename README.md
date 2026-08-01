@@ -1,102 +1,245 @@
 # Shared Reasoning
 
-A protocol for long-running collaborative reasoning between humans and LLMs.
+**Shared Reasoning is a lightweight framework for preserving and
+reconstructing the accepted understanding of long-running investigations.**
 
-This repository is an experiment in improving collaboration rather than
-individual answers. It provides a lightweight protocol for investigations
-where understanding evolves over time and documentation may be incomplete,
-contradictory or unreliable.
+It helps humans and language models continue work across many sessions
+without treating every new conversation as a fresh start.
 
-**The goal is not better prompts. The goal is better collaboration.**
+The goal is not better prompts.
 
-Modern language models are remarkably good at answering questions.
+The goal is better collaboration.
 
-Long-running investigations require something different.
+---
 
-They require collaborators to:
+## The problem
 
-- preserve accepted knowledge separately from reasoning history;
-- distinguish observation from inference;
-- maintain a shared understanding as understanding evolves;
-- improve collaboration rather than merely producing answers.
+Long-running investigations accumulate more than facts.
 
-This repository is an experiment in building that kind of collaboration.
+They accumulate:
 
-It began during reverse engineering of TECO and TOPS-20, where sparse and occasionally contradictory documentation repeatedly exposed the limitations of treating an LLM as a question-answering tool.
+- observations;
+- experiments;
+- working models;
+- rejected explanations;
+- domain terminology;
+- important uncertainties;
+- knowledge about which inferences are safe.
 
-The protocol has since evolved into a lightweight framework intended to support collaborative reasoning across multiple domains.
+Ordinary chat history is a poor long-term store for that understanding.
 
-## Current Status
+Conversations become long, context is lost, and a new collaborator may
+repeat old mistakes or confidently reconstruct the wrong model.
 
-This project is experimental.
+Shared Reasoning externalizes the important state of the investigation so
+that another collaborator—human or AI—can resume from the current accepted
+understanding.
 
-The protocol is currently being field-tested across multiple domains, including reverse engineering, software engineering and legal reasoning.
+---
 
-Feedback based on practical experience is particularly valuable.
+## The central idea
 
-The protocol + domain knowledge format have been tested with ChatGPT and Meta AI, using capsule teco.md. 
-That's enough domain knowledge about TECO packaged into ~700 lines plus 700 lines for handling the collaboration to discuss TECO code, and the LLM is even fairly good at producing simple programs.
+A project keeps several kinds of knowledge separate.
 
-### Latest changes
+### Accepted state
 
-I added support for inference-friendly domain-knowledge prompts that can be added to kick-start a new chat with information condensed from earlier chats. The trick here is to use the inference engine as much as possible, allowing it to infer from available sources while at the same time provide clear boundaries for when it should stop or not trust inferences. This works really good on knowledge that can be generated from rules.
+`project-state.md` records what the project currently accepts, including
+verified conclusions, working models, limitations, open questions, and the
+next direction.
 
-For examples, take a look in projects/teco/domain-teco.md and projects/teco/documentation-overview.md or the files in projects/macro-20/domain-llm. 
-Note that the domain knowledge may be organized different for different domains. This is a degree of freedom, not a fault.
+### Research history
+
+`session-log.md` records how the project got there: experiments, competing
+explanations, mistakes, corrections, and discarded branches.
+
+### Domain knowledge
+
+Files under `domain/` preserve compact conceptual models that help a new
+collaborator reconstruct the subject without replaying the entire history.
+
+### Collaboration method
+
+`protocol.md`, `rationale.md`, and `projects/common/` describe how evidence,
+uncertainty, maintenance, and handover are handled.
+
+The separation matters:
+
+> Project State answers: **What do we currently believe?**
+
+> Session Log answers: **Why do we currently believe it?**
+
+---
+
+## What happens in practice?
+
+A project is maintained as ordinary Markdown files.
+
+The script:
+
+```bash
+./create-project-prompt.sh <project>
+```
+
+combines the collaboration method, common knowledge architecture, current
+project state, and domain knowledge into one portable bootstrap file:
+
+```text
+projects/<project>/<project>.md
+```
+
+Upload that file to a new LLM conversation.
+
+The new collaborator receives the project's current reasoning environment
+instead of only a pile of notes or an unstructured chat transcript.
+
+A separate validation document can then test whether the collaboration
+model and domain knowledge were reconstructed successfully.
+
+---
+
+## Repository layout
+
+```text
+.
+├── protocol.md
+├── rationale.md
+├── create-project-prompt.sh
+├── QUICK-START.md
+├── CONTRIBUTING.md
+├── LICENSE
+├── validation/
+│   └── handover-validation.md
+└── projects/
+    ├── common/
+    │   └── shared knowledge architecture and maintenance guidance
+    ├── fresh-project/
+    │   ├── state/
+    │   └── domain/
+    └── <project>/
+        ├── state/
+        │   ├── project-state.md
+        │   ├── session-log.md
+        │   └── TODO.md
+        ├── domain/
+        │   └── project-specific conceptual knowledge
+        └── <project>.md
+```
+
+The generated `<project>.md` file is a serialization of the project
+knowledge. The source Markdown files remain authoritative.
+
+---
 
 ## Who is this for?
 
-Shared Reasoning is intended for investigations where understanding evolves over time, for example:
+Shared Reasoning is intended for investigations where understanding evolves
+over time and where errors, uncertainty, or incomplete documentation matter.
 
-- reverse engineering
-- software engineering
-- research
-- legal analysis
-- systems archaeology
-- scientific exploration
+Examples include:
 
-It is unlikely to provide significant benefit for short, transactional question-and-answer interactions.
+- reverse engineering;
+- software and systems engineering;
+- scientific investigation;
+- legal or policy analysis;
+- historical and technical research;
+- systems archaeology;
+- complex debugging;
+- learning projects that rely on repeated experiments.
 
-## Where to open issues (important)
+It is probably unnecessary for short, transactional question-and-answer
+sessions.
 
-This repository’s issues are for **meta-level work**:
+---
 
-- protocol improvements
-- collaboration process
-- framework/tooling around the method
+## Reference projects
 
-For **domain-specific research** (e.g., findings about a specific legacy system), use the relevant project artefacts/repo/fork:
+The repository includes practical projects developed with the method.
 
-- `project-state.md` for accepted current understanding
-- `session-log.md` for ongoing exploration and evidence trail
+They currently include work on:
 
-If you open a domain issue here, please use it as a **reference only** and link the target project location.
+- TECO and original EMACS environments;
+- MACRO-20 and TOPS-20;
+- other exploratory technical domains.
 
-### Overview
+These are not merely examples of prompt formatting.
 
-- protocol.md sets the overall goal, a collaborative session where available sources are tested before they are added to the knowledge base. It defines the collaboration protocol-
-- rationale.md explains WHY the protocol is structured as it is.
-- project-state.md and session-log.md are placeholders on top level. As you work you capture your current accepted understanding.
-- projects contain work done on TECO and Macro assembler on TOPS-20.
-- TODO.md (if present) contains current possible improvements that should be tested before being incorporated into protocol.md, rationale.md or getting a file of it's own.
+They demonstrate:
 
-### Instruction
+- multi-session continuity;
+- separation of accepted knowledge from history;
+- experimental correction of documentation;
+- compact domain reconstruction;
+- maintenance after major milestones;
+- handover testing with fresh conversations.
 
-See QUICK-START.md.
+---
 
-### Development
+## A few important principles
 
-Using the protocol will allow the LLM to add domain-specific knowledge in new files, such as mental-model.md, architecture.md etc. It should, however, hold off from such changes until clear patterns emerge.  
-Assist the collaboration by introducing new artefacts only when clear patterns emerge.
+### Evidence before inference
 
-### Take it for a spin...
+Documentation, experiments, and accepted project state take precedence over
+plausible general knowledge.
 
-Start an LLM session. Upload the protocol.md and rationale.md along with projects/emacs-teco/project-state.md and projects/emacs-teco/session-log.md and you should be able to ask questions about TECO and how original EMACS uses it.
-Likewise, the project state and session log in projects/macro-20 should allow you to get started with MACRO in TOPS-20.
-These projects serve as reference implementations of the protocol.
+### Uncertainty is useful information
+
+An explicit boundary is better than a confident guess.
+
+### Preserve concepts, not transcripts
+
+The objective is not to store every conversation. It is to preserve the
+smallest accepted model that reliably reconstructs the work.
+
+### Improve through observed failures
+
+The protocol evolves when practical use reveals a problem or a measurable
+improvement—not because a theoretical framework looks elegant.
+
+### Treat the LLM as a collaborator
+
+Ask it to inspect assumptions, propose discriminating experiments, maintain
+state, and disagree when the evidence warrants it.
+
+Mistakes remain possible. Testing and discussion are part of the method.
+
+---
+
+## Get started
+
+## Get started
+
+See [QUICK-START.md](QUICK-START.md).
+
+To try an existing project, upload:
+
+```text
+projects/macro-20/macro-20.md
+```
+
+If that file is missing or needs updating, regenerate it from the repository root:
+```bash
+./create-project-prompt.sh macro-20
+```
+
+Then upload the generated file to a new conversation.
+
+---
+
+## Contributing
+
+Practical observations are especially valuable.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Repository-level issues should focus on the collaboration method, common
+knowledge architecture, validation, or tooling. Domain-specific findings
+belong in the relevant project's state, log, domain files, or fork.
+
+---
 
 ## License
 
-This repository is licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+This repository is licensed under the Creative Commons Attribution 4.0
+International license (CC BY 4.0).
 
-You are encouraged to fork, adapt and improve the protocol for your own research or domain. Attribution is appreciated; compatibility is more important than uniformity.
+You are encouraged to fork, adapt, and test the method in other domains.

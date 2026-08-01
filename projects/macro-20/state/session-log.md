@@ -117,4 +117,77 @@ Knowledge Representation
 
 ---
 
+## Chapter 27 — Processes, forks, and program execution
 
+- Established that a process or fork is the independently scheduled
+  executable entity, while a JOB organizes a hierarchy of processes.
+- Each process has its own 512-page virtual address space, accumulators,
+  program counter, and execution state.
+- Established superior/inferior relationships and relative fork handles.
+- Accepted predefined structural handles:
+  `.FHSLF`, `.FHSUP`, `.FHTOP`, `.FHSAI`, `.FHINF`, and `.FHJOB`.
+- Examined `CFORK` as a process constructor:
+  - `CR%MAP` shares the superior's map through indirect pointers;
+  - `CR%CAP` copies capabilities;
+  - `CR%ACS` initializes accumulators from a supplied block;
+  - `CR%ST` supplies a PC and starts the inferior.
+- Confirmed that `CR%MAP` shares pages rather than copying them.
+- Established the process/program-image split:
+  `CFORK` constructs, `GET` installs an image, and `SFRKV` starts execution.
+- Verified that `GET`:
+  - maps sharable save files and copies nonsharable save files;
+  - updates the entry vector and PDVA list;
+  - never loads accumulators.
+- Established entry-vector structure: start, reenter, version, and optional
+  additional entry information.
+- Resolved PDV/PDVA:
+  - entry vector and PDVA list are distinct;
+  - LINK writes PDVs into program memory;
+  - the monitor retains only PDVAs;
+  - `PDVOP%` exposes PDVA information.
+- Examined virgin and execute-only process constraints.
+- Implemented and verified the Small Executive `PUSH` server:
+  `GTJFN → CFORK → GET → SFRKV → WFORK → KFORK`.
+- Live demonstrations connected the model to normal use:
+  `PUSH`/`POP`, EMACS inferiors, `REENTER`, `FINGER`, `SEND`, `ADVISE`,
+  and batch submission.
+
+## Chapter 28 — IPCF, QUASAR, and shared file pages
+
+- Established IPCF as asynchronous queued packet exchange.
+- Kept IPCF PIDs distinct from relative fork handles.
+- `MSEND` enqueues a packet; `MRECV` consumes it.
+- Reception may be polled or announced through a software interrupt.
+- Distinguished the generic IPCF packet descriptor from subsystem payloads.
+- Used the Small Executive `QUEUE` server to communicate with QUASAR.
+- Verified:
+  - `.OFLAG` is absent from `QSRMAC.UNV` on two independent systems;
+  - `.OHDRS` evaluates to octal `5`;
+  - `IFNDEF .OFLAG,.OFLAG==.OHDRS-2` is a working compatibility definition;
+  - `.MUCRE` requires IPCF or WHEEL capability on the tested system;
+  - a locally omitted `MOVEM C,IPCBLK+1` caused an invalid sender PID;
+    the line is present in Gorin;
+  - Gorin's published `.IPCFD` receive descriptor causes
+    `?Error: Invalid message size`;
+  - changing it to `.IPCFP` produces correct QUASAR queue output.
+- The `.IPCFD`/`.IPCFP` correction is a verified source erratum.
+- The Small Executive now anchors COMND, JFNs, process handling, IPCF,
+  and QUASAR composition.
+- Established two complementary cooperation models:
+  - IPCF for arm's-length communication with explicit identity;
+  - shared writable file pages for mutually trusting processes.
+- Shared-file communication requires both processes to open the same file
+  with `OF%RD`, `OF%WR`, and `OF%THW`, then map the same file pages.
+- Process virtual page numbers need not match.
+- Frozen writable access permits one writer.
+- Thawed writable access permits multiple writers only when every writer
+  requests `OF%THW`.
+- Frozen and thawed writable opens exclude one another.
+
+## Current status
+
+Chapter 28 complete.
+
+Next: Chapter 29, traps and interrupts.
+
+---

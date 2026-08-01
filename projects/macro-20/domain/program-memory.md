@@ -59,8 +59,8 @@ distinguish how that storage was obtained.
 
 `PMAP`
 
-associates pages of an open file with pages in the current fork's
-virtual address space.
+associates pages of an open file with pages in a fork's virtual
+address space.
 
 After mapping, the program accesses the file contents using ordinary
 memory references.
@@ -93,6 +93,25 @@ Subsequent writes affect only the private page.
 The underlying file remains unchanged.
 
 ------------------------------------------------------------------------
+
+## Shared File Pages
+
+Processes in independent JOBs may map the same writable file pages into
+their own virtual address spaces.
+
+The process page numbers need not match.
+
+Both mappings refer to the same underlying file pages.
+
+When the file is opened for thawed writable access, writes by one process
+are visible through the other process's mapping.
+
+Every participating writer must request `OF%THW`.
+
+This provides shared memory for cooperating processes that deliberately
+trust one another.
+
+---
 
 ## Stream versus Mapping
 
@@ -145,8 +164,9 @@ Current project knowledge does **not** establish:
 -   page replacement policy;
 -   cache behaviour;
 -   detailed page-table structure;
--   sharing semantics between multiple forks;
--   page protection beyond accepted PMAP access modes.
+-   all sharing semantics between related forks;
+-   page protection beyond accepted PMAP access modes;
+-   synchronization protocols for concurrent writers.
 
 Do not infer these from other virtual-memory systems.
 
@@ -154,8 +174,8 @@ Do not infer these from other virtual-memory systems.
 
 ## Open Questions
 
--   Exact relationship between FORKs and mapped address spaces.
--   Detailed PMAP access flags.
+-   Exact relationship between FORKs and inherited/shared maps.
+-   Detailed PMAP access flags beyond accepted examples.
 -   Interaction between PMAP and program growth.
 -   Allocation strategy beyond `.JBSA`.
 
@@ -166,4 +186,6 @@ Do not infer these from other virtual-memory systems.
 -   `addressing.md`
 -   `files-and-jfns.md`
 -   `records.md`
+-   `processes.md`
+-   `ipcf.md`
 -   `anchors.md`

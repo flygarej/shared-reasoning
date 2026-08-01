@@ -552,6 +552,129 @@ generator.
 
 ---
 
+
+## Process Semantics
+
+### JOB and process distinction
+
+A process or fork is the independently scheduled executable entity.
+
+A JOB organizes a hierarchy of processes.
+
+#### Guarded distinction
+
+Do not describe a JOB as though it were itself the scheduled execution
+context. Programs execute in processes.
+
+---
+
+### Relative fork handles
+
+A returned fork handle identifies an inferior relative to the superior
+that received it.
+
+Different superiors may hold the same numeric relative handle for
+different inferiors.
+
+#### Guarded distinction
+
+Do not treat relative fork handles as system-wide process identifiers.
+
+---
+
+### Process construction is decomposed
+
+`CFORK`, `GET`, and `SFRKV` perform distinct roles:
+
+- `CFORK` constructs and initializes a process;
+- `GET` installs a program image and process metadata;
+- `SFRKV` starts execution through an entry-vector offset.
+
+`GET` never loads accumulators.
+
+#### Guarded distinction
+
+Do not collapse process creation, executable loading, accumulator
+initialization, and starting execution into one implicit operation.
+
+---
+
+### Shared maps
+
+`CR%MAP` shares the superior's mapped pages with the inferior.
+
+Changes made by either process are visible to the other.
+
+#### Guarded distinction
+
+Do not reconstruct `CR%MAP` as a one-time copy.
+
+---
+
+## IPCF and Shared-File Semantics
+
+### IPCF PID versus fork handle
+
+An IPCF PID is used by IPCF routing.
+
+A relative fork handle identifies a process within a superior's fork
+namespace.
+
+These are distinct naming systems.
+
+---
+
+### IPCF receive descriptor field
+
+For `MRECV`, the receive message length and address belong in `.IPCFP`.
+
+`.IPCFD` is the sender user-number field filled by the monitor.
+
+#### Provenance
+
+Gorin's published `QUEUE` server stores the receive descriptor in
+`.IPCFD`.
+
+This produced `?Error: Invalid message size`.
+
+Changing the field to `.IPCFP` produced correct QUASAR output.
+
+---
+
+### QUASAR output flag compatibility
+
+Some distributed `QSRMAC.UNV` files define `.OHDRS` and `WT.MOR` but omit
+`.OFLAG`.
+
+The verified compatibility definition is:
+
+```asm
+IFNDEF .OFLAG,.OFLAG==.OHDRS-2
+```
+
+#### Provenance
+
+`.OFLAG` was absent on two systems, `.OHDRS` was octal `5`, DEC GALAXY
+layout placed `.OFLAG` two words before `.OHDRS`, and the definition was
+verified by successful queue output.
+
+---
+
+### Frozen and thawed writable access
+
+Normal writable access is frozen and permits one writer.
+
+Thawed writable access permits multiple simultaneous writers only when
+every writer requests `OF%THW`.
+
+Frozen and thawed writable opens exclude one another.
+
+#### Guarded distinction
+
+One process requesting `OF%THW` does not thaw access for the others.
+
+---
+
 ## Maintenance
 
 Add an anchor when a verified failure, recurring ambiguity, or close

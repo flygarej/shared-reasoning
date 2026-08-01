@@ -10,7 +10,13 @@ trying it.
 
 ## Try an existing project
 
-From the repository root, generate the project bootstrap:
+Upload the macro-20 project bootstrap prompt:
+
+```text
+projects/macro-20/macro-20.md
+```
+
+or, if that file is missing or needs updating, generate the project bootstrap:
 
 ```bash
 ./create-project-prompt.sh macro-20
@@ -22,7 +28,7 @@ The script creates:
 projects/macro-20/macro-20.md
 ```
 
-Upload that generated file to a new LLM conversation.
+Then upload that generated file to a new LLM conversation.
 
 A useful first message is:
 
@@ -39,6 +45,12 @@ validation/handover-validation.md
 ```
 
 and ask the collaborator to answer it.
+
+For domain specific test, you can use:
+
+```text
+Create a sample macro-20 program that uses a loop to print five "Hello world" + CRLF on the terminal in TOPS-20.
+```
 
 ---
 

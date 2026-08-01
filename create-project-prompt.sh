@@ -38,7 +38,8 @@ files=(
     for dir in \
         "$repo_dir/projects/common" \
         "$project_dir/state" \
-        "$project_dir/domain"
+        "$project_dir/domain" \
+        "$project_dir/observations"
     do
         [[ -d "$dir" ]] || continue
 

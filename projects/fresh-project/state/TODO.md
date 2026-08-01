@@ -1,36 +1,107 @@
-# TODO.md (projects/fresh-project/state/TODO.md)
+# Fresh Project TODO
 
-## TODO
+## Goal
 
-Since this is a newly started protocol session, there are
-just a few things to do.
-
-- Collect initial information about the project.
-- Help the user set up the file structure as follows:
-  - Top level:
-    protocol.md
-	rationale.md
-	handover-prompt.md
-	create-project-prompt.sh
-  - check that the projects folder contains the projects/common from the
-    github repo.
-  - in projects, create a folder for this project, preferably a short name
-  - in projects/short-name (replace short-name with project name...):
-    - Add folders state and domain and create starting files for:
-	  - state/project-state.md
-	  - state/session-log.md
-	  - state/TODO.md
-	  - domain/short-name-domain.md
-	- you may want domain files as domain-subject1.md and populate 
-	  with generators and boundaries while keeping anchors in a 
-	  separate file domain-anchors.md, but feel free to organize
-	  the domain knowledge in other ways if it simplifies things.
-  - Have user test "bash create-project-prompt.sh short-name" to get 
-    concatenated prompt in projects/short-name/short-name.md.
-  - Have user start a new chat and test the prompt using 
-    handover-prompt.md in top level folder.
-	
-Good luck!
+Establish enough accepted project knowledge that another collaborator can
+continue the investigation without replaying the original conversation.
 
 ---
 
+## Initial setup
+
+- Choose a short project name.
+- Rename or copy `projects/fresh-project` to `projects/<project>`.
+- Confirm that the repository contains:
+  - `protocol.md`;
+  - `rationale.md`;
+  - `create-project-prompt.sh`;
+  - `validation/handover-validation.md`;
+  - `projects/common/`.
+
+---
+
+## Establish the project
+
+Update `state/project-state.md` with:
+
+- project name;
+- objective;
+- scope;
+- known environment;
+- available evidence and documentation;
+- accepted observations;
+- current working models;
+- explicit unknowns;
+- next useful experiment.
+
+Update `state/session-log.md` with the initial discussion, evidence, decisions,
+and unresolved alternatives.
+
+Create one or more files under `domain/` when stable conceptual knowledge
+begins to emerge.
+
+Start small. A single domain file is sufficient.
+
+---
+
+## During the first session
+
+- Distinguish observation, documentation, inference, hypothesis, working
+  model, and verified conclusion.
+- Ask for missing factual or conceptual context.
+- Prefer a small discriminating experiment over speculative expansion.
+- Keep unresolved alternatives visible.
+- Do not create a large domain taxonomy before the investigation requires it.
+
+---
+
+## Generate the bootstrap
+
+Run:
+
+```bash
+./create-project-prompt.sh <project>
+```
+
+Confirm that this creates:
+
+```text
+projects/<project>/<project>.md
+```
+
+Upload the generated file to a new conversation.
+
+---
+
+## Validate reconstruction
+
+Use:
+
+```text
+validation/handover-validation.md
+```
+
+A successful handover should demonstrate that the new collaborator can:
+
+- identify the current accepted state;
+- distinguish state from history;
+- reconstruct important conceptual relationships;
+- respect uncertainty and boundaries;
+- begin productive work.
+
+Record any reconstruction failure.
+
+Use observed failures to improve the smallest relevant project or common
+artefact.
+
+---
+
+## After validation
+
+- Correct missing or misleading project knowledge.
+- Regenerate the bootstrap.
+- Continue the investigation.
+- Perform maintenance at natural milestones.
+- Compact only after successful reconstruction has been demonstrated.
+
+---

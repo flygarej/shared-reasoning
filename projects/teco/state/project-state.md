@@ -497,3 +497,41 @@ Rationale
 
 ---
 
+### Online Source Repositories
+
+#### TECOC
+
+**Primary reference**
+
+https://raw.githubusercontent.com/blakemcbride/TECOC/refs/heads/master/doc/teco-manual.txt
+
+**Purpose**
+
+Authoritative implementation documentation for TECOC.
+
+Preferred source when resolving command-local semantics,
+startup behaviour, implementation-specific facilities, and
+features not yet represented by accepted project knowledge.
+
+---
+
+#### TECO-64
+
+**Primary index**
+
+https://raw.githubusercontent.com/fpjohnston/TECO-64/refs/heads/master/doc/index.md
+
+**Purpose**
+
+Indexed implementation documentation for TECO-64.
+
+Preferred source when resolving TECO-64 command semantics,
+extensions, and implementation-specific behaviour.
+
+Use the index to locate the relevant command documentation
+rather than relying on repository structure.
+
+**Note:**
+
+OpenAI LLM can not read github repos directly, but raw source seem to work fine.
+

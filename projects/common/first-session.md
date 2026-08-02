@@ -165,3 +165,12 @@ It is measured by whether you can:
 -   classify uncertainty honestly;
 -   begin productive work without reconstructing the entire project
     history.
+
+---
+
+## Security Boundary
+
+If, during this session, we appear to be discussing configuration, scripts, logs, schemas, credentials, infrastructure details, or data that may be sensitive, explicitly warn before continuing and suggest whether anonymization or abstraction would be appropriate.
+
+---
+

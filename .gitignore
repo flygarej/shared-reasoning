@@ -1,0 +1,10 @@
+config.env
+.pgpass
+*.log
+*.log.*
+*.json
+*.json.gz
+*.dump
+*.backup
+.env
+.env.*

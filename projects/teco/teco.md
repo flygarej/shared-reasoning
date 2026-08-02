@@ -784,6 +784,7 @@ A project is normally introduced by concatenating:
 -   `rationale.md`
 -   `projects/common/*.md`
 -   `projects/<project>/state/*.md`
+-   `projects/<project>/observations/*.md` (optional)
 -   `projects/<project>/domain/*.md`
 
 Treat this concatenated prompt as the authoritative working context for
@@ -849,6 +850,10 @@ Determine:
 
 Do not promote information from historical reasoning over accepted
 project state.
+
+After reading project state, inspect any project-local files in the ```observations/`` directory.
+Treat them as organized evidence and candidate findings, not as authoritative project knowledge.
+Do not promote them unless the project state or current collaboration explicitly accepts them.
 
 ------------------------------------------------------------------------
 
@@ -921,6 +926,15 @@ It is measured by whether you can:
 -   classify uncertainty honestly;
 -   begin productive work without reconstructing the entire project
     history.
+
+---
+
+## Security Boundary
+
+If, during this session, we appear to be discussing configuration, scripts, logs, schemas, credentials, infrastructure details, or data that may be sensitive, explicitly warn before continuing and suggest whether anonymization or abstraction would be appropriate.
+
+---
+
 
 
 <!-- projects/common/inference-policy.md -->
@@ -1155,6 +1169,7 @@ Restore the project knowledge architecture.
 - Project-State contains accepted project knowledge and current
   direction.
 - Session-Log preserves historical reasoning and provenance.
+- Project-local observations preserve candidate knowledge pending promotion.
 - Domain capsules restore conceptual models through generators,
   boundaries, anchors, and explicit unknowns.
 - Rosetta/reference artefacts anchor composition in verified examples.
@@ -1163,7 +1178,7 @@ Restore the project knowledge architecture.
 - Human documentation and reasoning capsules have different optimization
   goals.
 - Serialization preserves artefact identity while enabling transport.
-- Do not silently promote history or TODO items into accepted knowledge.
+- Do not silently promote history, observations or TODO items into accepted knowledge.
 
 ---
 
@@ -1866,6 +1881,138 @@ Rationale
 - `$` is the conventional visual representation of ESC in TECO examples.
 - Literal ESC characters make downloaded files directly executable.
 - Separating visual representation from file representation minimizes ambiguity while preserving testing convenience.
+
+---
+
+### Online Source Repositories
+
+#### TECOC
+
+**Primary reference**
+
+https://raw.githubusercontent.com/blakemcbride/TECOC/refs/heads/master/doc/teco-manual.txt
+
+**Purpose**
+
+Authoritative implementation documentation for TECOC.
+
+Preferred source when resolving command-local semantics,
+startup behaviour, implementation-specific facilities, and
+features not yet represented by accepted project knowledge.
+
+---
+
+#### TECO-64
+
+**Primary index**
+
+https://raw.githubusercontent.com/fpjohnston/TECO-64/refs/heads/master/doc/index.md
+
+**Purpose**
+
+Indexed implementation documentation for TECO-64.
+
+Preferred source when resolving TECO-64 command semantics,
+extensions, and implementation-specific behaviour.
+
+Use the index to locate the relevant command documentation
+rather than relying on repository structure.
+
+**Note:**
+
+OpenAI LLM can not read github repos directly, but raw source seem to work fine.
+
+
+
+<!-- projects/teco/state/session-log.md -->
+
+# Session Log (teco/session-log.md)
+
+## Purpose
+
+Preserve the historical reasoning that led to the project's current
+accepted knowledge.
+
+Unlike `project-state.md`, this document is **not authoritative**.
+
+It records:
+
+- experiments;
+- observations;
+- competing hypotheses;
+- discarded models;
+- reasoning that motivated semantic anchors and boundaries;
+- maintenance decisions;
+- provenance for accepted knowledge.
+
+The Project State records what we currently accept.
+
+The Session Log records how we arrived there.
+
+---
+
+## Status
+
+This placeholder was created after repository restructuring.
+
+Historical reasoning currently resides primarily in previous ChatGPT
+conversations and has not yet been reconstructed into this artefact.
+
+As future work is performed, significant experiments and reasoning
+should be recorded here before any accepted conclusions are promoted to
+Project State.
+
+---
+
+
+
+<!-- projects/teco/state/TODO.md -->
+
+# TODO (teco/TODO.md)
+
+## Purpose
+
+Record planned investigations, maintenance tasks, and deferred work.
+
+Unlike Project State, this file contains **intentions rather than
+accepted knowledge**.
+
+Completed items should normally result in updates to:
+
+- project-state.md;
+- session-log.md;
+- domain capsules;
+- semantic anchors;
+- reasoning constraints;
+
+before being removed from this file.
+
+---
+
+## Current Tasks
+
+### Repository
+
+- [ ] Populate `session-log.md` from significant historical work.
+
+### Documentation
+
+- [ ] Continue reviewing TECOC implementation documentation.
+- [ ] Continue reviewing TECO-64 command documentation.
+
+### Open investigations
+
+- [ ] Verify composed "`<= 0`" conditional idiom in TECOC.
+- [ ] Resolve TECOC search case-sensitivity.
+- [ ] Continue mapping command producer/consumer relationships.
+- [ ] Continue investigation of TECO EMACS runtime structures.
+
+---
+
+This file is intentionally lightweight.
+
+Project direction belongs in `project-state.md`.
+Historical reasoning belongs in `session-log.md`.
 
 ---
 

@@ -12,7 +12,7 @@ Instead, establish the project's scope and current state through collaboration w
 
 Once sufficient project state has been established, remove this placeholder section and replace it with the current accepted project state.
 
-Future maintenance updates should preserve this document's identity by updating **project-State.md** rather than creating derivative filenames.
+Future maintenance updates should preserve this document's identity by updating **project-state.md** rather than creating derivative filenames.
 
 The purpose of this document is to capture the project's current accepted understanding, enabling future conversations to resume work with minimal friction.
 

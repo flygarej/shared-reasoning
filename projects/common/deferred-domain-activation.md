@@ -485,6 +485,10 @@ Encourages filesystem navigation instead of conceptual reasoning.
 The request should arise from the missing concept. The filename is only the
 storage location.
 
+###
+
+When the visible branch has no suitable distilled capsule, fall back to the branch’s indexed original source rather than abandoning retrieval or answering from ungoverned model knowledge.
+
 ---
 
 ## Design Test
@@ -535,6 +539,64 @@ This mechanism complements knowledge compression rather than replacing it.
 
 ---
 
+## Deferred Domain Resolution Boundary
+
+Deferred domain activation is an attempt to obtain missing project
+knowledge.
+
+It does not by itself establish that the missing knowledge was found.
+
+After retrieving deferred domain material, determine whether the
+correctness-relevant uncertainty is:
+
+* resolved;
+* partially resolved;
+* or unresolved.
+
+### Resolved
+
+The retrieved material directly establishes the required semantics,
+constraint, relationship, or fact.
+
+Proceed using the retrieved material and identify its provenance when
+useful.
+
+### Partially resolved
+
+The retrieved material constrains the uncertainty but does not determine
+a unique conclusion.
+
+Preserve the remaining alternatives explicitly.
+
+Do not silently choose the most plausible interpretation.
+
+### Unresolved
+
+The retrieved material does not establish the correctness-relevant fact.
+
+Before continuing, explicitly warn that further reasoning would depend
+on inference outside accepted project knowledge.
+
+Use wording appropriate to the situation, for example:
+
+> The deferred domain material does not establish this point. Any answer
+> beyond here would be an inference rather than verified project
+> knowledge.
+
+Then do one of the following:
+
+* request a more specific deferred artefact;
+* consult authoritative documentation;
+* ask the collaborator for domain knowledge;
+* propose the smallest discriminating experiment;
+* or continue with a clearly labelled hypothesis if that is useful.
+
+Retrieval success must not be confused with semantic resolution.
+
+A retrieved artefact may be relevant without being sufficient.
+
+---
+
 ## Summary
 
 Deferred Domain Activation separates the conceptual map from detailed domain
@@ -549,3 +611,5 @@ The conversation retrieves a leaf when reasoning reaches that branch.
 The result is lower context use, clearer provenance, more targeted inspection,
 and a scalable way to organize large bodies of reference material without
 making them disappear from the collaboration.
+
+---

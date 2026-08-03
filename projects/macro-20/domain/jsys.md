@@ -142,6 +142,11 @@ Inspect detailed capsules only when needed for:
 Do not infer exact AC layouts, flag meanings, return conditions, or
 designator encodings from this index alone.
 
+For family-level questions, request the matching family capsule before
+falling back to the original reference. Use the original reference 
+directly when no family capsule exists or exact local semantics exceed 
+the capsule’s scope.
+
 ---
 
 Detailed branch organization:
@@ -152,3 +157,35 @@ retrieve:
     projects/macro-20/domain/jsys/about-this-domain.md
 	
 ---
+
+## When a question requires exact local JSYS semantics:
+
+1. Determine the conceptual subsystem.
+2. Retrieve jsys-functional-families.md if necessary.
+3. Retrieve the smallest family capsule likely to answer the question.
+4. If insufficient, retrieve the original reference for that family or the
+   JSYS reference manual.
+5. Distill only if reusable conceptual knowledge emerges.
+
+---
+
+## Reference fallback
+
+If no detailed capsule covers the required monitor call or local semantic
+question, request the original indexed reference source:
+
+`projects/macro-20/references/JSYS_REFERENCE.MEM.txt`
+
+Retrieve and inspect only the relevant JSYS entry or nearby supporting
+sections.
+
+Material obtained this way is:
+
+- documentation-derived candidate knowledge;
+- authoritative for the documented interface and stated version;
+- not automatically accepted into Project State;
+- a candidate for later distillation into a generator, anchor, boundary,
+  or dedicated JSYS capsule.
+
+Do not answer exact local JSYS questions from model knowledge merely
+because no detailed capsule currently exists.

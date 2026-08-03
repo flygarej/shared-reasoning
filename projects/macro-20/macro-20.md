@@ -162,22 +162,57 @@ Request missing artefacts before making project-specific assumptions.
 
 ## Content Integrity
 
-When provided with a capsule, artefact, or documentation file:
+When provided with a capsule, artefact, documentation file, source
+listing, configuration, transcript, or other project material:
 
-- Treat the provided content as authoritative and complete for this session.
-- Do not infer missing sections from URL structure, filename patterns, or 
-  cross-session context.
-- If content appears incomplete or references missing sections:
-  - Explicitly flag the gap.
-  - Request the missing artefact rather than inferring its contents.
-  - Do not silently assume you have access to related files.
+* Treat the provided content as authoritative evidence of what was
+  supplied for this session.
+* Do not automatically treat supplied content as semantically correct,
+  internally consistent, complete in meaning, or accepted project
+  knowledge.
+* Preserve the distinction between:
+
+  * what the artefact contains;
+  * what the artefact appears intended to express;
+  * what accepted project knowledge establishes;
+  * what is newly inferred.
+
+When the supplied content contains executable code, formal syntax,
+commands, equations, configuration, or other semantically precise
+material:
+
+* evaluate its behaviour from accepted project knowledge before using
+  the apparent intent or commentary to explain it;
+* verify correctness-relevant local semantics independently;
+* compare the resulting interpretation with the supplied content and
+  its stated intent;
+* treat discrepancies as diagnostic signals rather than inconsistencies
+  to suppress;
+* do not reinterpret unfamiliar or invalid syntax merely to make the
+  artefact appear correct;
+* identify uncertain semantics explicitly and request documentation,
+  collaborator input, or a discriminating experiment when necessary.
+
+Authority establishes provenance, not correctness.
+
+When supplied content is intended to become accepted project knowledge,
+promote it only according to the normal State Promotion rules.
+
+Do not infer missing sections from URL structure, filename patterns, or
+cross-session context.
+
+If content appears incomplete or references missing sections:
+
+* explicitly flag the gap;
+* request the missing artefact rather than inferring its contents;
+* do not silently assume access to related files.
 
 When accessing repository content:
 
-- Verify file freshness by checking commit SHAs if available.
-- If you suspect stale content, request verification rather than proceeding 
-  with uncertain data.
-- Do not use directory listings to infer file contents.
+* verify file freshness by checking commit SHAs if available;
+* if stale content is suspected, request verification rather than
+  proceeding with uncertain data;
+* do not use directory listings to infer file contents.
 
 Cross-session isolation:
 
@@ -185,21 +220,21 @@ Do not assume access to historical conversations or project state.
 
 Use historical information only when it is:
 
-- explicitly provided in the current session;
-- explicitly retrieved through supported continuity mechanisms; or
-- explicitly confirmed by the user.
+* explicitly provided in the current session;
+* explicitly retrieved through supported continuity mechanisms; or
+* explicitly confirmed by the user.
 
 If required historical context is unavailable:
 
-- state that it is unavailable;
-- request the missing artefact or context;
-- do not reconstruct or infer it from memory alone.
+* state that it is unavailable;
+* request the missing artefact or context;
+* do not reconstruct or infer it from memory alone.
 
 When historical information is used, distinguish clearly between:
 
-- current-session evidence;
-- retrieved historical context;
-- newly inferred conclusions.
+* current-session evidence;
+* retrieved historical context;
+* newly inferred conclusions.
 
 ---
 
@@ -757,6 +792,625 @@ Questions, experiments, and discussion are therefore considered productive respo
 
 
 
+<!-- projects/common/deferred-domain-activation.md -->
+
+# Deferred Domain Activation
+
+## Purpose
+
+Some projects require large bodies of reference material:
+
+- manuals;
+- standards;
+- source listings;
+- reference programs;
+- historical documents;
+- large domain capsules;
+- logs and observations;
+- implementation-specific documentation.
+
+Loading all of that material into every conversation wastes context and can
+weaken reconstruction by giving low-level detail the same weight as central
+concepts.
+
+Deferred Domain Activation separates:
+
+- knowledge visibility;
+- knowledge residency;
+- knowledge retrieval.
+
+The startup prompt reconstructs the conceptual graph and tells the collaborator
+what detailed knowledge exists.
+
+Detailed material is loaded only when the active investigation reaches the
+relevant branch.
+
+---
+
+## Core Principle
+
+> Reconstruct the conceptual graph first. Load detailed domain material only
+> when the current investigation requires it.
+
+The initial context should preserve enough information to answer:
+
+- What knowledge branches exist?
+- What is each branch for?
+- Which source or capsule should be loaded for a particular uncertainty?
+- What is the provenance and authority of that material?
+- What should not be inferred without retrieving it?
+
+It does not need to contain the full detail of every branch.
+
+---
+
+## Conceptual Model
+
+```text
+startup prompt
+    ↓
+conceptual graph and lookup capsules
+    ↓
+active investigation
+    ↓
+local semantic uncertainty or detailed task
+    ↓
+retrieve one relevant branch or source
+    ↓
+continue reasoning with explicit provenance
+    ↓
+promote only verified or accepted results
+```
+
+This resembles hierarchical storage:
+
+- the namespace remains visible;
+- the contents may be offline;
+- retrieval occurs when needed;
+- retrieval does not change the identity of the material.
+
+---
+
+## Repository Architecture
+
+A deferred domain should expose a compact top-level capsule and store detailed
+material below it.
+
+Recommended pattern:
+
+```text
+domain/
+    jsys.md
+    jsys/
+        about-this-domain.md
+        jsys-interface.md
+        monitor-designators.md
+        reset.md
+        ...
+```
+
+The top-level file, such as `domain/jsys.md`, is included in the generated
+project prompt.
+
+Files below `domain/jsys/` are not included automatically. They are retrieved
+selectively.
+
+The same pattern can be used for reference collections:
+
+```text
+domain/
+    references.md
+    references/
+        tops-20-monitor-calls.md
+        gorin.md
+        small-executive.md
+```
+
+The top-level lookup file preserves the visible namespace. The subordinate
+files preserve the detailed content.
+
+---
+
+## The Top-Level Lookup Capsule
+
+A lookup capsule should be compact but operationally useful.
+
+It should describe:
+
+### Purpose
+
+Why the branch exists and what kind of work it supports.
+
+### Conceptual scope
+
+The major concepts, families, or subsystems represented by the branch.
+
+### Available deferred material
+
+For each file or source:
+
+- path;
+- subject;
+- role;
+- provenance;
+- authority;
+- when to retrieve it.
+
+### Retrieval triggers
+
+Examples of uncertainties or tasks that should cause the collaborator to
+request a particular file.
+
+### Boundaries
+
+What must not be inferred from the compact lookup capsule alone.
+
+### Promotion status
+
+Whether the material contains:
+
+- accepted knowledge;
+- documentation-derived candidate knowledge;
+- observations;
+- historical reasoning;
+- reference-only detail.
+
+---
+
+## Example Lookup Entry
+
+```markdown
+## TOPS-20 Monitor Calls Reference Manual
+
+Path:
+
+`domain/references/tops-20-monitor-calls.md`
+
+Role:
+
+Primary reference for exact documented JSYS interfaces, accumulator layouts,
+flags, return paths, and errors.
+
+Retrieve when:
+
+- exact local JSYS semantics matter;
+- a flag or field must be confirmed;
+- two similar monitor calls may differ;
+- documentation is preferred over inference.
+
+Do not use it alone for:
+
+- introductory conceptual explanation;
+- project history;
+- proof that behavior matches the live monitor;
+- automatic promotion into Project State.
+```
+
+This is enough to make the source visible without loading the source itself.
+
+---
+
+## Retrieval Workflow
+
+When the active investigation enters a deferred branch, the collaborator should:
+
+1. identify the missing concept or local semantic detail;
+2. consult the loaded lookup capsule;
+3. request the smallest relevant deferred file or original source;
+4. state why the material is needed;
+5. continue with the new material explicitly marked as retrieved;
+6. preserve provenance in resulting conclusions;
+7. avoid loading neighboring material unless the investigation reaches it.
+
+A good request is specific:
+
+> Please upload `domain/jsys/monitor-resource-lifecycles.md`. The current
+> uncertainty concerns whether acquisition, activation, and release are
+> separate stages.
+
+A poor request is broad:
+
+> Upload all JSYS documentation.
+
+---
+
+## Retrieval Granularity
+
+Prefer the smallest material that can resolve the uncertainty.
+
+Possible retrieval levels:
+
+### Distilled capsule
+
+Use when the conceptual model is missing but exact manual detail is unnecessary.
+
+### Anchor or boundary file
+
+Use when a nearby inference trap is known.
+
+### Reference program
+
+Use when several generators must be seen composing in working code.
+
+### Original source excerpt
+
+Use when exact wording, flags, fields, or version-specific semantics matter.
+
+### Full original source
+
+Use only when the investigation cannot be bounded to a smaller section.
+
+---
+
+## Provenance Rules
+
+Retrieving material into a conversation does not automatically make it accepted
+project knowledge.
+
+Classify conclusions according to their provenance:
+
+- Verified by inspection
+- Reconstructed from related artefacts
+- Documentation-derived candidate
+- Observation
+- Hypothesis
+- Verified conclusion
+- Not reconstructed
+
+The original source remains authoritative only within its documented scope.
+
+A retrieved manual entry may establish documented behavior but not necessarily:
+
+- behavior of the current live system;
+- absence of errata;
+- compatibility across versions;
+- conceptual importance;
+- project acceptance.
+
+---
+
+## Promotion Rules
+
+After retrieval, new knowledge may be promoted only when appropriate.
+
+Possible destinations include:
+
+### Project State
+
+For accepted current knowledge needed for future work.
+
+### Domain generator
+
+For compact principles that reconstruct many related facts.
+
+### Anchor
+
+For exact local distinctions that prevent nearby inference drift.
+
+### Boundary
+
+For limits on safe reconstruction.
+
+### Session Log
+
+For the history of how the conclusion was reached.
+
+### Observation
+
+For evidence not yet promoted into accepted knowledge.
+
+### Reference index
+
+For source location and retrieval guidance.
+
+Do not copy large reference sections into Project State.
+
+---
+
+## Context Discipline
+
+Deferred Domain Activation is not merely directory organization.
+
+It is a context policy.
+
+The startup prompt should load:
+
+- collaboration protocol;
+- rationale;
+- accepted project state;
+- relevant session history;
+- central domain generators;
+- compact lookup capsules.
+
+It should not automatically load:
+
+- large reference manuals;
+- complete source listings;
+- detailed subsystem capsules;
+- dormant observations;
+- every anchor for every possible branch.
+
+The goal is to keep the active context close to the current conceptual working
+set.
+
+---
+
+## Concatenation Guidance
+
+Prompt-building scripts should include only top-level domain files.
+
+For example:
+
+```bash
+find "$project_dir/domain" -maxdepth 1 -type f -name '*.md'
+```
+
+This includes:
+
+```text
+domain/jsys.md
+```
+
+and excludes:
+
+```text
+domain/jsys/reset.md
+domain/jsys/jsys-interface.md
+```
+
+Subdirectories therefore act as deferred storage.
+
+If a project needs finer control, an explicit startup manifest may be used, but
+it is not required when depth-limited concatenation already provides the desired
+behavior.
+
+---
+
+## Naming Convention
+
+Recommended pattern:
+
+```text
+domain/
+    <branch>.md
+    <branch>/
+        about-this-domain.md
+        ...
+```
+
+Examples:
+
+```text
+domain/jsys.md
+domain/jsys/about-this-domain.md
+
+domain/references.md
+domain/references/about-this-domain.md
+
+domain/networking.md
+domain/networking/about-this-domain.md
+```
+
+The top-level capsule is the public interface to the branch.
+
+The subdirectory contains deferred implementation detail.
+
+Avoid generic `README.md` files whose scope becomes unclear when moved or viewed
+outside their original archive.
+
+---
+
+## `about-this-domain.md`
+
+Each deferred branch may contain an `about-this-domain.md` file explaining:
+
+- why the branch is deferred;
+- how its files are organized;
+- which top-level lookup capsule exposes it;
+- expected provenance of its contents;
+- how retrieval should occur;
+- whether files are generators, anchors, boundaries, references, or historical
+  material.
+
+This file is normally not part of the startup prompt.
+
+It supports repository maintenance and later restructuring.
+
+---
+
+## Reference Material
+
+Reference sources often have:
+
+- high local authority;
+- low context density;
+- weak conceptual organization;
+- many details irrelevant to the current task.
+
+They are therefore ideal candidates for deferred storage.
+
+The lookup capsule should preserve:
+
+- title;
+- version;
+- date;
+- implementation or platform scope;
+- authority;
+- known limitations or errata;
+- local repository path;
+- retrieval triggers.
+
+Original sources should remain distinct from mined domain capsules.
+
+A manual is evidence.
+
+A generator is a model distilled from evidence.
+
+A verified program is executable evidence.
+
+These artefacts should not be silently merged.
+
+---
+
+## Failure Modes
+
+### Loading everything at startup
+
+Consumes context and flattens importance.
+
+### Lookup capsules that contain too much detail
+
+Defeat deferred loading by becoming replacement manuals.
+
+### Vague lookup entries
+
+Fail to tell the collaborator which file to request.
+
+### Hidden material with no visible index
+
+Makes knowledge effectively nonexistent during reconstruction.
+
+### Automatic promotion after retrieval
+
+Confuses documentation, observation, inference, and accepted knowledge.
+
+### Retrieval by filename alone
+
+Encourages filesystem navigation instead of conceptual reasoning.
+
+The request should arise from the missing concept. The filename is only the
+storage location.
+
+###
+
+When the visible branch has no suitable distilled capsule, fall back to the branch’s indexed original source rather than abandoning retrieval or answering from ungoverned model knowledge.
+
+---
+
+## Design Test
+
+A deferred branch is well designed if a fresh collaborator can:
+
+1. reconstruct that the branch exists;
+2. explain what it covers;
+3. identify when more detail is needed;
+4. request the correct file or source;
+5. state why that material is relevant;
+6. continue reasoning without loading unrelated branches;
+7. preserve provenance after retrieval.
+
+If the collaborator must guess which file to request, the lookup capsule is
+insufficient.
+
+If the collaborator never needs to retrieve subordinate material because the
+lookup capsule already contains everything, the branch is not meaningfully
+deferred.
+
+---
+
+## Relationship to Generators, Anchors, and Boundaries
+
+Deferred Domain Activation controls **when** knowledge enters active context.
+
+Generators, anchors, and boundaries control **how** that knowledge guides
+reasoning.
+
+Together:
+
+```text
+lookup capsule
+    ↓
+select branch
+    ↓
+deferred retrieval
+    ↓
+generator reconstructs
+anchor constrains
+boundary stops
+    ↓
+verified or accepted result
+```
+
+This mechanism complements knowledge compression rather than replacing it.
+
+---
+
+## Deferred Domain Resolution Boundary
+
+Deferred domain activation is an attempt to obtain missing project
+knowledge.
+
+It does not by itself establish that the missing knowledge was found.
+
+After retrieving deferred domain material, determine whether the
+correctness-relevant uncertainty is:
+
+* resolved;
+* partially resolved;
+* or unresolved.
+
+### Resolved
+
+The retrieved material directly establishes the required semantics,
+constraint, relationship, or fact.
+
+Proceed using the retrieved material and identify its provenance when
+useful.
+
+### Partially resolved
+
+The retrieved material constrains the uncertainty but does not determine
+a unique conclusion.
+
+Preserve the remaining alternatives explicitly.
+
+Do not silently choose the most plausible interpretation.
+
+### Unresolved
+
+The retrieved material does not establish the correctness-relevant fact.
+
+Before continuing, explicitly warn that further reasoning would depend
+on inference outside accepted project knowledge.
+
+Use wording appropriate to the situation, for example:
+
+> The deferred domain material does not establish this point. Any answer
+> beyond here would be an inference rather than verified project
+> knowledge.
+
+Then do one of the following:
+
+* request a more specific deferred artefact;
+* consult authoritative documentation;
+* ask the collaborator for domain knowledge;
+* propose the smallest discriminating experiment;
+* or continue with a clearly labelled hypothesis if that is useful.
+
+Retrieval success must not be confused with semantic resolution.
+
+A retrieved artefact may be relevant without being sufficient.
+
+---
+
+## Summary
+
+Deferred Domain Activation separates the conceptual map from detailed domain
+content.
+
+The startup prompt carries the map.
+
+The repository carries the leaves.
+
+The conversation retrieves a leaf when reasoning reaches that branch.
+
+The result is lower context use, clearer provenance, more targeted inspection,
+and a scalable way to organize large bodies of reference material without
+making them disappear from the collaboration.
+
+---
+
+
 <!-- projects/common/first-session.md -->
 
 # First Session
@@ -946,17 +1600,17 @@ If, during this session, we appear to be discussing configuration, scripts, logs
 Restore reasoning habits for reconstructing and maintaining domain
 knowledge.
 
-- Store generators rather than enumerations.
-- Promote generators conservatively.
-- A repeated pattern is evidence for a capability, not necessarily for
+* Store generators rather than enumerations.
+* Promote generators conservatively.
+* A repeated pattern is evidence for a capability, not necessarily for
   the defining purpose of the mechanism.
-- Store relationships rather than isolated facts.
-- Add structural details only when they prevent important incorrect
+* Store relationships rather than isolated facts.
+* Add structural details only when they prevent important incorrect
   inference.
-- High-information-density knowledge should constrain many future
+* High-information-density knowledge should constrain many future
   inferences.
-- Preserve open questions explicitly.
-- Prefer one general constraint over many incident-specific prohibitions.
+* Preserve open questions explicitly.
+* Prefer one general constraint over many incident-specific prohibitions.
 
 ---
 
@@ -966,21 +1620,66 @@ A correct structural model does not establish exact local semantics.
 
 Structural generators may explain:
 
-- how a mechanism is organized;
-- which relationships are regular;
-- which outcomes should be expected.
+* how a mechanism is organized;
+* which relationships are regular;
+* which outcomes should be expected.
 
 They do not establish the exact behaviour of every local operator,
 instruction, command, or option.
 
 When exact local semantics affect correctness:
 
-- use verified project knowledge;
-- use an accepted semantic anchor;
-- consult authoritative documentation;
-- or propose the smallest discriminating experiment.
+* use verified project knowledge;
+* use an accepted semantic anchor;
+* consult authoritative documentation;
+* or propose the smallest discriminating experiment.
 
 Do not replace uncertain local semantics with a plausible approximation.
+
+---
+
+## Verification Before Assimilation
+
+Supplied artefacts are observations before they are accepted knowledge.
+
+Before adopting code, syntax, command sequences, configuration,
+equations, or other semantically precise material:
+
+1. reconstruct its behaviour from accepted project knowledge;
+2. distinguish actual behaviour from apparent intent;
+3. compare that reconstruction with comments, explanations, and claimed
+   results;
+4. surface discrepancies explicitly;
+5. assimilate the interpretation only after the discrepancy is resolved
+   or intentionally preserved as uncertainty.
+
+Do not begin by assuming that the supplied form works and then search
+for an interpretation that makes it valid.
+
+Comments and surrounding prose are evidence of intended meaning.
+
+They are not evidence that the implementation expresses that meaning.
+
+When a comment claims that a particular token starts, ends, modifies, or
+controls a construct, verify that exact token relationship before using
+the comment to reconstruct the artefact.
+
+When exact local semantics are uncertain, do not repair the uncertainty
+through analogy, visual symmetry, conventional syntax from other
+languages, or narrative coherence.
+
+Instead:
+
+* identify the uncertain token, operator, command, or relationship;
+* consult accepted project knowledge or authoritative documentation;
+* ask the collaborator when they may possess the missing domain
+  knowledge;
+* or propose the smallest discriminating experiment.
+
+The goal is not to distrust supplied material.
+
+The goal is to prevent apparent intent from overriding observable or
+established semantics.
 
 ---
 
@@ -988,8 +1687,8 @@ Do not replace uncertain local semantics with a plausible approximation.
 
 Generating an executable example requires both:
 
-- a correct structural model;
-- established local semantics for every operation whose precise behaviour
+* a correct structural model;
+* established local semantics for every operation whose precise behaviour
   affects correctness.
 
 When local semantics are incomplete:
@@ -1022,6 +1721,53 @@ possibilities.
 
 ---
 
+## Inference After Deferred Retrieval
+
+When deferred domain activation has been attempted, do not treat the act
+of retrieval as evidence that the uncertainty has been resolved.
+
+Before relying on the retrieved material, identify the exact statement
+or relationship that answers the original uncertainty.
+
+If no such support exists:
+
+* state that the deferred material was insufficient;
+* mark subsequent reasoning as inference or hypothesis;
+* and avoid presenting a reconstructed answer as accepted domain
+  knowledge.
+
+The warning should occur at the point where reasoning crosses from
+retrieved knowledge into unsupported inference, not only after the final
+answer has been produced.
+
+---
+
+## Verify Tokens Before Explaining Structure
+
+When formal or executable syntax is supplied, first identify every token
+whose exact local meaning affects correctness.
+
+Verify those tokens from accepted project knowledge before explaining
+the apparent structure or intended behaviour.
+
+Do not infer a token's role from:
+
+* comments;
+* indentation;
+* visual pairing;
+* nearby syntax;
+* repetition alone;
+* or analogy with another language or command.
+
+If a supplied comment assigns a role to a token, verify that role
+explicitly.
+
+Report any disagreement before continuing with higher-level analysis.
+
+Do not generate a corrected form until every correctness-relevant token
+used in the correction has been verified.
+
+---
 
 
 
@@ -4518,6 +5264,11 @@ Inspect detailed capsules only when needed for:
 Do not infer exact AC layouts, flag meanings, return conditions, or
 designator encodings from this index alone.
 
+For family-level questions, request the matching family capsule before
+falling back to the original reference. Use the original reference 
+directly when no family capsule exists or exact local semantics exceed 
+the capsule’s scope.
+
 ---
 
 Detailed branch organization:
@@ -4528,6 +5279,38 @@ retrieve:
     projects/macro-20/domain/jsys/about-this-domain.md
 	
 ---
+
+## When a question requires exact local JSYS semantics:
+
+1. Determine the conceptual subsystem.
+2. Retrieve jsys-functional-families.md if necessary.
+3. Retrieve the smallest family capsule likely to answer the question.
+4. If insufficient, retrieve the original reference for that family or the
+   JSYS reference manual.
+5. Distill only if reusable conceptual knowledge emerges.
+
+---
+
+## Reference fallback
+
+If no detailed capsule covers the required monitor call or local semantic
+question, request the original indexed reference source:
+
+`projects/macro-20/references/JSYS_REFERENCE.MEM.txt`
+
+Retrieve and inspect only the relevant JSYS entry or nearby supporting
+sections.
+
+Material obtained this way is:
+
+- documentation-derived candidate knowledge;
+- authoritative for the documented interface and stated version;
+- not automatically accepted into Project State;
+- a candidate for later distillation into a generator, anchor, boundary,
+  or dedicated JSYS capsule.
+
+Do not answer exact local JSYS questions from model knowledge merely
+because no detailed capsule currently exists.
 
 
 <!-- projects/macro-20/domain/luuos.md -->

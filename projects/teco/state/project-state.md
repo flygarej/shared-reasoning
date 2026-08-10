@@ -497,6 +497,37 @@ Rationale
 
 ---
 
+### Deferred Reference Retrieval
+
+Deferred TECO reference material is mirrored in the ChatGPT Library under:
+
+    /projects/teco/references/
+
+When accepted project knowledge does not establish correctness-relevant
+command-local semantics:
+
+1. For later/portable TECO semantics, begin with
+   `references/TECO-64/index.md` and use it to locate the relevant
+   TECO-64 topic file.
+
+2. When comparison or additional detail is needed, consult the TECOC
+   monolithic reference under `references/TECOC/`.
+
+3. For TOPS-20-specific questions, consult the searchable reference PDF
+   under `references/TOPS-20/`.
+
+The TOPS-20 reference has not been established as documenting exactly
+the TECO version present in the Panda TOPS-20 images. It is therefore
+documentary evidence, not proof of Panda runtime behaviour.
+
+Verified experiments on the target implementation remain authoritative
+when documentation and observed behaviour disagree.
+
+Retrieved reference material remains evidence. It is not automatically
+promoted to accepted project knowledge.
+
+---
+
 ### Online Source Repositories
 
 #### TECOC

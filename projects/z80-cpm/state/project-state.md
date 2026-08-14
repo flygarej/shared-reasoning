@@ -157,6 +157,59 @@ The following have been experimentally verified.
 
 ---
 
+# Verified Development Workflow
+
+Primary edit/build/test loop under yaze-ag:
+
+```
+ChatGPT/source suggestion
+    ↓
+Linux directory mounted as a yaze drive
+    ↓
+PIP copy to CP/M working drive
+    ↓
+TE edit/save (normalizes LF to CR/LF)
+    ↓
+M80 assemble to .REL
+    ↓
+L80 link to .COM
+    ↓
+execute under CP/M and observe
+```
+
+Interactive command forms verified during testing:
+
+```
+M80
+*=MUL/Z
+
+L80
+*MUL,MUL/N/E
+```
+
+Important distinction: the interactive M80 command uses `=`, while the interactive L80 command does not.
+
+---
+
+# Verified Z80 Experiment: 8-bit Multiply to 16-bit Decimal Output
+
+A native Z80 program was assembled, linked, and executed under CP/M using the Microsoft toolchain.
+
+Verified results:
+
+- `25 * 10` produced decimal `250`.
+- `25 * 20` produced decimal `500`, demonstrating correct use of a 16-bit product because 500 exceeds the 8-bit range.
+- The multiplication routine used software repeated addition because the Z80 has no multiply instruction.
+- The decimal print routine used the stack to reverse generated digits before output.
+
+A failure was reproduced when the print loop kept its digit counter in register `B` across a BDOS console-output call without preserving `BC`. The program printed the correct leading result and then overran its logical stack, eventually crashing yaze-ag.
+
+The fix was to make the local `PUTCHAR` wrapper preserve `BC` around BDOS function 2.
+
+Accepted lesson: a caller must not rely on a register surviving a subroutine or BDOS call unless the interface explicitly guarantees it or the wrapper preserves it.
+
+---
+
 # Working Models
 
 The default M80 syntax mode appears to be Intel 8080 because 8080 source

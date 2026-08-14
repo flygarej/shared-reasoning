@@ -131,6 +131,73 @@ Relationship promoted to Project State.
 
 ---
 
+## Experiment 4 - Z80 Multiply and Decimal Output
+
+Built a native Z80 program that:
+
+- loads two 8-bit integers from memory;
+- multiplies them in software using repeated addition;
+- retains the result as a 16-bit value;
+- converts the result to decimal;
+- prints through CP/M BDOS.
+
+Observed:
+
+- `25 * 10` -> `250`
+- `25 * 20` -> `500`
+
+The second test verifies that the high byte of the 16-bit product is handled correctly.
+
+---
+
+## Experiment 5 - Register Preservation Failure
+
+Initial decimal-output code used `B` as the digit count while `PUTCHAR` called BDOS function 2.
+
+`PUTCHAR` did not preserve `BC`. The program printed the correct result prefix and then continued popping past the digit data, corrupting return state and eventually crashing yaze-ag itself.
+
+Fix:
+
+```asm
+PUTCHAR:
+        PUSH    BC
+        LD      C,2
+        CALL    5
+        POP     BC
+        RET
+```
+
+After the fix, execution completed normally.
+
+Promoted lesson: register preservation must be part of the subroutine contract; BDOS calls must not be assumed to preserve arbitrary registers.
+
+---
+
+## Development Workflow Update
+
+Practical yaze-ag workflow established:
+
+1. Copy source from ChatGPT into a Linux directory mounted as a yaze logical drive.
+2. Use PIP to copy the file to a CP/M working drive.
+3. Open and save in TE to normalize LF line endings to CR/LF.
+4. Assemble with M80.
+5. Link with L80.
+6. Execute and report observations.
+
+Interactive forms verified:
+
+```
+M80
+*=MUL/Z
+
+L80
+*MUL,MUL/N/E
+```
+
+The `=` used at the M80 prompt must not be carried over to the L80 prompt.
+
+---
+
 ## Current Open Questions
 
 - Confirm default M80 CPU mode from documentation.

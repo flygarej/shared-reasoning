@@ -2133,46 +2133,65 @@ A well-maintained knowledge base:
 
 # project-state.md
 
-## Placeholder
+## Project
+`arm-64`
 
-This placeholder indicates that this is the start of a new project.
+## Objective
+Learn primarily AArch64 assembly through small inspectable experiments on Raspberry Pi 5: write, assemble/link, execute, inspect ELF/disassembly, and build a durable human-usable model.
 
-If this placeholder is present, no project-specific state has yet been established.
+## Verified environment
+Current Raspberry Pi 5: 16 GiB, `aarch64`, GCC Debian 14.2.0-19, GNU Binutils 2.44 targeting `aarch64-linux-gnu`; `getconf PAGESIZE` reports 16384. Several Pi 5 systems with Raspberry Pi OS/Ubuntu are available.
 
-Do not infer or reconstruct project state.
+## Verified work
+- Direct-syscall Hello World assembled with `as`, linked with `ld`, printed successfully, exit 0.
+- Address experiments verified `ldr x1,=msg`, `adr`, and `adrp`+`:lo12:` forms through execution/disassembly.
+- Tested distinction: ADRP split 4 KiB, Linux VM page 16 KiB, observed ELF LOAD alignment 64 KiB.
+- Scalar FP test loaded doubles 2.5 and 3.5, performed `fadd d2,d0,d1`, converted via `fcvtzs x0,d2`, and exited with status 6.
 
-Instead, establish the project's scope and current state through collaboration with the user, following the guidance in protocol.md.
+## Accepted working model
+- Every A64 instruction is a fixed 32-bit word; use the encoding-budget idea to predict restrictions, then verify.
+- Address-construction heuristic: ADR ~+/-1 MiB easy; ADRP+low offset ~+/-4 GiB moderately easy; farther addresses need another construction/load mechanism. This is not a memory-access limit.
+- X0-X30 are 64-bit GPRs for integers or addresses; W0-W30 are 32-bit views and W writes zero the upper X half.
+- Memory transfers support 8/16/32/64-bit objects; ordinary GPR arithmetic is W=32 or X=64.
+- Integer arithmetic: three operands are normal; ADDS/SUBS update NZCV; ADD/SUB signedness is interpretation; DIV has SDIV/UDIV; MUL gives the low result width and no NZCV.
+- V0-V31 are 32 shared 128-bit FP/SIMD registers. Scalar S/D and SIMD 16B/8H/4S/2D are views/arrangements of the same bank.
+- SIMD teaching anchor: a lane is a parallel path across the participating registers.
+- `FCVTZS` numerically converts FP to signed integer rounding toward zero.
+- ADRP 4-KiB arithmetic and Linux 16-KiB MMU pages are separate.
 
-Once sufficient project state has been established, remove this placeholder section and replace it with the current accepted project state.
+## Current direction
+Continue FP/SIMD. Scalar FP is established; next natural experiment is a small SIMD operation using lanes. Integer arithmetic is parked for later executable/disassembly drills.
 
-Future maintenance updates should preserve this document's identity by updating **project-state.md** rather than creating derivative filenames.
-
-The purpose of this document is to capture the project's current accepted understanding, enabling future conversations to resume work with minimal friction.
-
----
+## Deferred/open
+Calling convention/stack ABI; exact encodings/relocations; detailed IEEE-754 FPCR/FPSR behavior; high-half multiplication; detailed NEON/SIMD and SVE; privileged MMU/exception levels; endianness controls; Thumb history; bare-metal/peripherals.
 
 
 <!-- projects/arm-64/state/session-log.md -->
 
 # session-log.md
 
-## Placeholder
+## 2026-08-11 — Bootstrap and first program
+Established the AArch64/Raspberry Pi 5 project and native GNU toolchain. Built a direct-syscall Hello World and inspected it. Compared `ldr x1,=msg`, `adr`, and `adrp`+`add :lo12:` address construction. Verified the important distinction between ADRP's 4-KiB split, the tested Linux 16-KiB base page, and observed 64-KiB ELF LOAD alignment.
 
-This placeholder indicates that no project history has yet been established.
+## 2026-08-12 — Fixed instruction budget and addressing
+Accepted the 32-bit A64 instruction budget as a central reasoning generator. Developed the learning heuristic: ADR ~+/-1 MiB easy, ADRP+low offset ~+/-4 GiB moderately easy, farther addresses require another construction mechanism. Address construction was separated from later register-based address use.
 
-If this placeholder is present, this is the beginning of a new project.
+## 2026-08-12 — Integer arithmetic and FP/SIMD reconnaissance
+Established X/W GPR views, W-write zeroing of upper X bits, memory transfer widths versus 32/64-bit ordinary GPR arithmetic, three-operand ADD/SUB, optional NZCV via ADDS/SUBS, low-half MUL behavior, and SDIV/UDIV. High-half multiplication was deliberately deferred.
 
-Do not infer historical reasoning that has not yet occurred.
+Surveyed MMU, FP, and SIMD. Recognized FP and SIMD as one shared bank of 32 128-bit V registers. Introduced scalar S/D views and SIMD 16B/8H/4S/2D arrangements.
 
-Instead, establish the project through collaboration with the user, following the guidance in protocol.md.
+A collaborative teaching anchor emerged: **a SIMD lane is one parallel path across the registers participating in an operation.**
 
-The first maintenance update should remove this placeholder and begin the chronological project log.
+Contextual branches—IEEE-754 heritage, Thumb as primarily 32-bit ARM territory, configurable data endianness, and privileged MMU machinery—were parked rather than expanded.
 
-Future maintenance updates should preserve this document's identity by updating **session-log.md** rather than creating derivative filenames.
+### First scalar FP experiment
+Loaded `.double 2.5` and `.double 3.5` into D0/D1, executed `fadd d2,d0,d1`, converted with `fcvtzs x0,d2`, and exited through syscall 93. Execution returned 6. Disassembly verified `ldr d0`, `ldr d1`, `fadd`, and `fcvtzs`; section inspection showed expected IEEE-754 binary64 data.
 
-The purpose of this document is to preserve the project's chronological evolution so that future conversations can understand not only what is currently believed, but how those conclusions were reached.
+`FCVTZS` was clarified as numerical FP-to-signed-integer conversion rounding toward zero, not bit copying.
 
----
+### Return point
+Stay with FP/SIMD. Scalar FP is now experimentally established; next useful step is a small SIMD/lane experiment. Integer arithmetic remains parked for later drills.
 
 
 <!-- projects/arm-64/state/TODO.md -->
@@ -2301,17 +2320,46 @@ not as bootstrap documentation.
 
 <!-- projects/arm-64/domain/domain.md -->
 
-# Domain knowledge
+# ARM64 Domain Knowledge
 
-## Placeholder
+## Purpose
+Compact accepted knowledge for the ARM64 learning project on AArch64 Linux/Raspberry Pi 5.
 
-Since this is a fresh project, there is no domain knowledge at the moment.
-Add files with generators, boundaries and anchors as you explore the
-domain of the project.
-Since different domains may structure the knowledge in different ways
-we do not provide instructions on that, let that be part of the 
-collaboration.
+## Core generators
+- A64 instructions are fixed 32-bit words. Operand/immediate/range restrictions should first be understood as competition for that 32-bit encoding budget, then verified.
+- Separate address construction from address use: `ADR` is the easy nearby (~+/-1 MiB) case; `ADRP` plus low offset is the moderately easy (~+/-4 GiB) case; beyond that obtain/construct the address another way. Once an address is in an X register, PC distance is irrelevant to register-based dereference.
+- `ADRP` uses a fixed 4-KiB/12-low-bit address split. This is not an MMU page. Tested system: Linux base page 16 KiB; observed ELF LOAD alignment 64 KiB.
+- X0-X30 are 31 general-purpose 64-bit registers usable for data or addresses; W0-W30 are 32-bit views. Writing Wn zeros the upper half of Xn. Encoding 31 has contextual SP/XZR/WZR use.
+- Memory transfers support byte/halfword/word/doubleword sizes; ordinary GPR arithmetic works at W=32 or X=64.
+- Integer arithmetic is normally three-operand. ADD/SUB do not inherently encode signedness; ADDS/SUBS request NZCV updates. DIV distinguishes SDIV/UDIV. MUL returns the low result width and does not set NZCV; high-half multiply forms are deferred.
 
----
+## FP/SIMD generator
+There is one shared bank of 32 128-bit registers, V0-V31, used by both scalar FP and SIMD.
+
+Scalar views include S=32-bit and D=64-bit. SIMD arrangements include:
+`16B` = 16x8, `8H` = 8x16, `4S` = 4x32, `2D` = 2x64.
+
+### Lane anchor
+A useful human model is: **a lane is one parallel path across the registers participating in a SIMD operation.** The instruction imposes the lane interpretation; the V register itself remains 128 bits.
+
+## Verified scalar FP path
+A test loaded `.double 2.5` and `.double 3.5`, then executed:
+```asm
+ldr     d0, [x0]
+ldr     d1, [x1]
+fadd    d2, d0, d1
+fcvtzs  x0, d2
+```
+The process exited with status 6. `objdump` verified the instructions and the expected IEEE-754 binary64 data.
+
+`FCVTZS` is a numerical FP-to-signed-integer conversion rounding toward zero, not raw bit movement. `FCVTZU` is the unsigned counterpart.
+
+## MMU/context boundaries
+Linux normally manages virtual-memory translation for user space. ADRP's 4-KiB construction unit and the tested Linux 16-KiB VM page are distinct mechanisms.
+
+Parked context: detailed IEEE-754 control/status, SIMD/NEON operations, SVE capability, privileged MMU/exception levels, endianness controls, Thumb/Thumb-2, and bare-metal Pi work should be verified when they become active topics.
+
+## Current learning edge
+Remain on FP/SIMD. Scalar double FP is experimentally established; next useful step is a small SIMD/lane experiment. Integer arithmetic remains a parked return thread.
 
 

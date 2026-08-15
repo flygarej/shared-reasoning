@@ -2133,170 +2133,108 @@ A well-maintained knowledge base:
 
 # project-state.md
 
-## Placeholder
+## Projekt
 
-This placeholder indicates that this is the start of a new project.
+**demojoakim — Frihetstiden: personer och relationer**
 
-If this placeholder is present, no project-specific state has yet been established.
+## Syfte
 
-Do not infer or reconstruct project state.
+Utforska personer under den svenska frihetstiden och hur relationerna mellan dem såg ut och förändrades över tid.
 
-Instead, establish the project's scope and current state through collaboration with the user, following the guidance in protocol.md.
+Målet är att bygga en historisk nätverksmodell snarare än enbart en lista över personer.
 
-Once sufficient project state has been established, remove this placeholder section and replace it with the current accepted project state.
+## Omfattning
 
-Future maintenance updates should preserve this document's identity by updating **project-state.md** rather than creating derivative filenames.
+Projektets huvudsakliga observationsfönster är frihetstiden 1719–1772.
 
-The purpose of this document is to capture the project's current accepted understanding, enabling future conversations to resume work with minimal friction.
+Tidigare material får användas när det behövs för att förklara relationer som existerar eller får betydelse under perioden.
 
----
+## Accepterad undersökningsmodell
+
+Relationer mellan personer behandlas som tidsberoende. När källorna medger det bör en relation beskrivas med:
+
+- berörda personer;
+- relationstyp;
+- tidsperiod;
+- dokumenterade händelser eller källor;
+- förändringar över tid;
+- osäkerheter och alternativa tolkningar.
+
+Gemensamt medlemskap i ett parti, ämbetsverk eller annan grupp innebär inte automatiskt en dokumenterad direkt relation.
+
+## Första etablerade nod
+
+Lorentz Christoffer Stobée (Stobaeus), 1676–1756, är projektets första etablerade nod.
+
+Domänkapseln dokumenterar hans fortifikationskarriär och identifierar ett första professionellt nätverk kring Carl Magnus Stuart, Gerhard Ehrenschantz och Lars Rosenborg samt en politisk/dynastisk konfliktkontext kring Karl Fredrik av Holstein-Gottorp och Fredrik I.
+
+Exakta relationstyper och styrkan hos relationerna skall även fortsättningsvis följa vad beläggen faktiskt visar.
+
+## Öppen fråga
+
+Uppgiften att Stobée var Fortifikationens "femte chef" är inte verifierad och skall inte behandlas som accepterad kunskap innan den har belagts.
+
+## Samarbets- och överlämningsläge
+
+Projektet är avsett att kunna lämnas över till en ny samarbetspartner utan att den ursprungliga konversationen behöver spelas upp.
+
+En kommande samarbetspartner kan behöva praktisk hjälp med projektmiljön, särskilt:
+
+- att skapa motsvarande projektmappar i ChatGPT Library;
+- att vid behov skapa projektstrukturen på den egna datorn;
+- att förstå skillnaden mellan projektets Library-kopia och lokala projektfiler;
+- att köra underhåll och regenerera den sammanfogade promptfilen med projektets verktyg.
+
+Den praktiska miljön skall etableras tillsammans med samarbetspartnern och inte antas finnas färdig.
+
+## Nästa riktning
+
+- Fortsätt expandera nätverket från Stobée med källbelagda relationer.
+- Verifiera eller förkasta uppgiften om Stobée som Fortifikationens "femte chef".
+- Vid överlämning: hjälp den nya samarbetspartnern etablera Library- och eventuell lokal projektstruktur innan underhållsflödet förutsätts fungera.
 
 
 <!-- projects/demojoakim/state/session-log.md -->
 
 # session-log.md
 
-## Placeholder
+## 2026-08-15 — Bootstrap och första domänmodell
 
-This placeholder indicates that no project history has yet been established.
+Projektet etablerades för att utforska personer och tidsberoende relationer under den svenska frihetstiden.
 
-If this placeholder is present, this is the beginning of a new project.
+Lorentz Christoffer Stobée (Stobaeus) valdes som första nod, med särskilt intresse för hans verksamhet inom Fortifikationen. En första faktakontroll och domänkapsel skapades med Svenskt biografiskt lexikon som huvudsaklig dokumentationsgrund.
 
-Do not infer historical reasoning that has not yet occurred.
+Den första modellen skiljer mellan dokumenterade direkta relationer och enbart gemensam grupptillhörighet. Stobées professionella nätverk och hans politiska/dynastiska konfliktkontext ger de första grenarna att undersöka vidare.
 
-Instead, establish the project through collaboration with the user, following the guidance in protocol.md.
+Uppgiften att Stobée var Fortifikationens "femte chef" kunde inte verifieras och bevarades uttryckligen som en öppen fråga.
 
-The first maintenance update should remove this placeholder and begin the chronological project log.
+## 2026-08-15 — Första maintenance
 
-Future maintenance updates should preserve this document's identity by updating **session-log.md** rather than creating derivative filenames.
+Den första maintenance genomfördes efter att domänkunskap hade etablerats.
 
-The purpose of this document is to preserve the project's chronological evolution so that future conversations can understand not only what is currently believed, but how those conclusions were reached.
+Placeholder-innehållet i `project-state.md` och `session-log.md` ersattes med faktisk projektstatus och historik. Bootstrap-TODO:n ersattes med en aktiv projekt-TODO.
 
----
+Projektet skall kunna lämnas över till en ny samarbetspartner. Det noterades att denne kan behöva praktisk hjälp med att skapa projektmappar i ChatGPT Library och eventuellt motsvarande struktur på egen dator, samt med att köra underhåll och regenerera promptfiler. Detta skall inte förutsättas vara färdigkonfigurerat vid överlämning.
 
 
 <!-- projects/demojoakim/state/TODO.md -->
 
-# Fresh Project TODO
+# TODO.md
 
-## Goal
+## Purpose
 
-Establish enough accepted project knowledge that another collaborator can
-continue the investigation without replaying the original conversation.
+Track work that remains to be done.
 
----
+This file is intentionally transient. Accepted project knowledge belongs in `project-state.md`, historical reasoning in `session-log.md`, and stable conceptual knowledge in domain artefacts.
 
-## Initial setup
+## Current Work
 
-- Choose a short project name.
-- Rename or copy `projects/fresh-project` to `projects/<project>`.
-- Confirm that the repository contains:
-  - `protocol.md`;
-  - `rationale.md`;
-  - `create-project-prompt.sh`;
-  - `validation/handover-validation.md`;
-  - `projects/common/`.
-
----
-
-## Establish the project
-
-Update `state/project-state.md` with:
-
-- project name;
-- objective;
-- scope;
-- known environment;
-- available evidence and documentation;
-- accepted observations;
-- current working models;
-- explicit unknowns;
-- next useful experiment.
-
-Update `state/session-log.md` with the initial discussion, evidence, decisions,
-and unresolved alternatives.
-
-Create one or more files under `domain/` when stable conceptual knowledge
-begins to emerge.
-
-Start small. A single domain file is sufficient.
-
----
-
-## During the first session
-
-- Distinguish observation, documentation, inference, hypothesis, working
-  model, and verified conclusion.
-- Ask for missing factual or conceptual context.
-- Prefer a small discriminating experiment over speculative expansion.
-- Keep unresolved alternatives visible.
-- Do not create a large domain taxonomy before the investigation requires it.
-
----
-
-## Generate the bootstrap
-
-Run:
-
-```bash
-./create-project-prompt.sh <project>
-```
-
-Confirm that this creates:
-
-```text
-projects/<project>/<project>.md
-```
-
-Upload the generated file to a new conversation.
-
----
-
-## Validate reconstruction
-
-Use:
-
-```text
-validation/handover-validation.md
-```
-
-A successful handover should demonstrate that the new collaborator can:
-
-- identify the current accepted state;
-- distinguish state from history;
-- reconstruct important conceptual relationships;
-- respect uncertainty and boundaries;
-- begin productive work.
-
-Record any reconstruction failure.
-
-Use observed failures to improve the smallest relevant project or common
-artefact.
-
----
-
-## After validation
-
-- Correct missing or misleading project knowledge.
-- Regenerate the bootstrap.
-- Continue the investigation.
-- Perform maintenance at natural milestones.
-- Compact only after successful reconstruction has been demonstrated.
-
----
-
-## Bootstrap Completion
-
-Once the project has completed its first successful maintenance:
-
-- Replace state/TODO.md with the contents of state/standard-project-TODO.md, 
-  then delete state/standard-project-TODO.md.
-- Remove bootstrap-specific instructions that no longer apply.
-- Keep only work items relevant to the active project.
-
-The TODO should thereafter function as the project's active work queue,
-not as bootstrap documentation.
-
+- Verifiera eller förkasta uppgiften att Lorentz Christoffer Stobée var Fortifikationens "femte chef".
+- Fortsätt kartlägga Stobées nätverk med källbelagda, tidsbestämda relationer.
+- Undersök vid behov Carl Magnus Stuart, Gerhard Ehrenschantz och Lars Rosenborg som nästa professionella noder.
+- Undersök Karl Fredrik av Holstein-Gottorp och Fredrik I där det behövs för att förstå Stobées politiska relationer och konfliktkontext.
+- Vid överlämning till ny samarbetspartner: hjälp till att skapa projektmappar i ChatGPT Library och, om önskat, motsvarande lokal projektstruktur.
+- Hjälp den nya samarbetspartnern att köra projektets maintenance-/promptgenereringsflöde när miljön är etablerad.
 
 
 <!-- projects/demojoakim/domain/domain.md -->

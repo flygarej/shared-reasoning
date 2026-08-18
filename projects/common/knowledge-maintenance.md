@@ -43,6 +43,28 @@ Every retained artefact should contribute to future reasoning.
 
 ---
 
+## Persistence Boundary
+
+Project artefact identity is independent of the mechanism used to persist it.
+
+When persistent project storage is available, maintain project artefacts in
+their established locations.
+
+When persistent project storage is unavailable, maintenance should instead
+return the changed artefacts to the collaborator using their stable filenames
+and expected project-relative paths.
+
+The collaborator is then responsible for replacing those artefacts in the
+authoritative project structure before generating the next bootstrap prompt.
+
+Do not create alternate filenames, derivative artefacts, or parallel copies
+merely because persistent storage is unavailable.
+
+The maintenance operation remains the same in both cases. Only responsibility
+for persistence changes.
+
+---
+
 ## Maintenance Activities
 
 ### Promote
@@ -165,6 +187,12 @@ Prefer a small number of authoritative examples over many partial ones.
 
 After substantial maintenance, test whether the revised artefacts still
 reconstruct the accepted model.
+
+When maintenance is performed across a persistence boundary, regenerate the
+bootstrap prompt after the collaborator has replaced the returned artefacts.
+
+When practical, review the regenerated bootstrap before handover. This checks
+both the maintained artefacts and their assembled representation.
 
 Useful checks include:
 

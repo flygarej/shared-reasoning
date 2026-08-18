@@ -2129,243 +2129,189 @@ A well-maintained knowledge base:
 
 
 
-<!-- projects/fwlog/state/project-state.md -->
+<!-- projects/midas/state/project-state.md -->
 
-# Firewall Log Pipeline -- Project State
+# project-state.md
 
-## Purpose
+## Placeholder
 
-Build and maintain a PostgreSQL-based firewall log analysis pipeline for
-network investigation.
+This placeholder indicates that this is the start of a new project.
 
-## Accepted architecture
+If this placeholder is present, no project-specific state has yet been established.
 
-Dream Router → rsyslog → NDJSON → jq normalization → PostgreSQL staging
-→ firewall.events → fwq SQL investigations.
+Do not infer or reconstruct project state.
 
-## Accepted boundaries
+Instead, establish the project's scope and current state through collaboration with the user, following the guidance in protocol.md.
 
-* Preserve existing architecture.
-* Bash automation.
-* jq performs final normalization.
-* Historical rotated logfiles are imported.
-* Source logfiles are preserved unchanged; known NUL-byte corruption is removed only from the ingestion stream before jq normalization.
-* Current dataset contains Dream Router dropped traffic.
-* Canonical event model is represented by firewall.events.
-* DDL, scripts, rsyslog configuration, jq programs, and investigation SQL
-  are authoritative implementation artefacts, but are not startup
-  knowledge. Inspect them only when the current task depends on their
-  exact semantics.
-* Do not infer exact field mappings, conversion behaviour, SQL semantics,
-  or configuration behaviour from the compressed project state or domain
-  capsules. Consult the relevant implementation artefact or verify by
-  experiment.
+Once sufficient project state has been established, remove this placeholder section and replace it with the current accepted project state.
 
-## Canonical concepts
+Future maintenance updates should preserve this document's identity by updating **project-state.md** rather than creating derivative filenames.
 
-* event_staging is transient.
-* imported_files records imported source files by (host,path,SHA-256).
-* insert_event(jsonb) is the database insertion contract.
-* mirai_signature is a generated column indicating (not proving)
-  Mirai-like behaviour.
+The purpose of this document is to capture the project's current accepted understanding, enabling future conversations to resume work with minimal friction.
 
 ---
 
 
+<!-- projects/midas/state/session-log.md -->
 
-<!-- projects/fwlog/state/session-log.md -->
+# session-log.md
 
-# Session Log
+## Placeholder
 
--   Reconstructed pipeline from rsyslog through PostgreSQL.
--   Reviewed rsyslog parser and routing.
--   Reviewed import automation and duplicate protection.
--   Reviewed jq normalization contract.
--   Reviewed firewall.events schema and helper functions.
--   Reviewed fwq dispatcher and investigation queries.
--   Identified candidate future tests (jq conversion behaviour,
-    fingerprint validation, timestamp semantics).
--   Added project-local selective-loading boundaries and implementation
-	contract anchors after the initial full implementation review caused
-	substantial active context load. Complete implementation artefacts
-	remain authoritative for exact semantics but are now intended to be
-	inspected on demand.
--   Validated end-to-end propagation of reported_tz and received_tz
-	through rsyslog and jq. Initial suspicion of data loss was traced to
-	inspection of historical rows imported before timezone support was
-	added.
--   Observed a rotated firewall logfile containing 875 NUL bytes after an
-    unclean shutdown/power-loss condition; the NULs caused jq normalization
-    to fail.
--   Verified `tr -d '\000'` as a narrow ingestion-stream mitigation: it
-    removed all NUL bytes, the real jq normalization succeeded, and a
-    deliberately NUL-corrupted copy produced byte-identical normalized output
-    to the clean reference according to `cmp`. The source logfile remains
-    unchanged.
+This placeholder indicates that no project history has yet been established.
+
+If this placeholder is present, this is the beginning of a new project.
+
+Do not infer historical reasoning that has not yet occurred.
+
+Instead, establish the project through collaboration with the user, following the guidance in protocol.md.
+
+The first maintenance update should remove this placeholder and begin the chronological project log.
+
+Future maintenance updates should preserve this document's identity by updating **session-log.md** rather than creating derivative filenames.
+
+The purpose of this document is to preserve the project's chronological evolution so that future conversations can understand not only what is currently believed, but how those conclusions were reached.
+
+---
 
 
-<!-- projects/fwlog/state/TODO.md -->
+<!-- projects/midas/state/TODO.md -->
 
-# TODO
+# Fresh Project TODO
 
--   Validate jq tonumber? behaviour with prepared sample logs.
--   Verify timestamp/session timezone semantics.
--   Review remaining SQL queries as the project evolves.
--   Consider future adapters for nftables/UFW while preserving canonical
-    event model.
--   Observe whether implementation-interface contracts consistently reduce
-	context requirements and improve reconstruction across multiple
-	engineering sessions. If the pattern proves general rather than
-	project-specific, consider promoting it into the common knowledge
-	architecture as a distinct artefact or responsibility.
--   Determine the canonical reporting timezone.
-    Current working model:
-    - Canonical database representation remains timestamptz.
-    - Reports may be rendered either in UTC or Europe/Stockholm,
-      but the selected convention must be stated explicitly.
+## Goal
 
+Establish enough accepted project knowledge that another collaborator can
+continue the investigation without replaying the original conversation.
 
-<!-- projects/fwlog/domain/canonical-event.md -->
+---
 
-# Canonical Event Model
+## Initial setup
 
-The database represents a source-neutral firewall event.
+- Choose a short project name.
+- Rename or copy `projects/fresh-project` to `projects/<project>`.
+- Confirm that the repository contains:
+  - `protocol.md`;
+  - `rationale.md`;
+  - `create-project-prompt.sh`;
+  - `validation/handover-validation.md`;
+  - `projects/common/`.
 
-Namespaces: - Event - Observer - Firewall - Network
+---
 
-Generated fields: - mirai_signature
+## Establish the project
 
-Constraints: - event_type='firewall' - Enumerated firewall actions and
-protocols.
+Update `state/project-state.md` with:
 
+- project name;
+- objective;
+- scope;
+- known environment;
+- available evidence and documentation;
+- accepted observations;
+- current working models;
+- explicit unknowns;
+- next useful experiment.
 
-<!-- projects/fwlog/domain/implementation-contracts.md -->
+Update `state/session-log.md` with the initial discussion, evidence, decisions,
+and unresolved alternatives.
 
-# Implementation Contracts
+Create one or more files under `domain/` when stable conceptual knowledge
+begins to emerge.
 
-## Purpose
+Start small. A single domain file is sufficient.
 
-Preserve the load-bearing contracts between pipeline components without
-requiring their complete implementation artefacts to remain in session
-context.
+---
 
-These anchors support architectural reasoning.
+## During the first session
 
-They do not establish exact field mappings, syntax, conversion behaviour,
-or implementation-local semantics.
+- Distinguish observation, documentation, inference, hypothesis, working
+  model, and verified conclusion.
+- Ask for missing factual or conceptual context.
+- Prefer a small discriminating experiment over speculative expansion.
+- Keep unresolved alternatives visible.
+- Do not create a large domain taxonomy before the investigation requires it.
 
-## Parsing and normalization
+---
 
-rsyslog performs source-specific parsing and emits NDJSON.
+## Generate the bootstrap
 
-jq performs final canonical normalization before database insertion.
+Run:
 
-This distinction prevents source parsing and canonical normalization from
-being treated as interchangeable responsibilities.
+```bash
+./create-project-prompt.sh <project>
+```
 
-## Input sanitization
+Confirm that this creates:
 
-Historical source logs may contain NUL bytes after an unclean shutdown or
-power-loss condition. Raw NUL bytes can make otherwise valid JSON input fail
-before jq normalization.
+```text
+projects/<project>/<project>.md
+```
 
-Remove only NUL bytes from the ingestion stream before jq, for example with
-`tr -d '\000'`. Preserve the original source logfile unchanged.
+Upload the generated file to a new conversation.
 
-This is a narrow mitigation for an observed corruption mode, not permission to
-generalize preprocessing into arbitrary malformed-input repair without new
-evidence.
+---
 
-## Database insertion
+## Validate reconstruction
 
-Normalized events enter PostgreSQL through `insert_event(jsonb)`.
+Use:
 
-The insertion function is the database contract presented to the import
-pipeline. Callers should not rely directly on the physical layout of
-`firewall.events`.
+```text
+validation/handover-validation.md
+```
 
-Exact accepted input fields and conversion behaviour must be verified
-from the current jq and database implementation artefacts.
+A successful handover should demonstrate that the new collaborator can:
 
-## Persistence
+- identify the current accepted state;
+- distinguish state from history;
+- reconstruct important conceptual relationships;
+- respect uncertainty and boundaries;
+- begin productive work.
 
-`event_staging` is transient.
+Record any reconstruction failure.
 
-`firewall.events` is the canonical persistent event model used by
-investigations.
+Use observed failures to improve the smallest relevant project or common
+artefact.
 
-Staging representation must not be treated as canonical event semantics.
+---
 
-## Import identity
+## After validation
 
-Imported source files are recorded by `(host, path, SHA-256)`.
+- Correct missing or misleading project knowledge.
+- Regenerate the bootstrap.
+- Continue the investigation.
+- Perform maintenance at natural milestones.
+- Compact only after successful reconstruction has been demonstrated.
 
-The import ledger prevents replay of an identical recorded file identity.
+---
 
-This anchor does not by itself establish the behaviour for renamed,
-modified, partially imported, or concurrently imported files; those cases
-require implementation inspection or experiment.
+## Bootstrap Completion
 
-## Derived evidence
+Once the project has completed its first successful maintenance:
 
-`mirai_signature` is a generated indication of Mirai-like behaviour.
+- Replace state/TODO.md with the contents of state/standard-project-TODO.md, 
+  then delete state/standard-project-TODO.md.
+- Remove bootstrap-specific instructions that no longer apply.
+- Keep only work items relevant to the active project.
 
-It is not proof, classification, or attribution.
-
-Investigation must corroborate it using additional packet fingerprints
-and raw evidence.
-
-## Implementation-reference boundary
-
-DDL, Bash scripts, rsyslog configuration, jq programs, and investigation
-SQL are reference artefacts for exact local semantics.
-
-Begin work from project state and the relevant domain capsules.
-
-Load implementation artefacts only when the current question depends on:
-
-* exact field names or mappings;
-* type conversions or null handling;
-* timestamp behaviour;
-* duplicate and transaction behaviour;
-* SQL expressions, constraints, indexes, or generated columns;
-* parser, shell, jq, or query syntax;
-* configuration precedence or runtime behaviour.
-
-After inspection or experiment, promote only accepted contracts,
-boundaries, anchors, working models, and open questions into the compact
-knowledge artefacts. Do not copy implementation detail into domain
-capsules merely because it was inspected.
+The TODO should thereafter function as the project's active work queue,
+not as bootstrap documentation.
 
 
-<!-- projects/fwlog/domain/investigation.md -->
 
-# Investigation Model
+<!-- projects/midas/domain/domain.md -->
 
-Typical workflow:
+# Domain knowledge
 
-1.  Volume
-2.  Source/subnet
-3.  Target ports
-4.  Packet fingerprints
-5.  Behavioural signatures
-6.  Raw evidence
+## Placeholder
 
-Mirai signature is an indication requiring corroboration from additional
-fingerprint fields.
+Since this is a fresh project, there is no domain knowledge at the moment.
+Add files with generators, boundaries and anchors as you explore the
+domain of the project.
+Since different domains may structure the knowledge in different ways
+we do not provide instructions on that, let that be part of the 
+collaboration.
 
-
-<!-- projects/fwlog/domain/pipeline.md -->
-
-# Pipeline Generator
-
-Router → rsyslog parsing → NDJSON → jq normalization → staging →
-insert_event(jsonb) → firewall.events.
-
-Generators: - Source-specific parsing. - Canonical JSON normalization. -
-Typed relational insertion.
-
-Anchors: - Historical rotated logs are imported. - SHA-256 import ledger
-prevents replay of identical files.
+---
 
 

@@ -16,6 +16,7 @@ Dream Router → rsyslog → NDJSON → jq normalization → PostgreSQL staging
 * Bash automation.
 * jq performs final normalization.
 * Historical rotated logfiles are imported.
+* Source logfiles are preserved unchanged; known NUL-byte corruption is removed only from the ingestion stream before jq normalization.
 * Current dataset contains Dream Router dropped traffic.
 * Canonical event model is represented by firewall.events.
 * DDL, scripts, rsyslog configuration, jq programs, and investigation SQL

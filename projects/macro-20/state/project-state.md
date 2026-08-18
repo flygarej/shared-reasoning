@@ -113,13 +113,21 @@ Accepted compile-time mechanisms include:
 - `PHASE` and `DEPHASE`;
 - `.ORG`;
 - generated command tables;
-- symbolic field placement.
+- symbolic field placement;
+- relocatable `.REL` output for LINK and reusable `.UNV` universal files;
+- standard MACSYM source abstractions for calls, returns, AC preservation, and named local storage.
 
 Macros may encode relationships once and generate multiple consistent
 representations.
 
 Repeated use of a mechanism does not by itself establish the mechanism's
 defining purpose.
+
+MACSYM is accepted as a standard TOPS-20 MACRO support environment rather
+than merely an optional collection of conveniences. It provides conventional
+source-level abstractions such as `CALL`, `RET`, `RETSKP`, AC preservation,
+and named stack/AC variables. Site-specific Columbia Chapter 7 packages are
+reference material, not portable MACRO-20/MACSYM semantics.
 
 ---
 
@@ -458,7 +466,7 @@ The project domain is undergoing maintenance to:
 - Exact `IDIVM` and `DIVM` remainder behaviour.
 - Exact floating-point field boundaries where the chapter transcription
   was ambiguous.
-- Detailed stack instruction and procedure-linkage conventions.
+- Detailed raw stack-instruction semantics beneath the accepted MACSYM procedure-linkage conventions.
 - Byte-pointer bit-level representation.
 
 ### Macro processing

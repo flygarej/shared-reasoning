@@ -148,6 +148,53 @@ had been written directly.
 
 ---
 
+## MACRO-20 Assembly Model
+
+MACRO-20 is a two-pass, statement-oriented assembler whose compile-time
+language includes symbols, expressions, pseudo-ops, macros, conditional
+assembly, and user-defined operation definitions.
+
+Its normal product is relocatable `.REL` code for LINK. It can also produce
+listing output and universal `.UNV` files whose definitions may be searched by
+other assemblies.
+
+This reinforces the project generator that MACRO-20 is a construction
+language over PDP-10 machine code, not merely a mnemonic translator.
+
+---
+
+## MACSYM Standard Abstraction Layer
+
+MACSYM is a standard TOPS-20 macro and symbol environment intended to make
+MACRO sources more consistent and readable. A source normally imports it with
+`SEARCH MACSYM`; support routines needed by some facilities may be requested
+with `.REQUIRE SYS:MACREL`.
+
+Accepted MACSYM facilities include:
+
+- `CALL`, `RET`, `RETSKP`, and `CALLRET` subroutine conventions;
+- conventional accumulator roles;
+- `SAVEAC` preservation of selected ACs with automatic restoration on return;
+- `STKVAR` and `TRVAR` named stack variables;
+- `ASUBR` naming arguments passed in T1--T4;
+- `ACVAR` locals allocated from preserved ACs with automatic save/restore.
+
+These are assembly-time abstractions over PDP-10 runtime mechanisms. They do
+not change the underlying processor semantics.
+
+A useful historical style anchor accompanies this model: subroutines should
+document their entry values, return paths/values, and relevant global state.
+
+### Portability boundary
+
+The Columbia utility packages described in Chapter 7 of the 1980
+*DECSYSTEM-20 Assembly Language Guide* are site-specific extensions. Their
+COMND helpers and other macros may demonstrate useful programming structures,
+but they must not be reconstructed as standard MACRO-20, MACSYM, or TOPS-20
+facilities.
+
+---
+
 ## Boundaries
 
 Current project knowledge does **not** establish:

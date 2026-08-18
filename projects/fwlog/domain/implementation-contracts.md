@@ -20,6 +20,19 @@ jq performs final canonical normalization before database insertion.
 This distinction prevents source parsing and canonical normalization from
 being treated as interchangeable responsibilities.
 
+## Input sanitization
+
+Historical source logs may contain NUL bytes after an unclean shutdown or
+power-loss condition. Raw NUL bytes can make otherwise valid JSON input fail
+before jq normalization.
+
+Remove only NUL bytes from the ingestion stream before jq, for example with
+`tr -d '\000'`. Preserve the original source logfile unchanged.
+
+This is a narrow mitigation for an observed corruption mode, not permission to
+generalize preprocessing into arbitrary malformed-input repair without new
+evidence.
+
 ## Database insertion
 
 Normalized events enter PostgreSQL through `insert_event(jsonb)`.

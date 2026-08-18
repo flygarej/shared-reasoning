@@ -17,3 +17,11 @@
 	through rsyslog and jq. Initial suspicion of data loss was traced to
 	inspection of historical rows imported before timezone support was
 	added.
+-   Observed a rotated firewall logfile containing 875 NUL bytes after an
+    unclean shutdown/power-loss condition; the NULs caused jq normalization
+    to fail.
+-   Verified `tr -d '\000'` as a narrow ingestion-stream mitigation: it
+    removed all NUL bytes, the real jq normalization succeeded, and a
+    deliberately NUL-corrupted copy produced byte-identical normalized output
+    to the clean reference according to `cmp`. The source logfile remains
+    unchanged.

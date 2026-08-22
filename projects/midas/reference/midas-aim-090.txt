@@ -1,0 +1,1710 @@
+               MASSACHUSETTS INSTITUTE OF TECHNOLOGY
+                            PROJECT MAC
+
+Artificial Intelligence
+Meno. No. 90                                           MAC--279
+Revised:  October 1968                                 October 1965
+
+
+
+                               mapas,
+                         MASSACHUSETTS INSTITUTE OF TECHNOLOGY
+                                      Project MAC
+                                                                              Memorandum NAC-M-268
+                                                                              Janvary 31, 1966
+                                                                              Attach
+                                                                              nan     ed to A.I. Meno. 90
+mr
+PROM:
+         POPE USERS
+          ‘Peter Sanson                                                         {EDAS" (HAC“MGina:-278)
+SUBJECT: Linking Loader for MIDAS
+
+        ‘The MIDAS Linking Loader is a POP-6 program co load relocatable-
+format output from the MIDAS assembler,                       with facilities to handle
+sysbolic cross-references between independently assembled prograns. ts
+Alchough 4e 4s arranged prinarily to load from DECtape, the loader
+ble also to load paper-tape relocatable, program
+To use the losder, load 4¢ off the MACUMP SYSTEM                                   cape as the file STINK .
+ (A  file     STINK   NEW’  may       e x t          xing    olé     bugs        or   introducing new
+features.)         Then    the    londer     expects    commands             to  be   typed in on che one
+Linetisletype;         two   successive       ALT   MODE    characters             terminate      the string
+of commands. The commands in a string are not performed until the string
+fs thus terminated, While @ comand string has (andnot type                             been terminated,
+RUBOUT     will    erase     the   last     typed-in    character                            {¢ out again
+a   reminder).        A   comand      string     may   contain      any         nunber    of   connandi
+the   effect      is  the    sane   whether      the   cormands        a r e     Cogether      in one string
+or   are    in  successively        typed-in       strings        each       delimited     by    two ALT MODES.
+The loader saintains evo tables whose contents may change as programs
+fare loaded: (a) the Londer Table, which conteins definitions of global
+Syabols and unresolved virtual usages;                       (b) the local symbol table,
+Containing all program sanes, and the local symbols for each progt
+for which their loading was requested.
+In the following command descriptions, 9 te an octal number, or one of
+the   command characters said to have a value.“ te ALT NODE, which
+echoes out a §. Q Fepresents SPACE .
+ommand £0                  Meanton
+P                                                       paper tape reader. (Tape oust
+                           Set to read‘be infromthethereader, and the reader must be on
+                                    when this comand te performed.)
+nitnanelnene?@             Set to read from beginning of file panel nae? theon lest
+                                    Dectape unit n. (If p is omitted,
+                                    DECtape mentiened:Se aesuned.)
+x                          Load selected input file without local symbols.
+Load selected input file, saving local syabol definitions
+           for DUT. (Nand L set the Current            Starting
+                                    sehfted in the progré
+           loaded tf that te not 9.)
+Copy all defined global synbols in the Loader Table
+           Sato the local symbol cable (for DDT); then
+               ete sane from the Loader Table.
+Reed in the relocatable        version of DDT from DECtape
+           ‘untt 1, tell it of all eyabols in the local
+            syabol table; wipe out the loader and transfer
+           control to DDT,
+List files of Déceape unitp . (Ae ts the M comand,
+           the argument may be omitte 5)
+‘Transfer control to the Current Starting Add
+  jee the Current   Starting Addr          top and eransfer
+           ‘control thereto.
+
+
+
+
+                                                                    he
+Print the value of p as an octal integer.
+Has the value of the Current Starting Addr
+Has the value of the lovest address currently ui
+           ‘by the loader.
+Delete all local and global sysbols from the local
+           faymbol table and the Loader Table.
+Zero core except registers 26 through 37 and the loader
+            (fro E yp).
+Print contents of location p
+Bas the current value of program relocation.
+Set program relocation ton -
+‘Set conmon relocation to.
+Print atorege map: Each program inis core           has one line
+           inthe map. At the left               the progran nane,
+           land at the right infiret  octal is « word whose
+           fight half ie the               location used by the
+                           whose   left   half  1 the last
+            Tocation andused by the progré
+           progran
+                Print storage map and missing list (short form). Each
+                          progren losded appears as follovs: one line
+                         Sieh the progran ane at the leit and the first
+                             ldreae used by the program at the Fight; any
+                          Buuber of lines indented one space, each listing
+                         ‘an undefined syabol used in that progran, with
+                          the address    of its first use therein, Symbols
+                          are global unless preceded by * meaning local.
+at              Print storage map and missing List (long form). (Here
+                          the value of pis immaterial, but an argunent
+                         must be gives.) Like T with’ the folloving
+                         changes: (a) folloving the progran nave is a
+                         D6-bit word in octal with first and last addresses
+                               for the $ comand; (b) the address ts given
+                         of each reference to each undefined symbol.
+néayn>          Define symbol gym with che value n . The symbol vill be
+                          global unless a * is cyped sonevhere between
+                           < and >
+
+
+sce                           ty exceeded. The program    being Gloaded
+                                    with the loeder at adr.
+      adr ayn   Undefined gi a1 stgmment. The global symbol sus
+                         was undefined when needed by the lot
+                          perfor a perencter soeigaesnt cr location
+                             iganent. ‘The current loading address Ls
+                         ade
+          oye   Wultiply defined global,a : vhen                           to
+                                             A defined global appearedlocation,
+                          the left of            adr , the current
+                          id not equal the value of the global. Te w
+                         BOE redefined.
+                Checksum error.
+                File not found on DECtape specified.
+a2
+
+
+
+
+                ‘Too much symbols:
+                          that DUT + symbols + prosré
+                          avetlable by qua registers.
+ux              Illegal senory reference: an error by the loader.
+A tape labelled LIBRARY {5 available, containing              various useful sub:
+Toutines   in  the   file     LIBRAR   1.  Up-to-date   details      are posted in the
+PDP-6 room.             program in the library file was
+                Eachtruction,                                     assesbled with thé
+         peevdoins                  and so will be loaded only if in the Loader
+Fable  1   #  request     for   a  global symbol defined. in chat progran. There=
+fore the Library f1le should not be loaded until all prograns have been
+Joaded which make reference to the library eubroutines.
+comand string Examples.
+(at) To load the program APLUA RALPHA from DECe:
+      SUBR 1 fron unit 2, and the progré
+       Bet a storage nap and aissing list
+        SMALTIA MALIA L2HsvaRL © UsUIR? O11 ©O
+        In thie exanple, L vas used for each program to load Ate ocel
+        symbols. The N comand could have been used in
+        not te load local symbole.
+(2)     Than td go co DIT:
+        r@®
+(@)     To load the progr                     e-tape reader and transfer to Lee
+
+        ‘The L command vas not used here because DOT vas not requested.
+(©)     To load PROG REL from DECt      unit 1 and the requested library
+        routines from unit
+        rnpno REL © uramary ©xOO
+   MIDAS is a PDP-6 senbly progran, Its input s # symbolie-Language file
+   either of paper tape punched in ASCIL code, or o DECts ASCII-node file
+   according to the MAC file foras(see t MAC-H-249). The output of MIDAS {=             |!
+   4 binary file either a
+   The Amput Language 1s
+   4m the input does not depend on its position in a Line or on the pa
+   inate: ‘upon the characters (such colon, comma, and carriage return) which
+   delintt te.                                         “
+   The output of MIDIS consists prinarily of storage words: 36: bie quanettte
+    intended to be placed in’aenory Locations when the ftfe is loaded. Also tn
+   he output fle usually « ayabol cable -- 4 tet of nanes and volves of
+   tymbols defined by the progresmer = {6 includ for use with DUP (eee DEC~
+   $-UP-DUT-UN-FP-ACTOP And A.I. Memo. No. 147, "A Multiple Procedure DOT")
+   ‘The progranmer may        one of nevetal formats for his binaey" output! Sie
+   of them fees cet           lows him to make symbolic crose-r
+~ tndepe
+   x4                       5                   Rays
+         we                                        variety
+  may express quantieis                            18 PBP~6 eachine instructions,
+  re ger to any of several Fadics + floating point nunbers, half-vor
+                                                                          ds, character
+  strings, ete, In addition te hy           iety of features (e.g. macroihstructions
+  and indefinite rep ®) for substitution and repitition of character stri
+                                                                               ngs
+ conpeletig input Go mamAsS        =»                                      si
+                                                           ie sat
+by nenbets of the Tech Hodel atirond Glub including          ae aa a
+ Gross, Holloway, Kotok, Nelson, Eggers and Samson. Since then, most. df che
+ work:on the       eiler bon Ws Que Wy Se Galerie mesw ee cae
+     intenance and wvelopnent of MIDAS. The corresponding position reasrding
+ ‘the MIDAS Linking loader 1s held by Mr. Holloway.
+          SUNTAX OF CHARACTERS
+        Appearing in Value Words
+
+:           Agnored except to
+
+            syllable constituents
+
+
+            Antrarsyllable operators
+
+
+            syllable       separators
+
+
+
+            f4eld      separators       the sysbol 4 ull be
+                                                   and for any
+                                        single field eeparator
+                                        the symbol 2 will be
+                                        used to stand for any
+    :      word teminators
+oO
+o>         delimit syllable from without;
+tl         delinit word within
+ @         indirect bit; @ eay                ap ear enyuhere in a vord
+SYLLABLES
+‘The elesentary unit of seaning in MIDAS is the syllable. Depending upon ies
+ form and upon how it was defined, a syllable may be # pusber, a symbol,
+gacro nane, a peeudoinstruction, a quoted character, or one of several kinds
+of bracketed vord, A pseuddinstruction directs soae action on the part of
+MIDAS; 2 macro name stands for a string of character; other syllables (termed
+valued syllables) represent numeric quantities, vhich are 36 bits in size.
+Such « quontity ts the value of the syllable, Associa       with each valued
+syllable {s @ relocation: a quantity which is either Sor 4. The value of
+sone syllables may virtual, meaning the value is not known at assembly
+tine but will become know as the program {8 loaded, Virtual quantities have
+@ relocation of fy
+
+
+A string of digits forms on integer with its expressed numeric value and 9
+relocation, ‘The nusber ts interpreted in the current radix. An integer
+ended by ' (single quote) {8 hovever taken tn base        and an integer ended
+by « (Period) {8 taken in base 19, An integer may be folloved by f followed
+by an intege:
+         AA by whore A and B axe integers, sesns the integer ,
+         AW RD with Ry being the radix in ubich A ie expressed.
+A string of digits with . (period) to the left of sone digit is Sloating-point
+number; decimal radix {s assuned, A floating-point nunber may be folloved by
+  sateser, and the result {s a floating point munbe     e 235 fa          5 the
+save as 35999.9 . Any of these nuneric formats nay be folloved by ¢ integer,
+which multiplies the current value by 2 7FGER + (ihe exponent integer aay
+be terminated by ' or , to force its radix; otherwise it used the current radix.)
+The result 1s a fixed-point integer! For instance, 1.5 <3 = 16"; and
+wes,
+
+sumo,
+A string of syllable constituents, ubich includes at Le it one Letter, or at
+Least one § or %e, or at Least two . (periods), or which consists     of the
+single character . (pertod) 1s @ pane, Only che first six characters of a
+         fe used by the assembler, A nano may be defined as a symbol, a sscro
+  sme, oF a pseudotnstruction. A symbol is a valued syllable.
+      One may write syllable <= syllable? vhich            aL         an Ante;
+‘hich eay not be virtual, and must have 9 relocations the expression stuns
+ayltabiea * 2%48le2,      re oseher syllable contains any operators whatsoever
+fe must be a Dracketed word, 1€ syllablet t+ virtual, of has ()selocetion,
+the value of syllable? mst be less   than 2%,
+
+If the character ' (single quote) appears to the right of a character in @
+symbol, it declares thet eynbol to be               MIDAS forad a List of
+etinet variables, which become defined, at the first subsequent use of the
+pteudotastruction VARIAB or END,     unique menory locations.
+
+IE" (double quote) follows any character in a synbol, {t declares that eynbol
+global. If a global symbol 4s NOT defined in the progran here it appears its
+value is virtual, to be supplied by the loader, If a global sysbol is defined
+im the progras, its value is pas sd on to the loader and there say resolve
+virtual quantities in other prograns.
+
+ AND $.; THE CURRENT LOCATION
+MIDAS maintoine an 18-bit lantity (with I-bit relocation) called the current
+cation counter, Its value, is that address into which the next storage vord
+will be        led, ‘The current location aay b e by fe of the pseudoinstruct        ion
+Woe; Lt te advanced by 4 with ich storage vord         assembled, and by sone anount
+at each use of the      sdotnstructions BLOCK, CONSTA, VARIAB and END. By use
+of 10C the current location say becone virtual,
+MIDAS also maintains the offset: a 36-bit- Kerelocation quantity, This
+normally hes value $, relocation @ but my be e otherwise by the OFFSET
+pseudotnstruction,
+The symbol . (period) alvays has the value (and relocation) of Current
+Location plus Offset. For inst ynce (assuning offset « 9), in ADD (SUB .]
+the . refers to the location of the ADD, not that of the SUB.
+‘The symbol §." ts virtual, It 1s the address where the loader is about to
+put @ storage word, So in ADD [SUB §."] (regardless of any offset) the $.
+hae the value of the location where the SUB ds to be put.
+The virtual symbol $R." stands for the Loader relocation, {.e, the anount that
+the loader adds to the value of each quantity ({ncluding the lecation counter)
+which has a relocation of 4.
+QUOTED CHARACTERS,
+ TE" (oing! quote) or "(double quote) or *(up arrov) appears without.
+ a syllable constituent immediately to its loft, the quote (oF arrow) and the
+ character nnediately to its right are taken as a syllable with the
+ value of the sixbityor ASCII code, or ASCIT anded with 77°, for the
+ character, respectively. e.g, 'A means 41" "+ means » 53", 4Q-meane 21!
+
+‘BRACKETED WORDS
+word             Ae @ syllable with the value of word, where word {8 2 word,
+ (word)          IE the ( As Amnediately preceded by a syllable-separeting
+                 character, 1s a syllable whose value te yord,, the value of
+                 word with lefe and right halves swapped.
+ [word]              ‘2 constant syllable, and word in this ¢: fe called a
+                 constant word, As MIDAS       assembles a progran it forms a 141
+                 of distinct constant words, and at the appearance of the
+                 peeudoinstruction CONSTA or END @ nusber of locations is
+                 reserved equal to the nunber of constant words outstanding.
+                 Bach constant word is asseabled to year in a unique one of
+                 these locations, Then, each constant syllable which refers
+                 to a certein constant word ie given the value of the addrei
+                 of that constant word, Last, the table of constant words
+                 Ae reset to contain none.
+                                     ao
+
+EIELDS
+A valued syllable is a field; and tyo or nore valued syllables may be combined
+to forms field by aeans of the syllable separators +-# / \ 4eand &.
+These perform respectively 36-bit integer operations of addition, subtraction,
+multiplication, division (vill eruncate quotient) and bitwise Boolean OR,
+XOR, and AND. ALl Q's are performed first, then all at's, then \ thea all
+W's and /'s last, + and ~ . Operators of the sane hierarchy are performed in
+order fron left to right.
+
+‘wORDS
+One or nore fields connected by field separators form a word. The two field
+separators are 5} e (or horizontal tab), and comma, (Space and hetab are
+aynonyuous and will both be called spaces.) spac before and after « word
+fare ignored, More then one space in a row ere exe sed as one, Spaces ads;
+to a comma are ignored,
+‘The values of the fields are combined to form the value of the word according
+to the number of fields and the pattern of field separators, as detailed in
+the following chart.
+                               FORT TABLE
+                 (Ay B and ¢ stand for fields)
+
+ format nusber                                   valve
+    in octal
+ 13                                              unassigned
+ “4                                              Ak TT7
+ 13
+ “                                               Yeo
+ v
+ 6                                               a
+ a
+ 2                            not possible
+ 23                                 7
+ Ey                         Aus                  Age RIII7z7
+ 25                         AvByC                A@B RIN: @ CRIN
+ 26                         ALB,                 A+@  &1D? ee 23
+ 2                          Aes                  A+ @ YL @ 23.660 777777
+ »                          A                    4
+ By                         ‘not possible
+ 2                          Ay                   KAR IIIT > g—18.
+ 3                          Ane                  QAR TITTD ge 18.        40.8777
+Fy                          AB                   A@BQITITI7
+ 33                         ABuC
+ 36                         AB,                  unassigned
+ 37                         ABC
+
+
+The sign @ seans addition with carry suppressed from bit 18 co bit 17.
+In the ¢: 1e of four or more fields in a word, the first three are treated
+according to the chart and all subsequent flelds, regerdless of separators,
+are treated Like field c.
+TE {no word appears (uord) with the character to the left of the ( other
+than += * /\a¥or &, the suapped value of the word within the parentheses
+As saved and at the ond of the outer word 1s edded into the wrd being formed.
+Anyuhere tn a vord may appear the character @ . The ONLY effect of thts ts
+that shen the word hes been evaluated, the dndizect bit, 14€= 22., £8 ORed
+Anto the valu ‘The @ does not terminate syllables or fields, nor ts it tol
+    part of a syllable or field.
+Certain symbols form the MIDAS initial symbol table. Any of these which represent
+P0e-6 machine instructions (except the 8 {-o instructions) may be independently
+defined by the progranser, in uhich case both values are available to MIDAS.
+hen the aynbol spears in the Leftnost field of @ vord Af ssaunes the inittol
+value; otherwise, the new value.
+
+ORD USES
+ pane:                      saakes nane 2 syabol with value, refoeation and
+                            virtuality equal to those of the Current Location.
+necemord 2                  askes nane 2 sysbol with value, relocation and
+                            virtuality of word.
+ninemmuord),                sene as nenemword, but elso has the
+                            the symbol table is read by DUT, of alf-kilLing™
+                            the symbol nsne in DDE's symbol table.
+                                      ab
+
+
+word), }                      word is taken as 2 storage word,
+word?                          (a series of Q characters with no intervening
+                              word creates ao storage words and does not change
+                              Ehe     Current Location Center.
+word;text Lf                  Mord {s taken as # storage word,1s ang   the text from
+                              The j to the first Line feed       tgnored.
+       NoTE: If J of ; terminates # vord 4 automatically closes all open (L
+             and €groupings. Hence ADDV((3) {8 the same a8 ADDVLC)] 2»
+
+BSEUDORNSTRUCTIONS   PART 1
+     ‘Any arguments supplied to, the “following pseudoinstructions in excess of
+those needed are ignore
+woe a        word)                e+ the Current Location Counter to the right
+                              18 bies of the value of word, with the relocation
+                              and virtuality of word.
+BLOCK & word).                       the Current Location Counter to the right
+                              18 bite of the sun of its previous value and the
+                                  jue of word
+BD 4 word)                    ‘This marks the end of the program, and the right
+                              18 bits of the value of the word, and its relocation,
+                              fare    saved as the progran starting address. The EXD
+                              ‘@leo acts as VARIAS and CONSTA, in that order, if
+                              there ave any constent words of variables undefined.
+XWORD 4 field! A     field2y,             Sane as (,fteld4 ),fiele2
+XD      fieldd @ fiele2)
+ Exe       word)                       Sane as word)
+ OP 4 fieldd A fleld2 A fteld3Q        This is a syllable and so may have syllable-
+                                       combining operators to {es left and at the
+               ‘                       Fight of the Isst A . The value of the
+                                       syllable is the result of performing field4
+                                       a2 2 PDP-6 instruction with field? in the
+                         Ere
+
+                         specified accumsletor and ££el83 in the
+                         specified memory location. The value of
+                         s0P is the resulting contents of #
+                         ‘accumulator.
+ ocak                    Sets current radix to 8
+ DECTMAL                 Sets current radix to 19.
+ RADIX & word)           Sets current radix to value of word,
+‘constaD                 Reserves space     where it appears for all
+                         unsssigned constant words,
+VARIAB )                 Reserves space where it
+                         undefined variables.
+WOLD.                    has no effect. Any number of argunents
+                         say be given and’ will have no
+EQUALS A naned 2 nane?   paned
+                         be used anyvhere inst
+                         psevdoinstruction    1s generally used upon
+                         hacros   and pecudoinstructions rather than
+                         symbols.
+TITLE f string Lf.       ‘The string of characters through the first
+
+                         The progran nane, which nay be used by DDty
+                          is det £0 the firet 6 characters of the
+                          first syllable in the title
+OFFSET Q word),          ‘The Offset {e set to the value and relocation
+                         of word.
+SqUOZE & field, symbol    Is a syllable with value equal to the cadix-59
+                          representation of syabol plus < field & 172.3%.
+ASCII ws jtext           where 4 is any ASCIT character, and text 1s
+                          any string of ASCII characters not containing
+                         di generates one or ore storage words.
+                          Pontsining each five 7-bit characters vf the
+                          Eext, from left to right lefe-justified in
+                          successive words (in order that can be reed
+                          with THB). If {tse syllal         field, 0:
+                                 “3.
+
+                                ‘word-separator other then space, the space
+                                after ASCII can be onitted. The entire
+                                usage is treated as a syllable: any
+                                syllable-conbining operators at its left
+                                fact upon the first storage vord it
+                                generates, and any syllable-conbining
+                                ‘operators to its right act upon the last
+                                storage word it generates.
+AScTajtext                      Like ASCIT, but 1f nuaber of characters in
+                                kext 1s divisible by 5, asseables final
+                                ‘additional storage word of
+sASCEL jeoxt3                   tke ASct but also when the character | te
+                                encountered in the       takes the field
+                                following it, evaluates  that fLeld, creates
+                                the character string representing that value
+                                im octal digits, and puts that character
+                                string into the assenbled text storage words
+                                Anstead of the ! and field,
+SIxBrTujtextj                   Sane action ag ASCII, but puts six stxbit
+                                characters to the word,
+rasa]
+                                source file (see Operating Instructions).
+                                For exanple, if the source file nase ts
+                              RANDOM PROG, FNAML has the sane nuneric
+                                value as SIXBIT /RANDOM/                  .
+PRINTCAStexts                 Takes a text argusent identical in form to
+                                that of ASCII, and prints the text on-line
+                              when the pseudoinstruction is met on each
+                                s of the assenbly. No storage vords
+                              pacreated.
+PRINTKAA text)                Sane as PRINTC, but suppre:        type-out
+                              of the character I
+EXPUNG onamel Anane2...Ananen) Each name ts expunged, i.e., deleted from
+                                    the syabol table; ‘and effectively forgotten
+                                    by MIDAS.
+                              1.
+-BEGRYY                     ‘The code appearing between .BEGIN and its
+os                           satching -END is termed © progran block
+                              (sot to be confused with » DECtape block,
+                             2 logical block of sssenbler output, or
+                             12 group of locations spaced over by the
+                             BLOCK pseudoinstrsct     ion). All symbol,
+                             definitions effected within a progran
+                             block are “undone” at the .END, end such
+                             aymbols regein the values they hed at the
+                              sBEGIN. Program blocks may be nested,
+cont fieldt, f1e1e22        ‘The eight PDP-S i-o instructions are defined
+CON fieldt, fteld2)             1s psecdoinstructions to'MIDAS. If they
+cousz field], fiele2)             pear in the leftnost field of a word, then
+Gouso fieldt, fieldz)         for that word the evaluation rules for
+DATAT field], field2)        certain word formats changes according to
+DATAO field{, fteld2)        the following table; and the {-0 instruction
+BIRT field{, fteld2)         otherwise scts as a symbol with the value
+BIKO fleldj, field2)          shown in the Initial Symbol Table.
+foreat nunber           pattern                  value
+    im octal
+       26               wr                       At <BLI7> e256,
+       27               AGB                      Ad €BULND £26. @CRIN7
+
+SFORWA 6 no, fs            Inserts an entry in the format table (1.0.,
+                           replaces old entry)          for fornat number 50
+                                   format cable on Page 8). The tumeric
+                           value of field fs ts caken as three 12-bit
+                           bytes
+                           handledreferring
+                                          fields inato thevord:(up to)the three
+                                                                           left 12distinctly
+                                                                                        bite
+                           refer to the right most field, the middle
+                           12 bles eo the field next to the Tight most
+                            Gf any) and the right 12 bits to the field
+                           2 fom the Fight and any additonal fields.
+                            (IE there 4s only one field in a given format
+                           de 4s the right nose regardiess of punctuation
+                           which may be required after it.)
+                           A ld-bie byte describing a particular fold
+                            is in turn treated as two 6-Dit bytes. The
+                            Fight 6-bie byte speciffes a mask andthe
+                            Jefe 6-bie byte specifies a shift. The mask
+                           number
+                               bite of(say a)     directsvaluethatbe only
+                                            the field                    takingthe therigheshite
+                           fusber
+                            Fenaining(sayafter s) directs
+                                                   masking that         the biteleft s bits.
+                                                                be shifted
+                           The fields, after this sasking and ahifeing
+                           are added to give the value of the word.
+                            GEsample: the 12-bie spect tteation 270%,
+                           describes an accusulator field: <e61> + 23.
+                Bb.
+
+
+
+                 There are three exceptions to the above
+                procedure. (1) If a field ds specified
+                ‘as     902 3 (right half, not shifted) the
+                 carry out of bit 18 is suppressed as the
+                 field 1s added into the word. (2) A
+                virtual quantity may only occur in a field
+                 specified O844g, 962g, 22225, 050g or
+                 2704g, (3) If-as a syilable in the left~
+                most field of a word appears any of the
+                 eight 1-0 instructions (DATAD, DATAJ,
+                 CoN, CONE, BLKC, BLK, CONSZ, CORSO}
+                 then’ any field in that word specified
+                 27bg 1s instead taken as 1f specified
+                 3211g (io device field).
+
+sLENGT   text   (coxt argument as for ASCII) this ts a
+                syllable with the value of the number of
+                characters in the text.
+SIYPE name      As a syllable whose value depends on the
+                nature (at that point) of the nane nane
+                value (octal)        if name tea
+                                     seudoinstruction or macronane
+                2                    defined synbol (not global,
+                                                    not @ variable)
+                3                    undefined local symbol
+                4                    defined local variable
+                5                    wundefined local variable
+                6                    defined global variable
+                7                    undefined global variable
+                y0                      fined global symbol (not a
+                                                           variable)
+                ua                   undefined global symbol (not
+                                                       variable)
+                U                    unseen (except in .TYPE)
+                                            16.
+
+
+   yor                    ART I,
+he foregoing sections described those features of the MIDAS Language which
+(generally) henéle numeric values} these features should be euffictent co the
+casual veer, and adequate for a majority of MIDAS-Longuage prograns, The
+following sections describe the character-string-handling feature of MIDAS,
+primarily mucroinstructions, REPEAT and IRP (indefinite repeat). MIDAS cakes
+each usage of such pseudo or macroinstructions ond translates that string of
+characters {nto a new character string (according to the rules below) which ts
+fed back a8 input to MIDAS. (See sketch)
+                                      results of
+                                   eros & Fe
+                          Asctr                       binary
+                           Anpot >                J   output
+
+REPEAT A field A text er                 (where text 4s any charscter string whose
+                                         fret character 18 not { and vhich contains
+                                         no gt) MIDAS detects this peeudoinstruction,
+                                         deteraines the nuneric value of field (as an
+                                         integer), sey p; and passes text dack a8 input
+                                         a total of g tines, followed each tine by
+                                         self.
+REPEAT A field 4 [cext)                  Finds m, the velue of field; then passes
+                                         Eext to the input p tines. The Eext cay
+                                         Gontein any characters including [end]; the
+                                         ] which deliatte che text ie the fiver thse
+                                         matches the opening [ . Xo 1
+                                         are passed on. The (outermost) bracke
+                                         surrounding text are not passed on.
+                                        av.
+
+sRPONT                                ‘This {9.4 symbol whose value depends on
+                                         1¢ innermost repeat in which it 1s
+                                      contained: the first tise that repect
+                                      is processed, .RPGNT hes the value 93
+                                      the second tine, it has the value 4
+‘The following peeudotnetructions, whose nanes begin IP, are terced condt
+ assembly psoudotnetrvctions.
+TELA cexter                           (eake Sent argument tke ther of RE2EAT.)
+Hi Goal}                              The Eoxt is passed back as input if the
+                                      esseabler {6 perforning Pass 4. Otherwise
+                                      this usage gives no characters our.
+IF2 A cexter                          Like TFL, but gf 8 kext back £0 saputYonty
+1F2 @ (text),                         if performing Pi
+IE A field A texts                    IZ the nunerie value of field £5 equal to 6,
+Tre B field p feexed                                            as input; otherwise not.
+big                                   Identical to IPE in for; pass text back again
+IFCE                                  according as the value of their first
+ag                                    arguoent te: 93
+rm                                    or equal £0; not               Less than; Lei
+TELE                                  then or equal to: , respectively.
+HISE Matring Asteing? a cextee        (text oxgucent a9 in REPEAT.) The strings
+IESE A string4 a string? A (text      are compared character for-character.
+                                      Each string may contain spaces and consas
+                                      42 Lee first character {9 open bracket ({),
+                                      in which cose     that string ts ended by the
+                                      matching close bracket (J). Such outersost
+                                      brackets, ££ they exist, ave not used in
+                                      the string comparison. ‘The text is then
+                                      processed   only if the two fields are
+                                      {dentical chaacter strings,
+ESN                                   Like IFSE, but passes text on only if the
+                                      two fields ere not identical strings.
+me AA, 3, (P,Q RID                    ‘The TRP pseudoinatruction takes a triplet of
+                                      argunents, separated by cones: the first
+                                                              lee dunay syabole; the third
+                                      is  termed   a   List,   Bach of the dunsy symbol
+                                      nanes   need   not   be given,     The list consists
+                                      Of  an  open   bracket,      any nuaber of elenents
+                                           18.
+
+                                      separated by
+                                     Each elonent contas,
+                                                    is  2
+                                                                and a closed bracket.
+                                                             string
+                                     characters and liste, Theof only  sero or more
+                                     excluded {s cons; and that may character
+                                                                            appear if
+                                     ina list, i.e. inside [ ]. For instance:
+                                     TRE WL, , (AKBY,(C,DsE],y]        has a ite
+                                     symbol, and has a List of fivesecondelenent
+                                     Htst   deny’  symbol,    bos   20        dunay
+                                     AX; BY; [C,D,E]; and tvo null arguments.
+‘TERNDND                             ‘The renge ofan IRP ts the string of
+                                     chatacters from that IRP to the next
+                                     atching TERIIN, exclusive. The effect
+                                     of IRP-TERMIN {6 to pass the range of
+                                      the IRP on as input’        again @ number of
+                                      times equal to the nunber of elenents in
+                                      the List of the IRP. The first tine
+                                      through the range, the first duomy symbol
+                                     of the TRP has the string value of the
+                                                 nent of the List, meaning that:
+                                                 ¢ of that dunay symbol inside the
+                                                     inated at each end by ! or any
+                                     non-syllable-constituent) 1s replaced
+                                      (in effect) by the current string value of
+                                     the dusay syabol. ‘The second time through
+                                     the range, the first dumay symbol has the
+                                     string value of the second element of the
+                                      list, ete,
+       Example: IRP Ay ,{W1,}2,W6)
+                 aD 3,4
+                 ‘Temmt
+       will rectrculate the string
+                ADD 3, wd
+                ‘ADD 3, 2
+                ‘ADD 3, wa
+                                     ‘The second dumty symbol of ERP has, on
+                                     each iteration through the range, the
+                                     string value of the reoainder of the List
+                                     yet unused: for instance, on the third
+                                     iteration of IRP Q,R, (AND, 10R,XOR,EQV,
+                                     ANDCA] for R vould be substizuted EQV, ANDCA.
+      TRP-A,B,(,%52}0,0)(P,Q,R[8,10]
+                               IEP «--)
+                                     ‘The IRP pseudoinstruction nay be followed
+                                     by any number of triplets. At each iteration,
+                                     a.
+
+                                   all the dusny aysbols are advanced in their
+                                   vespective lists. The IRP iterates &
+                                   number of tines equal to the nunber of
+                                   elements in the longest lat; if one List
+                                   is exhausted before another, both ics dusay
+                                   fsysbols receive null string values,
+TREC 4A, By [string] D             Here A and B are dunny symbols, and string
+                                     6 2 stving of characters ende     by the
+                                    first aatching }. On each iteration of
+                                   the IPC the first duany symbol takes che
+                                   string velue of each successive cf
+                                   in seeing, and the second duaay syabol has
+                                   che string value of the string to the right
+                                   of that character.     In all other
+                                   TRPC {6 used identically to IRP.
+TRPS 4 A,B leylt g syl2 yeeeysyln) Again A ané B ore deny                gOnts exch
+                                   ‘any field or syllable
+                                    iteration the frat cusny             has the strin
+                                   value of successively each of the svii, and th
+                                   ‘second dunny symbol has the string valve of th
+                                    ‘J to the right of the syllable which is the
+                                    current value of the first dusay aybol. Othe
+                                   wise IRPS {9 ike IRP and IRPC.
+MAGROINSTRUCTIONS
+A pecroinscruction definition ie a syntactic elenent consisting of: @ define Line;
+4 definttton body; and the pseudotnstruction TERUN.
+A define Line contains in order: the pseudoinstruction DEFINE; a nase, which
+is co be dofined, called the pecro nase; and zero or sore nanes which are dumy
+syabol; all separated by spaces or counas, except that a dunay synbol may be
+preceded or terninated by / or \ instead; the whole extending through the flrs
+ ) charactor, but 1f that character 4s or and the next character 1e 1f, the 1f
+also is taken as part of the define line.
+                                     20.
+
+
+  ‘The definteton body is all text folloving the define Line, up to but not
+   tcluding the first unsstched use of TERCIN, (The TERMIN preudoinstruction ts
+  ‘matched by IRP, IRPC, IRPS and DEFINE.)
+  The effect of a nacroinstruction definition is that vhen its TERME 1s encountered
+  the macro nase becones defined    4 sacroinstruction with the string value of the
+  definition body.
+   As this happens, the characters to the left and right of each dusmy
+   symbol occurrence in the body are examined: each one which { an exclamation
+   point is deleted and ite place taken by ark which 1¢ invistble; except
+   chat dt deliminates che dumy ion that aide vhen dusmy symbole are Looks for in
+    (I) below.
+Subs went to Ate definition, Lf a sacro nane {s encounter das a syllable (44
+not part of any text orgunent nor in @ nacro definition) the following sti
+are performed:
+                          (1) the chérecters following the sparator which ends
+                               tthe macro nane are read as ¢ List of argunente
+                                   jarated by coute and the List ended by caret
+                               return or semicolon. This process, termed the
+                               argument scan, associates in order each dusay eynbol in
+                               the define Line of the macroinstruction with the
+                               corresponding argunent in the argument Met. If
+                               in the define line a dusny symbol is ended by /,
+                               the scan for its argusent 1s not erainated by
+      a.
+
+
+consa (uhich in this case 4s treated. atoply
+another character {a the argusent), but by any
+ D characters Lf there ere dussy symbols te the
+Fight of the /, the « 9 assuses that thet
+ laxguoents are not expre; 2s The nusber of exguzents
+ read will tn any ca not exceed the nunber of
+dunmy syebols in the macro definition,” Furthermore,
+Af the fiver ct weacter where on argument {+
+expected ts [ (open bracket), that argu st
+consist of ell characters folloving the [, up
+to the satching J; the next argument (tf any)
+should follow che ] inpediately without ax Sater
+vening coona, (Right bracket 4 matched only by
+left bracket.) Neither outermost bracket 4s pa
+fon as part of che argunent. Also if the firet
+character where on argunent 46 expected 1s \
+(backslash), the subsequent characters up to
+but not including the fret space or cons exe
+interpreted a6 2 fleld, and for the axguseat ts
+supplied « string of digits expressing the value
+of the word (as en integer) in the Current Redix;
+        2.
+
+‘the next srgunent nnediately follous the spsce
+oF comns which ended the fteld, If fever argunents
+ave expressed than there are dunsy sysbols, the
+arguments given are essociai 2 with the leftmost
+dumay symbols, and the unsatisfied dumay eyzbols
+‘are given string values according to the following
+ rulet:
+      » If there {6 no / or \ in the List of dusay
+          symbole in the define Line, all unsi sfhed
+
+      donay symbols get the aul steing value.
+    2 If there is one or more / or \ in the List
+      of duaay symbols in the define Line,
+        unsatisfied dunay symbols untch appear co
+        the left of the first / or \ get che neti
+        string value, and oll uneatietied éusay
+        ayabole fo the right of the first / of \
+            ce given a string value of the form
+        GHOL1 oF 68982, etc. (called «
+        symbol; a unique generated syabol being
+        assigned to each such dummy symbol of each
+        lise of eny such macroinstruction,
+                                   23.
+
+
+                    (AD) The effect to the assenbler is that che ssero nane
+                         and argunent List are replaced by the body of the
+                         definition of that macroinstruction, with each
+                         dunay synbol in the body receiving the string value
+                         of the corresponding argusent.
+                          For example, if MAC 1s defined as follows
+                                    DEFINE VMAC WEAF)
+                                     IMOVETY B32
+                                     | DUBS ELF)
+                                    TERN
+                          then MAC 4, LOC will be seen by the
+                                         MOVED V1,32
+                                   Bytes
+                                      SP uocy
+
+If the argunent scan is terminated by the pre nce of a aeaicolon, that
+seatcolon (as well as vhat follows it) i             on to the assesbler after
+the macroinstruction body.
+The character { may be used to delimit dummy aymbols vhen the effect of any
+other syllable     separator is not wanted. The definition
+                              TerINe  mc MAERD
+                               i woverve,3.2
+                               Sybatine
+                              Temant      BAD
+enables one to then say HAC WB, 4 ,LOC to generate
+                            i Mover   w4 2).
+                             IDOLE    V4 .10CD
+or EAC yy, 4 s10C Fo give
+                             hover 2.3
+                             DAL    S 4,100
+                                        2,
+
+since the first argument, vhich extends from the space ending HAC to the next
+conna, is null. Notice that only the single character just to the right of
+the macro nase is lost; WC wu, 4 100 has a first argunent consisting of
+one space.
+       ‘A common use of \ preceding an argument {5 as follows:
+                                  DEFINEWOISPATCH 'N,TAB
+                                       TRSTATABIN
+                                  TERMIN
+                                   aL
+                                  REPEAT 39, (Drepavce \.RPCNTHLDT
+                                   1
+                                   ast Dr
+ producing                         mati
+                                   ont on
+ ‘the argunent brackets [] are often used to pass on argunent lists to a macro or IRP
+ within the definition of the aacro being calle
+                                   DEFINE NAPLIST FNL.
+                                        TRE Ay {L]
+                                        mapone      "PNA
+                                        TERMIN
+                                   ToC
+
+                                 DEFINE MAPONE FAL
+                                       Po Ale
+                                 ‘TERNIN
+                                 warEtsT MACAIC LOC), 4 LOK 2,toc})
+                                 wardne Mac, { 4 ,L00]
+                                         Mac, {2 LORI
+                                         Mac,(2 toc}
+                                   we f,r0¢
+                                   WAC 410K
+                                   MAC 2;L0¢
+                                    25.
+The pseudoinsteuetion   QUOTE tel
+      aged, protecting it fron being teken a3 @ duany syabol ox
+the pscudoinstructions IRPINZ end TERGN. In all other cases, @ nace which
+4s curroncly & dumay aysbol will appear to be replaced by its string valve
+whenever 4 appears bounded on each side by non-syllable constituents. Por
+example, ££ A {8 sn accumulator as well ase dussy syabol within # esero
+definition, one might need £0 say
+       ADD wy QUOTE LALA
+to eifferentiote the two meanings
+
+
+sTAGaname? may be used within the range of IRP, IRPS or TRPC; or in the
+60 Onane? body of a nacro definition. Only the first 6 characters of
+           the name are used, The .TAGhi no effect except to mark
+           4 place in the IRP etc, or macro which aay be referred to
+           by @ GO. As one of these repeate or # macro de being
+                    yed, sending characters to the assesbler, when a
+            +00 4s encountered it 18 not output nor does outputting
+           Fesuse right after the .GO ; instead, the range of the
+           repeat (or body of the acto) in which the .GO occurred
+           4s searched for @ .TAG with the matching name, If tt 1s
+           found, outputting to the         assesbler resumes to the right
+           of the tag. If dt Le not found, processing of the current
+           repeat or macro is terminated and processing returns to the
+           point just beyond the range of the repeat or just after
+           tthe sacro usage; if this is within an outer repeat or macro
+           body, searching for the missing tag is done therein, ete.,
+           Af a tag 1s not found anywhere until processing reaches the
+           top level (outside all repeats and macro calls), assembling
+           then resuses from the point just after the outermost
+           repeat or macro.
+                                         26.
+
+
+.0sseTA no)        Sets generated-synbol counter to value of no.
+‘PSEUORNSTRUCTIONS PART IIT
+Binary Ourput Forse
+Storage words axe output in one of two modes: absolute or relocatable
+‘There axe three possible forsate for absolute output, nened Read-in node,
+ualf-word readin zode, and steple block foroate; there is one relocetable
+format. The Re: im mode format, if punched on paper tay can be read by the
+RIM Loader (at 28); the ataple block format, {f on DECtupe, can be read by
+MACDMP, or HACTRN (the DOT in tine sharing) and on paper tape ts preceded by a
+SSLX loader in RI format; the raloeatahle farsar can be read by the Linking
+ loader. " Virtual’ quantiti  and strorage words with non-tere Felocatton, may
+not occur in absolute mode output.
+
+ amp                          selects read-in mode fornet output
+ anad                         selects halfeword xead-in node format output
+ soix?                        selects staple block format output
+RELOCA                        selects relocatable fornst output ané sets
+                              current location counter to   with relocation 4.
+arass)                      like RELOGA, but also causes « A-pass assembly.
+SBLK Ae inittalty selected.
+-SEDR                         causes output of SBLK loader ond enters SBLK forest
+WORD Q uzey,                  ‘The value of urd e output 25 2 36ebit word. Ia
+                               yelocatable end einple block fornets, which o
+                               storage words in blocks, any block currently
+                               being accunslated is insedistely output so chat
+                              zd appears in the proper place end between blocks.
+                                          a.
+
+
+  nosras                     Suppresses output of symbol table which normally
+                             accompanies binary program.
+   -NSTGH                    enables SWD error printout to occur if @ storage
+                             word 1s generated.
+    “STH                     Aisables SKD error printout. .¥STOW ts
+                             initially selected.
+Loader Connsnds,
+Im relocatable format, certain pseudotnetructions are avatlable to cause special
+action by the Linking Loader when encountered.
+sLIBRA v naselist),                {8 must occur before any storage words, It
+                              tells the losder thet the progran to follow ts
+                              a Library program. The entries in the ganelist,
+                              separated by commas, are either nanes oF groups of
+                              Rapes separated by space, +, and =. An entry is
+                              said to be gatiefied by a Lat of aymbols if
+                              either (a) the entry {6 a nane and that nase eppears
+                              in the List of symbole; or (b) the entry is a group
+                              of nanes, all of which nares preceded by space oF +
+                              are in the Tfst of symbols, and none of which aanes
+                              preceded by + axe, The Linking Leader will onit £0
+                              load a library progran unless one or more entvies in
+                              Ate namelist are catisfied by the Iist of undefined
+                              slobal symbols used in prograns already loaded.
+SLIPS U nace idee >           Lead TE Seen.
+Ewe                           End Locd Tine Conditional. Any storage words
+                              appearing between «LIFS end BLOC ere passed on
+                               to the loader which will lood thes only if one or
+                              nore entries in the nonelist are satisfied by the
+                               List of defined and undefined global syabols used
+                               in prograns already loaded.
+                              Note: .ELDC should alvays be folloved by a location
+                              assignnent (LOC pseudoinstruction). Sosetines tf
+                              there {6 a series of load-tine eonditiontls with no
+                              Antervening non-conditional matter the L0G reed
+                              only be used efter the last, Notice thet Loc §."
+                              ay be used to continue loading storage words
+                              Anko aubsequent Locations where the effect of the
+                              Joad-tine conditional is not necessarily known.
+                              Load Time Conditionals may de nested,
+                                       28.
+
+“LIFE word 2,                 Loed Tine Conditionals on Value. Any one of
+«LIFE 6word),                 these starts « range uhich {6 ended by .ELDC.
+SLIFL & word)                 In each case the word 18 evaluated by the Loader,
+s1IFG A word)                      the storage words in the range are loaded
+sLIFGE a word),               only if the value of word ts respectively
+“LI & word)                   +9 26,60          > 2H EO
+
+Lor
+
+tons 1062063)                 Like
+                              loader .0P,in but    occurs when encountered by
+                                             relocatable
+                              inseruction, £2 {8 takenformat.   at the
+                                                                       (fl ia an
+                              the specified accumulator, and £3contents     as che
+                                                                                   of
+                              contents
+                              Has no value;of the specified memory location).
+                                                    loader sets variable sLVALL
+                              to resultant senory contents.
+                               LVALL and sLVAL2 have the value (initially,8),
+ scLoaAbnand Anan.)           has
+                              foltovedsane byeffect
+                                                a", asbutappearance of each nane
+                              words.
+ -LIBRQAnamt Baw?)            wilt output the given names to the relocatable
+                              loader euch that the loader
+                                             is piven to the loader, anda use
+                              of LIBRE does not cause the names to be seen
+                              ‘at ail by the asseabler.
+
+                        ye typed out by MIDAS ts in the folloving form:
+                      wx coe
+                                   2».
+
+SYM is the current location in terns of symbols; WM is the current lesation
+tn octal; Lis the depth in mscro-instructionss XX is the offending syllable
+(iE ony); C00 is @ S+character error code, as Listed below. A dagger + ia the
+folloving Listing sarks « fatal error, which KIDAS will not proceed pact.
+       {ALL undefined sysbel errors trest the symbol as having value $, relocation 9]
+ usw                          undefined symbol in a storage word
+ vse                          undefined symbol in 9 constant word
+ vse                          undefined syabol in a parameter ass{gnnent
+                                          £0 right of =)
+ sa                           undefined symbol in count field of REPEAT
+ veo                          undefined symbol in test field of conditional
+                                         assenbly
+vse                           undefined symbol in EXD pecudoinstruction
+vst                           undefined symbol {n 100 pseudoinstruction
+ vss                          undefined symbol tn BLOCK pseudoinstruction
+ vss                          undefined symbol tn nunerte fleld of SQUOZE
+                                          pseudoinstruction
+vs                            undefined symbol in fteld folloving \ tn
+                                          actoinatruction argunent
+ so.                          undefined symbol in OFFSET pseudotnstruetion
+wor                           multiply defined tag. A variable, defined syabol
+                                          ‘or macroinetruction appeared to
+                                           left of : and was not redefined,
+wv                            multiply defined variable. A defined syzbol or
+                                          ‘macroinstruction appeared followed
+                                           by ', and was NOP redefined.
+RES                           reserved, An attenpt was nade to redefine @
+                                           pseudoinetruction. It was NOT redefined.
+mr    illegal tog. Sorething other then # symbol appeared
+                    ‘to the left of : and no action was caken,
+2A    illegal parsceter
+                    ‘@ symbol appeared
+                    Ro action was taken,
+ara   ‘questionable pareneter        fgnnent. A osero nase
+                    oF peeudo:      rection appeared to the
+                    lest         nd WAS redefined,
+EQ    illegal EQUALS. One of the arguments vas not 6
+                    Rane, HO action was taken.
+      multiply defined tag ot virtual location,
+Nos   RO sixdic. A non-priating character epzeared in
+                   the text argunent of SIXBIT or £6 the
+                   right of '
+      exponent overflow, Floating point umber too Legs
+xsc    lost significance, Fixed point nuaber too large.
+              forset of fields in a word, The word
+                   te taken as Be
+      (turned on by .NSTOH) stora
+Nos            ator. A{B)C oF ASCII /X/3, for instence.
+me    AMlegal closing. Attempt to match ( with } or
+                    (Cuith >
+mA    virtual quantity used in obsoluce assenbly
+1m    non-zero relocation used in absolute asseably
+      illegal relocation. 4 fLeld with relocetion t
+                   ‘wae put other than with ite right ené
+                   Detween bite 17 and 18 or 35 and 36.
+           a
+
+ me    legal relocetion count. 4 fleld had a relocation
+                   other then +4 oF 9.
+ 16s   ANlegal virtual. A virtual quantity was put
+                   ‘other then with its right end betucen
+                   bite 12 ond 13, 17 and 18, 39 and 31,
+                   or 35 and 36,
+        {legal sultfplicetion of virtual quantities
+ wy     division by virtual quantity
+ Pr    « used when location indefinite, 9 assured
+ cut    1 used at indefinite Location
+ ut    Location « ignoent contains {Legal relocation
+       too many constant word areas
+       too many variable ari
+me     too many constent words in one area
+youn   constant word orea location differs fron
+                 previous pace
+wD     vortable ares location differs fron previous puss
++oaD   relocation of constent word ares dtffere fz0a
+                 previous pase
+       relocation of vertable area differs fron previous
+                 pete
+       relocation of cone sn word area illegal
+       00 many dusay ayabols in macro definition
+       too much axgusente   (strings too long) at ute
+                 of secreinstruetion
+       sacroinstruction capacity exceeded
+       storage capacity exceeded
+       tilegel format. Programmer's intent unclear.
+       internal assenbler error
+       assembler made {legal menory reference
+                                          22.
+
+ ‘Op rRAT                      prem
+  With MACDMP, load fron the HACUMP SYSTEN tape the dump-mode file MIDAS.
+  (there may exiee     0 a file MIDAS NEW. It may have new features, or fix
+ exors in old. Its use for assemblies instead of the MIDAS file would be
+ epprectaced as an invive check-out of the now version.) When MIDAS is started,
+ st will accept 4 string of connands fr0a the on-Line Teletype, ended by to
+ successive ALNODE characters, The effect is the sane whether all the connends
+ are in one string or they are each in s        sepsrai   string delimited by ALT MODES.
+(@ wilt be used as a eymbol for ALT MODE.) In normal us one should give
+coraands ia the follouing or: tr (1) select an input file; (2) select en
+output mediua; (3) direct the    assesdl; (4) file the output (nusbere (2) ane
+(2) say be interchanged).
+                            (2) Iuput Selection: the commend nRnaned v maze? @
+                                With select for saput the file named nese nese?
+                                or the D2ctape on unit p. If the ER comend ie
+                                not given, Anput 42 selected from the peper tape
+                                reader or on-line teletype. (Bhe reader ta checked
+                                snftiatly, and after each character te typed in.)
+                            (2) output Selection: the counand RET will select for
+                                ‘output on the DECtepe on unit g. If the EI command
+                                is not given, output will be on paper tape.
+         33.
+
+(3) Assembly: the comand A causes the program to
+    be asenbled. This is the comsnd normally used;
+    St Le composed of five parts which can be connanded
+    separately, In order, these are
+        I inefelize, Forget all symbols, mscros, ete.
+             except those in the Initisl Sysbol Teble;
+             set the Current Radix to 8; set the Current
+             Location Counter to 199 with relocation 9;
+             delect SEL output format; el ye all tapue md
+             output buffers.
+         © pass one. Read the input file and essenble
+               At, defining symbols ond nacros, eevaroping
+              values of storage words, ete. No oupus
+               done unless the APASS pseudoinstvuceion was
+                  Jed in the program.
+         S punch SBIK loader 1f SIX ts outpur format.
+         T pass two, If 4PASS was not used, x
+              the input file ond assemble it, ourpurcing
+               storage words (and in the relocatable format,
+              various data concerning virtual usage) to
+              the output device previously selected. Tf
+              PASS! wee used, do none of this BEE instead
+              check if ony aymbols vere used which ere
+               still undefined,
+                                   3h.
+                                    L  symbols. Output # sysbol teble (unless
+                                       NOSHNS was used).
+                           (oy Output Filing: the commmnd EF nanel w none?@
+                                       will fille DBctape output in SBLK node for
+                                          solute-nede output or RELOC mode
+                                       relocatable node output. There is no need
+                                       for this Lf output was to paper tape, or if
+                                       the assecbled program Le not going to be used
+                                       (for 45      0, due to # Large nusber of
+                                          asseably errors).
+When one program has been assenbled, enother cay de without reloading MIDAS.
+‘To Leave MIDAS and return fo HACIMP, use che command D.
+
+There axe sleo several charactors which my be typed in and take effect
+Annediately, without being part of command strings. The se axe various letters
+with the CTRL key hold:
+     wu                       type out sll input characters processed by
+                             ‘This includes expansions of eactos, IRP, ete.
+      &                       turn off typeout,
+      le      en)            Quit current setivities and welt for typed-in
+                              comands. Tt is advisable to go to MACH and
+                              load a fresh MEDAS {f you have Quit.
+      E                      ‘Torn on line printer output.
+      B                      ‘Turn off Line printer output.
+      B                      Commence output to paper ti
+                             co     paper-tape output.
+                                         35.
+
+    &                         Commence DECtepe output.
+    a                         Cease output to Dactape.
+    8                         Fesune reading from DECtape.
+   is                         interrupt reading DECtepe.
+
+        ING_INSTRU     TIME    SHARING
+To DDT type MIDAS | (alternatively, any other commands which will load
+‘and start the program T5 MIDAS on device SYS). Into MIDAS type a command
+Line comprised of (a) the destination file designation; (b) the character
+  + (ohtft 0); (€) the source f1le designation; (@) a carriage return. A
+{410 designation consists of: a) (optional) a "system nane" ended by
+ 5 (semicolon). If no systen 4 specified, the nape the user gave as he
+logged in is assuned. b) a device name ended by 1 (colon). ¢) the file
+ase, consisting of two subnanen                        ee TE ayaten nano
+oF device nane s not epecif4:               sstination description, the
+rane used in the source jeription will be taken, If no file nane ts
+siven in the destination description, one vill be sumed vbone first
+Subnane is the first subnane of the source f4le, and vhose second subnane
+4s BIN. When the carriage return is typed, MIDAS will read the
+designated source file, and output the     assembled result and file tt
+accordingly to the destination file designation. The title (on each
+pans), PRINTX output, ete, and error messages will appear on the ust
+console. When finished, MIDAS will do a Value Return to DDT.
+                                        36.
+
+                              Radix-59 SQUOZE Code
+
+‘This ts the Zora tn whieh symbol nanes are represented internally and ta ayabol
+table ouput.
+chareceer            Vatuo(oets1)                               Vatue(oesst)
+   sult                  ¢                                        4
+    4                    1                                        25
+    1                    2                                        26
+    2                    3                                        n
+    3                   4                                         ”
+    ‘                   s                                         a
+    s                   6                                         2
+    ‘                   7                                         2
+    ?                 w                                            x
+    8                 n                           s                38
+    $                 2                           t                6
+    4                 13                          8                a
+    2                 ry                          v               “
+    c                 13                          "               a
+    >                 6                           x               a
+    e                 v                           x               “a
+    r                 co                          z                a
+    ‘                 a                            :               4s
+                      2                            s               46
+                      2                 |        °f0               a
+                                       37.
+
+Say the name ts ABCDEF; the Squore code t2
+       We BH K1T + SH C16 +H             SIS +56 HL + 56H ISD>DDD,
+Ave, the lost character is least signift     tm the radixe59 (octel) vepreene
+tation, If the nase hes fever than 6 characters, the lest characters ore
+token as null.
+
+‘The radix-59 achene leaves 4 free bits at the hightorder end of ¢ 36-bit
+word; these are used a6 Code Bits to describe the type and relocetion of the
+syabol.
+                              38,
+
+                    Initiel Syabol Table
+syabot    Vatue                     Symbol      Value
+          (octal)                              (octal
+ R438      pseudo             ,      403       (249998)
+ DD       278598)             |      409A      (340090)
+ A003     273538)             |      AOE       (342098)
+ aD0r     «271998)            |      A036      (347690)
+‘DIM      (272959)            |      soe       (345999) —
+ax        494998)                    40st      (341909)
+aNDB      «497939)                   408       (350000)
+ANC       (619989)                   ‘A084     54900)
+ ANDCAB   (613098)                   ASE       (352000)
+ANDCAT    couigas)                   1006      (357009)
+ANDCAH    (12089)                    20808     (355000)
+‘anne     (465009)                   208       351000)
+ aNDCRB   (843069)                   soste     (353000)
+  NDB     (4sigia)                    08H      (356000)
+ NDC      (42gaa)                     a        6
+anne,     (429990)                    a
+ANDO.     423998)             |       bpenl
+axdoxt    (621969)                   Aske      (244990)
+ ax       (622999)                    BLxr     OBER) prude
+ A0T      685099)                    20318     (343089)
+ANDK      (496909)                   4038      46859) peeudo
+                                               99199)
+ ABN      253098)                     BIxO
+                                      BLOCK    eevee
+408s      (252990)                    Bur      (251899)
+Car       CHB)                       ‘CONST    (79368) paende
+cara      (294998)                    oR       he
+CAE       Gn2058)                    Data      (799949) pseuce
+care      a7008)                     DATAO     (799149) pseudo
+cage      (395998)                   PC        285
+can       91098)                      OSA      309
+cane      693999)                     DOSB     36
+                                      DECI     Pseudo
+                                      DEFINE   pseudo
+ cant     «296908)                    prs      139
+ cate     19998)                      Dv        (230999)
+                                      Dove      (237998)
+                                      DEVE      (235000)
+com,      (s.age9)                    Dit      (236950)
+cae       12998)                     DEB        (337999)
+                                     DpBE      (136889)
+                           39.
+
+
+           Velue                  Syedot   Veive
+          (17698)                 xD
+          215959)                 EQUALS   :
+          311999)                 qv       Cosagtn
+          (313958)               EqUE      (647556)
+          316998)                 QUE      (685855)
+                                           (646656)
+          669999)                 Qn
+                                 EXCH       (259939)
+ cuzaas   cwesg8)                Be        Peeude
+ CuEARE   co91998)               EXPUNG    peeude
+ CLEAR    (492099)                FAD      (049695)
+cons      (769248)peeudo          FADS     636i)
+‘cox                              FADL     082896)
+ 0:50                             FAM      42058)
+cousta    pacude
+ ADR      CLsGaIBD                Fant     {s20H
+ FADD     Qa7888)                 SBR      54599)
+TaDK,     (243899)                cy       (357988)
+Fant      (146899)                SBR,     «355655
+ wv       275695)                 sam      (56070)
+¥Dva      073695)                 ¥5¢      (132989)
+ FDVL     71889)                 HLL       (599989)
+ svt      (72809)                 uz       (530999)
+ FOR      74955)                 waist     (531999)
+ FOUR     077995)                ELLEN     (532095)
+ FORE     075998)                 wines    33098)
+FD        76965)                 ELLE      301905)
+          (265998)               pa        Ga2965)
+          (163985)                Lo       520900)
+          61995)                 ELL       521999)
+          (162699)                muon     (522685)
+          as4s68)                L038      23558)
+          (87898)                mus       (593959)
+          165958)                wuz       519990)
+          (166995)                mur      11935)
+          139858)
+          (153662)               cre       12690)
+                                 Hus,      (513998)
+          51865)                 ER        (548555),
+          Orerpey                TROY      ESTES)
+          75003)                 HLH,      526095)
+          876595)                ROS,      (527935)
+          (877958)               mus       (557822)
+          (345998)                uz       Gte509)
+          (546079)                Zr       Gi5655)
+          (364988)               HL        618939)
+          565998)                aRzs      527958)
+                       40.
+
+   sysbot   Velve         |    syabot      value
+  mace      (56698)       |
+  LROS                    a             (349068)
+  mans      67958)        —             (379065)
+ MLRZ
+            (547880)           RET      (311965)
+            C5400),       |   WRREN,    Gg)
+  maar      55098)            TERRES    (573858)
+  LRM       (556098)          ERR       (541959)
+  URS       (557900)          RR        «342909
+  EL        (504008)          THRO      (568690)
+ ERLE       G34               HRROE     (563005)
+ uRLET      635                HRROK    (562008)
+  ERLEM     536058)            AROS     (563898)
+ ARLES      37696)            TERS      (543898)
+ IRL        Gis098)      {maz           (559998)
+  FRM       Geese)       {      ereer   Gaiam
+ime.
+ THRAZS     (S24
+            SSH —             wR.
+                               TOR      rCSTI50)-
+                                         e
+  ue                           ort      435009)
+            023980)           TORK       (436598)
+                               He       paeueo
+  mw        239098)           mec       peeude
+                              res       pseudo
+  mwa       233498)           re        (255859)
+  Dwi       31999)             oR       (267956)
+  Ft        232088)           ust        (254988)
+ ines       036068)            38K       (266995)
+  mr                          as         (265556),
+   1m                       }  ss.       (264500)
+   In                          or        2gses)
+   Fad                        sora       (324999)
+   ree                        saer       322965)
+  i                           suec       (327098)
+   Tre                        neces      (325958)
+  im                       |   Seen      (321999)
+  Tis                      |   Saete     (323880)
+  pd                       |   soe       326958)
+  mn        136809)           rr)        035098)
+                           )   ur        340998)
+  Dat       229909)            aT        124
+                              we        pseudo
+  eis       (223098)          1st        (2e2gss)
+  pans      (221988)           site       46595)
+  aM        (222988)          Nove        (2a9596)
+  oR         434969)           over        20
+ HOVER      RIGBY              OP         (262499)
+  MovES     (283009)           ORS        (263099)
+ wow        (214999)           PRITC    pseudo
+Symbol    valve               valve
+roma      c21snp)             (334906)
+          (216608)            (332006)
+Novas     (217908)            337000)
+own       (219008)            (335000)
+youn      entt oy             (650909)
+ova       (212088)            (654868)
+yovKs     13068)              (652008)
+yovs      (290868)            peevde
+yovst     (295080)            195
+yous      (206008)            196
+          (224988)
+                              (281999)
+                              (26
+HOLE
+          (227088)
+          (225008)            pee.9038)
+          (226998)            pseudo
+          pseudo              peeuds
+ULL       pseudo              pseudo
+OCTAL                         ee(24udo
+OFFSET                              1058)
+                              (245990)
+ORCAB                BLK      peeudo
+                     SETA     (62
+ORCAT
+‘ORCAM,              SETAB    (424997980)0)
+ORC                  SETAT    (425990)
+‘onc                 SErat    426599)
+oncat                SEICA    (456666)
+‘onc                 SETcas   (453999)
+orn,                 SEICAL   (451990)
+‘onc                          (S31BaB
+“onckr               SKIPLE   (333998)
+‘onc                 SKIN     336090)
+PL                   soy      360995)
+‘sETCA               S0sA     (64995)
+SETH                 SO5E     (62998)
+SETCHB               8036     (267598)
+Seto                 03GB     (265098)
+SETCO                Sask,    81998)
+SET.                 SOSLE    (363868)
+SEM                  SOgN     (366869)
+SETA                 303.     19886)
+SEnet                308A     Gr4g86)
+SETO                 S0SE     72698)
+SETOB                SOS      (377998)
+SETOT                30865     75099)
+‘SETON               303%,     Qng99)
+SETZ,                S0SLE     (373588)
+SETZB                305K      376998)
+SETZI                SQUOZE   pseudo
+seras                sua       (274999)
+SUXBIT               SUB       (277998)
+SKIP                 SUB       (275998)
+                     UBM,      (276963)
+                     TNA       <693859)
+                     THE        (603090)
+                     Ton        (697990)
+                                                      nore
+                            42.                       In the time-sharing
+                                                      version there
+                                                      reat many addition:
+                                                      initial symbols,
+                                                      for example, systen
+syabo     value                     sysbol     volue  calls, status bit
+                                                      ete. “This Lise
+                                                      ‘changes frequently.
+ot       (656989)                   m0       (ss999)  in accordance with
+EY       (616650)   }               tua      (ess962) ‘the developnent of
+2A       (614888)   |               moe      (653865) the time-sharing
+Te       (612595)                   Tox      (657953)     em, so n0
+Tass     (616588)   |               mz       (621982)   tempt has been
+         (675658)   }             0 mm       (625855)     je to include
+                                                             here. To avoté
+         (674899)                            623888)
+         (672850)
+         (676880)                   me       627586)
+         (639680)                   ca       (45808)
+                                             (64008)
+ 2A      (634588)                            (642800)
+ me
+ ro      (632988)
+         (636988)                            (ese)
+                                              (630558)
+Tema     paeuto     |                         (684998)
+ ports   peeudo     |                        (62558)
+ me      (641998)   {                        (686959)
+Tea
+ maz     (645989)
+         (643068)                             (669699)
+                                              (654559)
+ mex     (67955)                              (652899)
+ mu
+ Te       6H1889)
+         (626550)                            (656958)
+                                             2
+ Raa     (624680)                            peeudo
+ maz     (522599)                            peeudo
+ zx      (626559)   |                         (256098)
+ sc      (651998)                             639598)
+ sta     (655558)                             (633098)
+ sce     (653858)       |                     (231668)
+ scx     (657699)                             (652598)
+ mx      611838)                             pseudo
+ Tan     (615898)                            peeudo
+ Ta      (613959)                            Current Location
+ tant    (617805)       i                    paeudo
+330      71089          |                    paeudo
+‘TS04    (675999)       i                    pseudo
+                        |                    Peeudo
+         (673898)       |                    aeudo(e-s only)
+         (677888)
+         Cx1998)                             preudo(e-s
+                                             Pseudo only)
+sce      635898)
+         (633598)                            Pseudo
+                                             pareudo
+         (637998)                            pseudo
+         la                                  peeudo
+         3                                   peeudo
+                                             Peeudo
+wre      age                                 Peeudo
+                                             peeudo
+                                             Peeude
+                                             paeudo
+         43.
+
+
+
+
+BEY   (loaded by tosder at 26)
+         DADAT PIR, ADDRESS
+         conrets
+         DATAT PER, ADDRESS
+         coxa
+         ssp state
+
+Apt
+         vaxt 17, nro
+         va 17, aoess
+         mx, wear
+         vane 37, atmanss
+         vast 7, srcimuaur
+         meme 17, asonss
+         wit 17, erm
+         me 17, amps
+         st stant
+                    48.
+
+
+
+
+       FIRE               cONo. PTR, 68
+       PERL               ssp 16,38
+       PER,2              DATA. PIR,1G
+DARAT 728,39              WOVE 15,16
+DATAT PERG                SIMRGE 16,16
+ DATAE PTR,S              ssp 14,38
+DATAE PER,6               DAPAT. PIR, (16)
+DATAI PTR,7               Ror 15,2
+ DATAL PIR,               apd 15,(16)
+DATAT FTR,11              OB 16,5
+ DATAE PTR,12             NOVEL 14,33
+ DATAL PPR,13   .         sast 38
+ DATAL PERI               CONSO PIR,IP
+ DATAL PTR,31             sRstt 39
+ DATAT PER,32             sRst (14)
+ DATA PTR,33              DATAT PER,16
+ DATA PTR,36              cum 15,16
+ DATA PTR,35              sor 1
+DATAT P7R,36
+                                                45.
+
+
+              (2) Blocks read by SBLK Loader
+
+The checkaue                     cr                   on) etree address              5 header word
+for each esta                                         contents of 1st addr,
+block 4s                     .                        contents of (lot addret)          Yon da
+                                                                                            words
+computed as                                           contents of (1st adér.tn-1),
+Pottowss     cakes                    Logiest         checksum
+                                       block                i
+the hea                               Tana)              edlyi number of date blocks
+word; rotate                          ct)                  7
+                                       oa                  :
+at. to the             PROGRAM. [arte]                snst      start                3 Just block
+left one bit                                                                                core
+                                                                                       ooef progran
+and adé the
+fire date
+word; rotete
+the result to
+the left one
+bir and ae
+the second
+date words ote.
+After the ath
+deca word the
+result should
+equal the
+checksuae
+                                 46.
+
+
+
+he adézoss                              ou                         sheader word
+tn the header                          SQuozE+( 940809)
+word of cach                                                       Ast synbot
+                                       value
+data block
+                                       SUOZE (BABE)
+of the aysbol                                                      2nd ayubol
+table should                           value
+be Sgnored.
+                         block
+                snaon,                 Squoze+($4 9990) 3        ( aych    yatot
+Notice that
+                TABLE
+                                       value                       ?)
+a oRST                                 checksum
+Anetruetion                                   nunber of blocks
+Ae positives                                                       5 end of synbols
+                                        a.
+
+                               vated Symbolic Format,
+
+‘The format~free nature of the MIDAS symbolic Language allows @ great deal of
+typographic variety, but sone of this variety should generally be given up
+ for the sake of re; ability of one's program, The suggestions vhich follow
+fare not hard-and-fast rules, but in most cases will represent @ consens
+to good practice.
+
+     o               word should appt Fon a Line indented one tab stop.
+     @                     (symbol followed by colon) should not be indented,
+     fo)ALL address tags referring to a given location should appear on
+            yarate Lin with the contents of that Location indented once
+                   sme Line as the Last (or only) tags
+    o Blonk Lines (redundant careiay returns, Line feeds, ete.) may
+        occur wher             ful to denarcate parts of a routine.
+    “) The entire ¢; jertpt should be divided into pages (by forn-feed
+        characters), ‘The logical divisions of the program should cotneide
+        with poge divistons, Although @ page will hold up to about 69.
+        Lines, it {8 good practice whenever conventent to put only 45. oF
+        58. Link         paRe.                                 he
+     © Within a storage word, use af ce rather than tab as a f{eld delimiter.
+     o Close all ( {and < groupe with ) } and >.
+    © When a consent {# applied to 2 storage word, put one tab before the 5.
+    Oy Peeddoinstructions and macro names which generate one or more storage
+        words should generally be treated like storage words.
+                                      48.
+
+
+
+     (10) BND gad TETLE are usually not indented.
+     (G2) With the possible excepeton of f, accumulators should as ¢ rule
+          sbe referred to syzbolfeally, with such symbole defined at the
+           beginning of the progres.
+     (02) Generally it ts a good idea to put a paraneter assignsent (use of »)
+          at the esrlie point in the program where its right eide (s defined.
+
+
+EXMCLE
+The following page te an example of coding in the MIDAS language. (Zt Le che
+first page of & program which uses the TV camera.) Tt denonstrates aany,
+‘though by no means all, of the features of MIDAS, The PIX macro 1s indeed «
+   quence of instructions which will convert a floating-point nusber to fixed=
+point.
+  TITLE FIND THAT BALL
+  RELOCATABLE
+  Hscute2
+  TWICHN=S
+  TCHS
+  TYCCHN®S,
+  TWAeT70
+  usc=760
+  UPDLaio0
+  DEFINE BALLP N,NO
+           SETCH Y,X
+           JUHPE Y,NO
+  REPEAT He2, (          LSH X,2.
+}          ANDGH Y,X
+           YUMPE YO
+           Tunn ¥, 577000
+            uaST $3.
+            is ¥,-12
+            TLo ¥,011000
+            FSC Y,26
+            FAD YY
+            Usu y,-27
+  TERMIN
+  DEFINE FIX
+            HOLT X, 400
+            Tse x
+            ASH X#1,=263(X)
+            TERMIN
+
+
+
+DING:    YRST &, THRU
+Look:    SETOM LcKI
+         SETOH LCK2
+         CLEAR TAKP
+         HOVE T,TARN
+         oven 1, TAKEN
+         CLEARM LETAKE
+         CLEARM PTS
+         SETOM TVIOLE
+         SETOM CANCEL
+         CLEARM MSTIHE
+         CONG HSC, MSCHN
+         URST LOOKA
+

@@ -2157,224 +2157,189 @@ A well-maintained knowledge base:
 
 
 
-<!-- projects/test-library/state/project-state.md -->
+<!-- projects/fresh-project/state/project-state.md -->
 
 # project-state.md
 
-## Project
+## Placeholder
 
-`test-library`
+This placeholder indicates that this is the start of a new project.
 
-## Objective
+If this placeholder is present, no project-specific state has yet been established.
 
-Use a small meta-project as an empirical test bench for Shared Reasoning: test persistence, reconstruction, portability, knowledge maintenance, and behavior across LLM/product environments while keeping the framework itself under deliberate human/Git control.
+Do not infer or reconstruct project state.
 
-## Accepted working model
+Instead, establish the project's scope and current state through collaboration with the user, following the guidance in protocol.md.
 
-- The authoritative framework (`protocol.md`, `rationale.md`, and `projects/common/`) belongs in the user's Git/local repository and should change by deliberate mutual agreement.
-- The Library `/projects/test-library` tree is a project cache for project-specific state, domain knowledge, and optional references. It is not the authority for the Shared Reasoning framework.
-- Project artefact identity is independent of persistence mechanism. If an LLM-side persistent cache is unavailable, the collaborator should return changed artefacts with stable filenames and project-relative paths so the human can replace them locally.
-- After substantial maintenance across a persistence boundary, the regenerated monolithic bootstrap should be reviewed when practical. This validates both component maintenance and assembled reconstruction.
-- References are evidence, not automatically accepted knowledge. State/domain remain curated knowledge and require verification or explicit acceptance before promotion.
-- Shared Reasoning should carry most of its own knowledge-architecture bookkeeping. A user should not need to understand state/domain/reference mechanics before productive collaboration can begin.
-- Productive meanders are compatible with the collaboration model when the active project thread remains recoverable; the framework should not become a rigid task-enforcement mechanism.
+Once sufficient project state has been established, remove this placeholder section and replace it with the current accepted project state.
 
-## Observed findings
+Future maintenance updates should preserve this document's identity by updating **project-state.md** rather than creating derivative filenames.
 
-- Initially caching the whole monolithic stack exposed an unsafe authority boundary: allowing the cache-maintaining collaborator to freely rewrite protocol/rationale/common would make self-modification too easy and bypass the intended Git review/branching workflow.
-- A no-persistence thought experiment correctly produced the fallback of returning changed artefacts, but initially omitted review of the regenerated monolith. This motivated connecting persistence-boundary maintenance to the existing Reconstruction Check.
-- Reviewing regenerated monoliths immediately caught two editing/assembly errors (a duplicated Reconstruction Check and then a malformed heading), validating the usefulness of post-maintenance reconstruction review.
-- An ambiguous acronym (`PD`) was prematurely resolved as "Professional Development" when the intended meaning was "Public Domain". This is a compact example of plausible inference being mistaken for semantic resolution.
+The purpose of this document is to capture the project's current accepted understanding, enabling future conversations to resume work with minimal friction.
 
-## Current direction
-
-Test the framework in fresh, inference-isolated conversations rather than adding speculative rules. Collect observed failures and improve the smallest relevant abstraction only when evidence warrants it.
-
-## Open questions
-
-- Will a fresh collaborator with no persistent project storage derive the correct artefact-return workflow from the Persistence Boundary without being told the fallback procedure?
-- Can a naïve user collaborate successfully without learning the internal state/domain/reference architecture?
-- How consistently do different product harnesses/models preserve uncertainty, competing hypotheses, and collaborative behavior rather than prematurely converging on solutions?
-- Can Shared Reasoning support learning/onboarding by separating shared domain knowledge from an individual learner's demonstrated state?
-
-## Next experiments
-
-1. Start a fresh isolated chat with the monolithic prompt and explicitly deny Library/persistent storage, without explaining the expected fallback. Ask naturally to save/maintain progress.
-2. Run a naïve-user test: avoid framework vocabulary and see whether the collaborator carries the architectural burden.
-3. Compare equivalent project/problem runs across different LLM/product environments, recording premature convergence, uncertainty handling, missing-context behavior, and handover quality.
-4. Later, test a learning/onboarding fork in which mature shared domain knowledge is reused while learner state starts separately.
+---
 
 
-<!-- projects/test-library/state/session-log.md -->
+<!-- projects/fresh-project/state/session-log.md -->
 
 # session-log.md
 
-## 2026-08-18 — Initial `test-library` exploration
+## Placeholder
 
-### Project purpose established
+This placeholder indicates that no project history has yet been established.
 
-Created `test-library` as a meta-project for exploring ChatGPT/LLM capabilities using persistent Library storage as a cache for project state and domain knowledge.
+If this placeholder is present, this is the beginning of a new project.
 
-### Cache authority boundary discovered
+Do not infer historical reasoning that has not yet occurred.
 
-The first cache population included the full monolithic prompt stack. Discussion exposed a dangerous self-modification path: if the cache-maintaining collaborator owned `protocol.md`, `rationale.md`, and common framework artefacts, an erroneous maintenance step could modify the rules governing its own future maintenance.
+Instead, establish the project through collaboration with the user, following the guidance in protocol.md.
 
-Decision: preserve the existing authority split. The user maintains framework/common material in the authoritative local/Git repository; the LLM-side Library cache holds project-specific state/domain/references when requested. Framework changes can be tested on Git branches before mutual acceptance and merge.
+The first maintenance update should remove this placeholder and begin the chronological project log.
 
-### Persistence without Library
+Future maintenance updates should preserve this document's identity by updating **session-log.md** rather than creating derivative filenames.
 
-Considered how Shared Reasoning should operate for a collaborator with no LLM-side persistent storage. The desired invariant was identified: maintenance semantics and artefact identities remain unchanged; only responsibility for persistence crosses to the human collaborator.
+The purpose of this document is to preserve the project's chronological evolution so that future conversations can understand not only what is currently believed, but how those conclusions were reached.
 
-This led to a new `Persistence Boundary` section in `common/knowledge-maintenance.md`: when persistent project storage is unavailable, changed artefacts should be returned with stable filenames and expected project-relative paths for local replacement.
+---
 
-### Reconstruction review connection
 
-A no-persistence walkthrough revealed that the first inferred workflow stopped after local replacement and bootstrap regeneration; it did not initially suggest returning the regenerated monolith for validation.
+<!-- projects/fresh-project/state/TODO.md -->
 
-Rather than expanding the Persistence Boundary, the existing `Reconstruction Check` was extended: after substantial maintenance across a persistence boundary, regenerate the bootstrap and, when practical, review the assembled result before handover.
+# Fresh Project TODO
 
-This check immediately proved useful. Review of regenerated monoliths caught first a duplicated `Reconstruction Check` section and then a malformed `## ## Reconstruction Check` heading. Both were corrected in the user's authoritative local framework.
+## Goal
 
-### References versus curated knowledge
+Establish enough accepted project knowledge that another collaborator can
+continue the investigation without replaying the original conversation.
 
-Discussion confirmed that references should remain below state/domain in epistemic status. A discovered manual or document may be relevant, obsolete, version-specific, or misunderstood. It becomes grounding for state/domain only after relevance/scope/authority are checked and the resulting understanding is verified or explicitly accepted.
+---
 
-### Naïve-user and portability tests proposed
+## Initial setup
 
-The framework should ideally let a user collaborate without administering its internal knowledge architecture. Proposed tests include:
+- Choose a short project name.
+- Rename or copy `projects/fresh-project` to `projects/<project>`.
+- Confirm that the repository contains:
+  - `protocol.md`;
+  - `rationale.md`;
+  - `create-project-prompt.sh`;
+  - `validation/handover-validation.md`;
+  - `projects/common/`.
 
-- a fresh chat explicitly denied Library/persistent storage, without telling it the fallback behavior;
-- a deliberately naïve user who never says "state", "domain", "promotion", etc.;
-- comparison across LLM/product environments to observe whether the same project context produces collaboration, uncertainty lifting, or premature solution convergence.
+---
 
-### Ambiguity failure observed
+## Establish the project
 
-During discussion of possible workplace uses, the user said it was good that Shared Reasoning was placed in `PD`. The assistant confidently interpreted `PD` as "Professional Development"; the intended meaning was "Public Domain".
+Update `state/project-state.md` with:
 
-This was accepted as a small, clean example of an inference failure: an ambiguous abbreviation had a plausible contextual expansion, but ambiguity was not surfaced before the inference was treated as resolved.
+- project name;
+- objective;
+- scope;
+- known environment;
+- available evidence and documentation;
+- accepted observations;
+- current working models;
+- explicit unknowns;
+- next useful experiment.
 
-### Learning/onboarding direction
+Update `state/session-log.md` with the initial discussion, evidence, decisions,
+and unresolved alternatives.
 
-A possible future application emerged: mature domain knowledge curated from senior experience could be cloned/forked into an individual learning project while keeping learner state separate. Repeated learner failures could then expose weak generators, missing anchors, or uncaptured tribal knowledge in the shared domain.
+Create one or more files under `domain/` when stable conceptual knowledge
+begins to emerge.
 
-This remains a future experiment rather than an accepted framework requirement.
+Start small. A single domain file is sufficient.
 
-### Maintenance decision
+---
 
-The project has accumulated enough accepted meta-knowledge to replace its bootstrap placeholders. Preserve the technical/meta findings above; leave conversational meanders in conversation history unless they expose a reusable reasoning failure (as the `PD` example did).
+## During the first session
 
+- Distinguish observation, documentation, inference, hypothesis, working
+  model, and verified conclusion.
+- Ask for missing factual or conceptual context.
+- Prefer a small discriminating experiment over speculative expansion.
+- Keep unresolved alternatives visible.
+- Do not create a large domain taxonomy before the investigation requires it.
 
-<!-- projects/test-library/state/TODO.md -->
+---
 
-# TODO.md
+## Generate the bootstrap
 
-## Active experiments
+Run:
 
-- [ ] Run a fresh inference-isolated conversation using the current monolithic prompt while explicitly denying access to Library or other persistent project storage.
-  - Do not explain the expected fallback.
-  - Later ask naturally to save/maintain progress.
-  - Observe whether changed artefacts are returned with stable filenames and project-relative paths.
-  - Regenerate and review the monolithic bootstrap after local replacement.
+```bash
+./create-project-prompt.sh <project>
+```
 
-- [ ] Run a naïve-user test.
-  - Avoid framework vocabulary such as state, domain, generator, anchor, boundary, promotion, and reference index.
-  - Provide normal discoveries, documents, corrections, and changes of direction.
-  - Observe whether the collaborator performs knowledge-architecture bookkeeping without making the user administer it.
+Confirm that this creates:
 
-- [ ] Compare equivalent Shared Reasoning work across different LLM/product environments.
-  - Track premature convergence versus uncertainty lifting.
-  - Track requests for missing evidence/context.
-  - Track preservation of competing hypotheses.
-  - Track handover/reconstruction quality.
-  - Prefer observed failures over subjective "feels better" judgments.
+```text
+projects/<project>/<project>.md
+```
 
-## Future experiments
+Upload the generated file to a new conversation.
 
-- [ ] Explore Shared Reasoning as a self-directed learning/onboarding pattern.
-  - Reuse mature shared domain knowledge.
-  - Start a separate learner-specific project state.
-  - Use exercises/experiments to establish what the learner has actually reconstructed.
-  - Treat repeated learner confusion as possible evidence of weak shared knowledge representation.
+---
 
-- [ ] Consider a deliberate or benign contradiction test for retraction/demotion behavior once friendlier tests have exercised the same mechanisms.
+## Validate reconstruction
 
-## Maintenance policy for this project
+Use:
 
-- Keep `protocol.md`, `rationale.md`, and `projects/common/` outside the Library project cache; framework changes remain under human/Git authority and mutual review.
-- Maintain Library `/projects/test-library` as a cache of project-specific state/domain/references when requested.
-- Prefer collecting empirical failures before proposing further framework changes.
+```text
+validation/handover-validation.md
+```
 
+A successful handover should demonstrate that the new collaborator can:
 
-<!-- projects/test-library/domain/domain.md -->
+- identify the current accepted state;
+- distinguish state from history;
+- reconstruct important conceptual relationships;
+- respect uncertainty and boundaries;
+- begin productive work.
 
-# Domain knowledge — Shared Reasoning test bench
+Record any reconstruction failure.
 
-## Purpose
+Use observed failures to improve the smallest relevant project or common
+artefact.
 
-Capture stable conceptual knowledge needed to test Shared Reasoning itself without duplicating the full collaboration framework.
+---
 
-## Generator: authority and persistence are separate dimensions
+## After validation
 
-The identity and epistemic role of a project artefact do not depend on where it is stored.
+- Correct missing or misleading project knowledge.
+- Regenerate the bootstrap.
+- Continue the investigation.
+- Perform maintenance at natural milestones.
+- Compact only after successful reconstruction has been demonstrated.
 
-- Git/local repository can be authoritative for framework and project source material.
-- An LLM-side Library can act as a writable cache for selected project artefacts.
-- A monolithic prompt is a serialized bootstrap/transport representation.
-- Absence of persistent LLM-side storage changes who performs persistence, not what maintenance means.
+---
 
-This separation allows the same Shared Reasoning maintenance model to operate across environments with different storage capabilities.
+## Bootstrap Completion
 
-## Boundary: framework self-modification
+Once the project has completed its first successful maintenance:
 
-Do not treat a convenient writable project cache as authority for the framework that governs collaboration.
+- Replace state/TODO.md with the contents of state/standard-project-TODO.md, 
+  then delete state/standard-project-TODO.md.
+- Remove bootstrap-specific instructions that no longer apply.
+- Keep only work items relevant to the active project.
 
-For this project, `protocol.md`, `rationale.md`, and common framework artefacts remain under deliberate human/Git control. The project cache may record observations about framework behavior and propose changes, but framework changes are tested/reviewed separately before acceptance.
+The TODO should thereafter function as the project's active work queue,
+not as bootstrap documentation.
 
-## Generator: reconstruction validates more than component correctness
 
-Correctly maintained component artefacts do not by themselves prove that the next collaborator will receive a coherent project.
 
-For substantial maintenance, especially when artefacts cross a persistence boundary:
+<!-- projects/fresh-project/domain/domain.md -->
 
-1. maintain the component artefacts;
-2. persist/replace them in the authoritative project tree;
-3. regenerate the monolithic bootstrap;
-4. when practical, review the assembled result for reconstruction failures.
+# Domain knowledge
 
-Assembly mistakes, omissions, duplication, and loss of load-bearing relationships can appear only after serialization.
+## Placeholder
 
-## Generator: references are evidence; state/domain are curated knowledge
+Since this is a fresh project, there is no domain knowledge at the moment.
+Add files with generators, boundaries and anchors as you explore the
+domain of the project.
+Since different domains may structure the knowledge in different ways
+we do not provide instructions on that, let that be part of the 
+collaboration.
 
-Reference material may have high local authority but does not automatically become accepted project knowledge.
-
-Before grounding state/domain in a reference, establish its relevance, scope, version/applicability, and relationship to observations or existing accepted knowledge. Promote only verified or explicitly accepted conclusions.
-
-## Generator: test abstractions by withholding implementation conveniences
-
-A discriminating portability test should state the missing capability or constraint but avoid prescribing the expected fallback behavior.
-
-Example: tell a fresh collaborator that persistent Library storage is unavailable, then later request maintenance naturally. If it derives the correct artefact-return workflow, the abstraction is doing useful work. If the test prompt tells it exactly how to return files, the framework itself has not been tested.
-
-## Anchor: ambiguity is unresolved until discriminated
-
-A plausible expansion of an abbreviation, homonym, shorthand, or culturally loaded phrase is still an inference when multiple interpretations remain credible.
-
-Observed example: `PD` was interpreted as "Professional Development" but meant "Public Domain".
-
-Surface the ambiguity when local context does not discriminate it; do not silently promote the most plausible interpretation to resolution.
-
-## Working model: collaboration architecture should be mostly invisible to naïve users
-
-The collaborator should normally carry the bookkeeping burden of deciding whether new material belongs in project state, domain knowledge, references, observations, history, or TODOs.
-
-A user should be able to say ordinary things such as "we proved X", "here is a manual", or "save where we got to" without first learning the internal knowledge architecture.
-
-This is a working model to be tested in fresh naïve-user conversations.
-
-## Working model: productive meanders are not automatically scope loss
-
-Exploration of adjacent ideas can expose useful analogies, assumptions, or new approaches. The collaborator should preserve a recoverable thread to the active project and return to it when the meander ceases to contribute, rather than rigidly suppressing tangents.
-
-This behavior is desirable but should not cause conversational material to be promoted into project knowledge unless it contributes to future reasoning.
+---
 
 

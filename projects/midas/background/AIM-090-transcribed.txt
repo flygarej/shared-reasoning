@@ -1,0 +1,789 @@
+
+Transcription notes
+-------------------
+
+This is a transcription of MIT Project MAC Artificial Intelligence
+Memo No. 90, "MIDAS", by Peter Samson.
+
+The scanned document is authoritative. Original spelling, punctuation,
+capitalization, and apparent typographical errors are preserved.
+
+Text supplied or reconstructed by the transcriber is explicitly marked.
+A question mark following reconstructed text indicates uncertainty.
+
+Page breaks in the source are preserved.
+
+
+		MASSACHUSETTS INSTITUTE OF TECHNOLOGY
+
+			      PROJECT MAC
+Artificial Intelligence
+Memo. No. 90					MAC-M-279
+Revised: October 1968				October 1965
+
+
+
+	 	 	        MIDAS
+
+				Peter Samson
+
+
+
+
+		MASSACHUSETTS INSTITUTE OF TECHNOLOGY
+			      Project MAC
+						Memorandum MAC-M-268
+						January 31, 1966
+TO:    PDP-6 USERS				Attached to A.I. Memo. 90
+FROM:  Peter Samson
+
+SUBJECT: Linking Loader for MIDAS
+
+The MIDAS Linking Loader is a PDP-6 program to load relocatable-
+format output from the MIDAS assembler, with facilities to handle
+symbolic cross-references between independently assembled programs.
+Although it is arranged primarily to load from DECtape, the loader is
+able also to load paper-tape relocatable programs.
+
+To use the loader, load it off the MACDMP SYSTEM tape as the file STINK
+(A file STINK NEW may exist, repairing old bugs or introducing new
+features.) Then the loader expects commands to be typed in on the on-
+line Teletype; two successive ALT MODE characters terminate the string
+of commands. The commands in a string are not performed until the string
+is thus terminated. While a command string has not been terminated,
+RUBOUT will erase the last typed-in character (and type it out again as
+a reminder). A command string may contain any number of commands, and
+the effect is the same whether the commands are together in one string
+or are in successively typed-in strings each delimited by two ALT MODEs.
+
+The loader maintains two tables whose contents may change as programs
+are loaded: (a) the loader table, which contains definitions of global
+symbols and unresolved virtual usages; (b) the local symbol table,
+containing all program names, and the local symbols for each program
+for which their loading was requested.
+
+In the following command descriptions, n is an octal number, or one of
+the command characters said to have a value. ($) is ALT mode, which
+echoes out as $. _ represents SPACE.
+
+command form  	   Meaning
+
+P		   Set to read from the paper tape reader. (Tape must
+		       be in the reader, and the reader must be on
+		       when this command is performed.)
+
+nMname1,name2($)   Set to read from the beginning of file name1, name2 on
+		       DECtape unit n. (If n is omitted, the last
+		       DECtape mentioned is assumed.)
+
+N		   Load selected input file without local symbols.
+
+(Transcriber note, if there are commands for the functions on this page,
+the command is missing in the original PDF, suggested command letters
+listed with a ?)
+
+					-2-
+
+L?    	       	   Load selected input file, saving local symbol definitions
+		   	for DDT. (N and L set the Current Starting
+			Address to that specified in the program
+			loaded if that is not 0.
+
+C?		   Copy all defined global symbols in the Loader Table
+		   	into the local symbol table (for DDT); then
+			delete same from the Loader Table.
+
+R?		   Read in the relocatable version of DDT from DECtape
+		   	unit 1, tell it of all symbols in the local
+			symbol table; wipe out the loader and transfer
+			control to DDT.
+
+nL?		   List files of DECtape unit n. (As in the M command,
+		   	the argument n may be omitted.)
+
+T?		   Transfer control to the Current STarting Address.
+
+S?		   Set the Current Starting Address to n and transfer
+		       control thereto.
+
+<missing>	   Has the value of the Current Starting Address
+
+<missing>	   Has the value of the lowest address currently used
+		       by the loader
+
+D?		   Delete all local and global symbols from the local
+		       symbol table and the Loader Table.
+
+Z?		   Zero core except registers 20 through 37 and the loader
+		   	from E up.
+
+nP?		   Print contents of location n.
+
+<missing>	   Has the current value of program relocation.
+
+<missing>	   Set program relocation to n.
+
+<missing>	   Set common relocation to n.
+
+<missing>	   Print storage map: Each program in core has one line
+		   	 in the map. At the left is the program name
+			 and at the right in octal is a word whose
+			 right half is the first location used by the
+			 program and whose left half is the last
+			 location used by the program.
+
+
+
+					-3-
+
+?		   Print storage map and missing list (short form), Each
+		   	 program loaded appears as follows: one line
+			 with the program name at the left and the first
+			 address used by the program at the right; any
+			 number of lines indented one space, each listing
+			 an undefined symbol used in that program, with
+			 the address of its first use therein. Symbols
+			 are global unless preceded by * meaning local.
+
+n?		   Print storage map and missing list (long form). (Here
+		   	 the value of n is immaterial, but one argument
+			 must be given.) Like ? with the following
+			 changes: (a) following the program name is a
+			 36-bit word in octal with first and last addresses
+			 as for the S command; (b) the address is given
+			 of each reference to each undefined symbol.
+
+n<sym>		   Define symbol sym with value n. The symbol will be
+		   	 global unless a * is typed somewhere between
+			 < and >.
+
+Error message	 meaning
+SCE adr		 Storage capacity exceeded. The program being loaded
+    		     collided with the loader at adr
+
+UGA adr sym	 Undefined global assignment. The global symbol sym
+    		     was undefined when needed by the loader to
+		     perform a parameter assignment or location
+		     assignment. The current loading address is
+		     adr.
+
+MDG adr sym	 Multiply defined global. A defined global appeared to
+    		     the left of a : when adr, the current location
+		     did not equal the value of the global. It was
+		     not redefined.
+
+CKS		 Checksum error.
+
+FNF		 File not found on DECtape specified.
+
+TMS num		 Too much symbols: occurs when loading DDT, and means
+    		     that DDT + symbols + program exceeds storage
+		     available by num registers.
+
+ILM		 Illegal memory reference: an error by the loader.
+
+
+
+					-4-
+
+
+A tape labelled LIBRARY is available, containing various useful sub-
+routines in the file LIBRAR l. Up-to-date details are posted in the
+PDP-6 room. Each program in the library file was assembled with the
+.LIBRA pseudoinstruction, and so will be loaded only if in the Loader
+Table is a request for a global symbol defined in that program. There-
+fore the library file should not be loaded until all programs have been
+loaded that make reference to the library subroutines.
+
+Command string examples:
+
+(a1)	To load the program APHLA RALPHA from DECtape unit 3, the program
+	SUBR 1 from unit 2 and the program SUBR 2 from unit 2; then to (Transcriber
+	note: original text is 'BR for SUBR 2)
+	get a storage map and missing list:
+
+	3MALPHA RALPHA$L2MSUBR 1$LMSUBR 2$L?$$
+
+	In this example, L was used for each program to load its local
+	symbols. The N command could have been used in each case instead
+	not to load local symbols.
+
+(a2)	Then go to DDT:
+	TD$$
+
+(b)	To load the program in the paper-tape reader and transfer to its
+	starting address:
+
+	PNG$$
+
+	The L command was not used here because DDT was not requested.
+
+(c)	To load PROG REL from DECtape unit 1 and the requested library
+	routines from unit 4:
+
+	1MPROG REL$L4MLIBRAR 1$N$$
+
+
+
+					-2-
+
+MIDAS is a PDP-6 assembly program. Its input is a symbolic-language file
+either of paper tape punched in ASCII code or a DECtape ASCII-mode file
+according to the MAC file format (see MAC-M-249). The output of MIDAS is
+a binary file -- either a paper tape or a SBLK or RELOC-mode file on DECtape.
+The input language is format-free, meaning that the value or use of a word
+in the input does not depend on its position in a line or the page, but
+instead upon the characters (such as colon, comma, and carriage return) which
+delimit it.
+The output of MIDAS consists primarily of storage words: 36-bit quantities
+intended to be placed in memory locations when the file is loaded. Also in
+the output file usually a symbol table -- a list of names and values of all
+symbols defined by the programmer - is included for use with DDT (see DEC-6-
+0-UP-DDT-UM-FP-ACT00 and A.I. Memo. No. 147, "A Multiple Procedure DDT")
+The programmer may select one of several formats for his binary output: one
+of them, relocatable, allows him to make symbolic cross-references between
+independently assembled programs.
+The MIDAS symbolic language provides a wide variety of ways the programmer
+may express quantities of interest to him: as PDP-6 machine instructions,
+integer to any of several radices, floating point numbers, half-words, character
+strings, etc. In addition it has a variety of features (e.g. macroinstructions
+and indefinite repeat) for substitution and repitition of character strings
+comprising input to MIDAS.
+The original specifications for MIDAS were undertaken in the winter of 1963-4
+by members of the Tech Model Railroad Club, including Messrs. Frazier, Greenblatt,
+Gross, Holloway, Kotok, Nelson, Eggers and Samson. Since then, most of the
+work on the assembler has been done by Mr. Greenblatt who is now managing the
+maintenance and development of MIDAS. The corresponding position regarding
+the MIDAS linking loader is held by Mr. Holloway.
+
+
+
+
+					-3-
+				SYNTAX OF CHARACTERS
+				Appearing in Value Words
+
+
+! 				Ignored except to separate dummy symbol names
+
+A,B,...,Y,Z     |
+0,1,...,8,9     |
+$,%             |--------------	Syllable constituents
+.               |
+' "             |
+
+(Transcriber note leftarrow/uparrow are hand drawn arrows in the manual...)
+leftarrow    	|
+uparrow		|--------------	intra-syllable operators
+
++		|
+-		|
+*		|
+/		|-------------- Syllable operators
+&		|
+#		|
+\		|
+
+sp,ht		|-------------- field separators
+,		|
+
+cr,lf,ff,vt	|
+?		|
+;		|--------------	word terminators
+:		|
+=		|
+
+( )		|
+< >		|--------------	delimit syllable from without;
+[ ]		|		delimit word from within
+
+@ -----------------------------	indirect bit; @ may appear anywhere in a word
+
+
+
+					-4-
+
+
+SYLLABLES
+
+The elementary unit of meaning in MIDAS is the syllable. Depending on its
+form and upon how it was defined, a syllable may be a number, a symbol,
+a macro name, a pseudoinstruction, a quoted character or one of several kinds
+of bracketed word. A pseudoinstruction directs some action on the part of
+MIDAS; a macro name stands for a string of characters; other syllables (termed
+valued syllables) represent numeric quantities, which are 36 bits in size.
+Such a quantity is the value of the syllable. Associated with each valued
+syllable is a relocation: a quantity which is either 0 or 1. The value of
+some syllables may be virtual, meaning the value is not known at assembly
+time but will become known as the program is loaded. Virtual quantities have
+a relocation of 0.
+
+Numbers
+
+A string of digits forms an integer with its expressed numeric value and 0
+relocation. The number is interpreted in the current radix. An integer
+ended by ' (single quote) is however taken as in base 8; and an integer ended
+by . (period) is taken in base 10. An integer may be followed by (uparrow) followed
+by an integer:
+   A (uparrow) B where A and B are integers, means the integer
+   A*R(subscript A) (superscript B) with R(subscript A) being the radix in which A is expressed.
+A string of digits with . (period) to the left of some digit is a floating-point
+number; decimal radix is assumed. A floating point number may be followed by
+(uparrow) integer, and the result is a floating point number: eg 3.5 (uparrow) 4 means the
+
+
+
+					-5-
+
+same as 35000.0. Any of these numeric formats may be followed by (leftarrow) integer,
+which multiplies the current value by 2(raised to) INTEGER. (The exponent integer may
+be terminated by ' or . to force its radix; otherwise it used the current radix.)
+The result is a fixed-point integer! For instance, 1.5 (leftarrow) 3 = 14'; and
+17' (leftarrow) 3 = 170'.
+
+SYMBOLS
+
+A string of syllable constituents, which includes at least one letter, or at
+least one $ or %, or at least two . (periods), or which consists of the
+single character . (period) is a name. Only the first six characters of a
+name are used by the assembler. A name may be defined as a symbol, a macro
+name or a pseudoinstruction. A symbol is a valued syllable.
+     One may write syllable1<-syllable2 which takes syllable2 as an integer
+which may not be virtual, and must have 0 relocation; the expression means
+syllable1 * 2 raised to power of syllable2. If either syllable contains any operators whatsoever
+it must be a bracketed word. If syllable1 is virtual, or has (1 in circle) relocation,
+the value of syllable2 must be less than 2(to tenth power).
+
+If the character ' (single quote) appears to the right of a character in a
+symbol, it declares that symbol to be a variable. MIDAS forms a list of
+distinct variables, which become defined, at the first subsequent use of the
+pseudoinstruction VARIAB or END, as unique memory locations.
+
+If " (double quote) follows any character in a symbol, it declares that symbol
+global. If a global symbol is NOT defined in the program where it appears its
+
+
+
+					-6-
+
+value is virtual, to be supplied by the loader. If a global symbol is defined
+in the program, its value is passed on to the loader and there may resolve
+virtual quantities in other programs.
+
+. AND $.; THE CURRENT LOCATION
+______________________________
+
+MIDAS maintains an 18-bit quantity (with 1-bit relocation) called the current
+location counter. Its value, is that address into which the next storage word
+will be assembled. The current location may be set by use of the pseudoinstruction
+LOC; it is advanced by 1 with each storage word assembled, and by some amount
+at each use of the pseudoinstructions BLOCK, CONSTA, VARIAB and END. By use
+of LOC the current location may become virtual.
+
+MIDAS also maintains the offset: a 36-bit-&-relocation quantity. This
+normally has value 0, relocation 0, but may be set otherwise by the OFFSET
+pseudoinstruction.
+
+The symbol . (period) always has the value (and relocation) of Current
+Location plus Offset. For instance (assuming offset = 0) in ADD [SUB .]
+the . refers to the location of the ADD, not that of the SUB.
+
+The symbol $." is virtual. It is the address where the loader is about to
+put a storage word. So in ADD [SUB $."] (regardless of any offset) the $."
+has the value of the location where the SUB is to be put.
+
+The virtual symbol $R. stands for the loader relocation, i.e. the amount that
+the loader adds to the value of each quantity (including the location counter)
+which has a relocation of 1.
+
+
+
+					-7-
+
+QUOTED CHARACTERS
+-----------------
+
+If '(single quote) or "(double quote) or (uparrow)(up arrow) appears without
+a syllable constituent immediately to its left, the quote (or arrow) and the
+character immediately to its right are taken as a syllable with the
+value of the sixbit,or ASCII code, or ASCII anded with 77(octal), for the
+character, respectively. e.g., 'A means 41'; "+ means 53', (uparrow)Q means 21'
+
+BRACKETED WORDS
+_______________
+
+<word>		is a syllable with the value of word, where word is a word.
+(word)		If the ( is immediately preceded by a syllable-separating
+		character, is a syllable whose value is a word(8), the value of
+		word with left and right halves swapped.
+[word]		is a constant syllable, and word in this case is called a
+		constant word. As MIDAS assembles a program it forms a list
+		of distinct constant words and at the appearance of the
+		pseudoinstruction CONSTA or END a number of locations is
+		reserved equal to the number of constant words outstanding.
+		Each constant word is assembled to appear in a unique one of
+		these locations. Then, each constant syllable which refers
+		to a certain constant word is given the value of the address
+		of that constant word. Last, the table of constant words
+		is reset to contain none.
+
+
+
+					-8-
+
+
+FIELDS
+______
+
+A valued syllable is a field; and two or more valued syllables may be combined
+to form a field by means of the syllable separators + - * / \ # and &.
+These perform respectively 36-bit integer operations of addition, subtraction,
+multiplication, division (will truncate quotient) and bitwise Boolean OR,
+XOR, and AND. All &'s are performed first, then all #'s, then \'s, then all
+*'s and /'s; last, + and -. Operators of the same hierarchy are performed in
+order from left to right.
+
+WORDS
+_____
+
+One or more fields connected by field separators form a word. The two field
+separators are space (or horizontal tab), and comma. (Space and h.tab are
+synonymous and will both be called spaces.) Spaces before and after a word
+are ignored. More than one space in a row are treated as one. Spaces adjacent
+to a comma are ignored.
+
+The values of the fields are combined to form the value of the word according
+to the number of fields and the pattern of field separators, as detailed in
+the following chart.
+
+
+					-9-
+
+				FORMAT TABLE
+		(A, B and C stand for fields)
+		(Transcriber: _ stands for space, ++ stands for
+		 addition with carry suppressed from bit 18 to bit 17
+		 <- is leftarrow)
+
+format number	      	  pattern		value
+  in octal
+----------------------------------------------------------------------------
+13			   ,,C			unassigned
+14			   ,A			A & 777777
+15			   ,A_C			|
+16			   ,A,			|-- unassigned
+17			   ,A,C			|
+20			   A			A
+21			   |
+22			   |--not possible
+23			   |
+24			   A_B			A ++ B & 777777
+25			   A_B_C		A ++ B & 777777 ++ C & 777777
+26			   A_B,			A + <B & 17> <- 23.
+27			   A_B,C		A + <B & 17> <- 23. ++ C & 777777
+30			   A,			A
+31			   not possible
+32			   A,,			<A & 777777> <- 18.
+33			   A,,C			<A & 777777> <- 18. + C & 777777
+34			   A,B			A ++ B & 777777
+35			   A,B_C		|
+36			   A,B,			|-- unassigned
+37			   A,B,C		|
+
+
+The sign (+ in circle) means addition with carry suppressed from bit 18 to bit 17
+
+
+
+					-10-
+
+In the case of four or more fields in a word, the first three are treated
+according to the chart and all subsequent fields, regardless of separators,
+are treated like field C.
+
+If in a word appears (word) with the character to the left of the ( other
+than + - * / \ # or &, the swapped value of the word within the parentheses
+is saved and at the end of the outer word is added into the word being formed.
+
+Anywhere in the word may appear the character @. The only effect of this is
+that when the word has been evaluated, the indirect bit, 1<-22., is ORed
+into the value. The @ does not terminate syllables or fields, nor is it taken
+     part of a syllable or field.
+
+Certain symbols form the MIDAS initial symbol table. Any of these which represent
+PDP-6 machine instructions (except the 8 i-o instructions) may be independently
+defined by the programmer, in which case both values are available to MIDAS.
+When the symbol appears in the leftmost field of a word it assumes the initial
+value; otherwise, the new value.
+
+(Transcriber note: <ret> is used instead of the bent downarrow in PDF
+     <tri> means triangle symbol used in PDF)
+
+WORD USES
+_________
+
+name:			makes name a symbol with value, relocation and
+			virtuality equal to those of the Current Location.
+
+name=word<ret>		makes name a symbol with value, relocation and
+			virtuality of word.
+
+name==word<ret>		same as name=word<ret>, but also has the effect, when
+			the symbol table is read by DDT, of "half-killing"
+			the symbol name in DDT's symbol table.
+
+
+
+					-11-
+
+word<ret>|		word is taken as a storage word.
+	 |
+word?	 |		(a series of <ret> characters with no intervening
+	 		word creates no storage words and does not change
+			the Current Location Center.
+
+word;text lf		word is taken as a storage word, and the text from
+	  		the ; to the first line feed is ignored.
+
+
+   NOTE: If <ret> or ; terminates a word it automatically closes all open ([
+   	 and < groupings. Hence ADD_[(3<ret> is the same as ADD_[(3)]<ret>.
+
+
+PSEUDOINSTRUCTIONS  PART I
+--------------------------
+
+     Any arguments supplied to the following pseudoinstructions in excess of
+those needed are ignored.
+
+LOC <tri> word <ret>	sets the Current Location Counter to the right
+    	       		18 bits of the value of word, with the relocation
+			and virtuality of word.
+
+BLOCK <tri> word <ret>	sets the Current Location Counter to the right
+      	    	 	18 bits of the sum of its previous value and the
+			value of word
+
+END <tri> word <ret>	This marks the end of the program, and the right
+    	       		18 bits of the value of the word, and its relocation,
+			are saved as the program starting address. The END
+			also acts as VARIAB and CONSTA, in that order, if
+			there are any constant words or variables undefined.
+
+XWORD <tri> field1 <tri> field2 <ret>|-- Same as (,field1),field2
+XWD <tri> field1 <tri> field2 <ret>  |
+
+EXP <tri> word <ret>    Same as word<ret>
+
+.OP <tri> field1 <tri> field2 <tri> field3 <tri>
+    	  	        This is a syllable and so may have syllable-
+			combining operators to its left and at the
+			right of the last <tri>. The value of the
+			syllable is the result of performing field1
+			as a PDP-6 instruction with field2 in the
+
+
+					
+			     	        -12-
+
+			specified accumulator and field3 in the
+			specified memory location. The value of
+			.OP is the resulting contents of the
+			accumulator.
+
+OCTAL			Sets current radix to 8
+
+DECIMAL			Sets current radix to 10
+
+RADIX <tri> word<ret>	Sets current radix to value of word.
+
+CONSTA	    		Reserves space where it appears for all
+			unassigned constant words.
+
+VARIAB			Reserves space where it appears for all
+			undefined variables.
+
+NULL			has no effect. Any number of arguments
+			may be given and will have no effect.
+
+EQUALS<tri>name1<tri>name2<ret>
+			name1 is made a synonym of name2 and may
+			be used anywhere instead of name2. This
+			pseudoinstruction is generally used upon
+			macros and pseudoinstructions rather than
+			symbols.
+
+TITLE<tri>string lf	The string of characters through the first
+		 	line feed is the title of the program, and
+			is printed out when the TITLE pseudoinstruction
+			is encountered on each pass of the assembly.
+			The program name, which may be used by DDT,
+			is set to the first 6 characters of the
+			first syllable in the title.
+
+OFFSET<tri>word<ret>	The Offset is set to the value and relocation
+			of word.
+
+SQOZE<tri>field,symbol	Is a syllable with value equal to the radix-50
+			representation of symbol plus <field & 17><-30
+
+ASCII_jtextj		where j is any ASCII character, and text is
+			any string of ASCII characters not containing
+			j: generates one or more storage words,
+			containing each five 7-bit characters of the
+			text, from left to right left-justified in
+			successive words (in order that can be read
+			with ILDB). If j is a syllable, field, or
+
+
+
+					-13-
+
+			word-separator other then space, the space
+			after ASCII can be omitted. The entire
+			usage is treated as a syllable: any
+			syllable-combining operators at its left
+			act upon the first storage word it
+			generates, and any syllable-combining
+			operators to its right act upon the last
+			storage word it generates.
+
+ASCIZ_jtextj		like ASCII, but if number of characters in
+			text is divisible by 5, assembles final
+			additional storage word of 0.
+
+.ASCII jtextj		Like ASCIZ; but also when the character ! is
+       			encountered in the text takes the field
+			following it, evaluates that field, creates
+			the character string representing that value
+			in octal digits, and puts that character
+			string into the assembled text storage words
+			instead of the ! and field.
+
+SIXBIT_jtextj		Same action as ASCII, but puts six sixbit
+			characters to the word.
+
+.FNAM1			In time-sharing version only  .FNAM1 and
+.FNAM2			.FNAM2 correspond respectively to the sixbit
+			code for the first and second subnames of the
+			source file (see Operating Instructions).
+			For example, if the source file name is
+			RANDOM PROG, .FNAM1 has the same numeric
+			value as SIXBIT /RANDOM/ .
+
+PRINTC_jtextj		Takes a text argument identical in form to
+			that of ASCII, and prints the text on-line
+			when the pseudoinstruction is met on each
+			pass of the assembly. No storage words are
+			created.
+
+PRINTX_jtextj		Same as PRINTC, but suppresses type-out
+			of the character !.
+
+EXPUNG<tri>name1<tri>name2<tri>...<tri>namen<ret>
+			Each name is expunged, i.e., deleted from
+			the symbol table; and effectively forgotten
+			by MIDAS
+
+
+
+					14.
+
+.BEGIN			The code appearing between .BEGIN and its
+.END			matching .END is termed a program block
+			(not to be confused with a DECtape block,
+			a logical block of assembler output, or
+			a group of locations spaced over by the
+			BLOCK pseudoinstruction). All symbol
+			definitions effected within a program
+			block are "undone" at the .END and such
+			symbols regain the values they had at the
+			.BEGIN. Program blocks may be nested.
+
+CONI  field1, field2<ret>	The eight PDP-6 i-o instructions are defined
+CONO  field1, field2<ret>	as pseudoinstructions to'MIDAS. If they
+CONSZ field1, field2<ret>	appear in the leftmost field of a word, then
+CONSO field1, field2<ret>	for that word the evaluation rules for
+DATAI field1, field2<ret>	certain word formats changes according to
+DATAO field1, field2<ret>	the following table; and the i-o instruction
+BLKI  field1, field2<ret>	otherwise acts as a symbol with the value
+BLKO  field1, field2<ret>	shown in the Initial Symbol Table
+    	  	       
+format number	pattern		value
+ in octal
+-------------------------------------------------------------------
+26		A_B,		A + <B & 177> <- 26.
+27		A_B,C		A + <B & 177> <- 26. ++ C & 777777
+
+.FORMA<tri>no,fs	Inserts an entry in the format table (i.e.,
+			replaces old entry) for format number no
+			(see format table on Page 9). The numeric
+			value of field fs is taken as three 12-bit
+			bytes referring to the (up to) three distinctly
+			handled fields of a word: the left 12 bits
+			refer to the right most field, the middle
+			12 bits to the field next to the right most
+			(if any) and the right 12 bits to the field
+			2 from the right and any additional fields.
+			(If there is only one field in a given format
+			it is the right most regardless of punctuation
+			which may be required after it)
+			A 12-bit byte describing a particular field
+			is in turn treated as two 6-bit bytes. The
+			right 6-bit byte specifies a mask and the
+			left 6-bit byte specifies a shift. The mask
+			number (say m) directs that only the right
+			m bits of the field value be taking the shift
+			number (say s) directs that the bits
+			remaining after masking be shifted left s bits.
+			The fields, after this masking and shifting
+			are added to give the value of the word.
+			(Example: the 12-bit specification 2704 (octal)
+			describes an accumulator field:
+						       <f&17> +23.
+
+
+
+					15.
+
+(Transcriber note: digits appended with (8) are octal)
+
+			There are three exceptions to the above
+			procedure. (1) If a field is specified
+			as 0022(8) (right half, not shifted) the
+			carry out of bit 18 is suppressed as the
+			field is added into the word. (2) A
+			virtual quantity may only occur in a field
+			specified 0044(8),0022(8),2222(8), 0504(8) or
+			2704(8). (3) If as a syllable in the left-
+			most field of a word appears any of the
+			eight i-o instructions (DATAO, DATAJ,
+			CONO, CONI, BLKC, BLKJ, CONSZ, CONSO)
+			then any field in that word specified
+			2704(8) is instead taken as if specified
+			3211(8) (i-o device field).
+
+.LENGT jtextj		(Text argument as for ASCII) this is a
+       			syllable with the value of the number of
+			characters in the text.
+
+.TYPE name		is a syllable whose value depends on the
+      			nature (at that point) of the name name.
+
+			value (octal)    if name is a
+			1     		 pseudoinstruction or macroname
+			2		 defined symbol (not global,
+					 	 	not a variable)
+			3		 undefined local symbol
+			4		 defined local variable
+			5		 undefined local variable
+			6		 defined global variable
+			7		 undefined global variable
+			10		 defined global symbol (not a
+					 	 variable)
+			11		 undefined global symbol (not
+					 	 a variable)
+			17		 unseen (except in .TYPE)
+
+
+

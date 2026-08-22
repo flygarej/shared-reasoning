@@ -1,120 +1,59 @@
-# Fresh Project TODO
+# MIDAS Project TODO
 
-## Goal
+## Current goal
 
-Establish enough accepted project knowledge that another collaborator can
-continue the investigation without replaying the original conversation.
+Build practical MIDAS literacy on the live TOPS-20 system, especially the assembly-time programming model, before serious decomposition of historical `TECO.MID`.
 
----
+## Verified and now normal vocabulary
 
-## Initial setup
+The following no longer need isolated introductory tests unless a boundary question arises:
 
-- Choose a short project name.
-- Rename or copy `projects/fresh-project` to `projects/<project>`.
-- Confirm that the repository contains:
-  - `protocol.md`;
-  - `rationale.md`;
-  - `create-project-prompt.sh`;
-  - `validation/handover-validation.md`;
-  - `projects/common/`.
+- simple `DEFINE ... TERMIN` macros;
+- textual macro arguments in the tested `SAY` form;
+- `IFN` / `IFE` conditional assembly;
+- `REPEAT`;
+- `.RPCNT` as a zero-based `REPEAT` counter;
+- `IRPS`;
+- `.IRPCNT` as a zero-based counter in the tested `IRPS` usage.
 
----
+Use these naturally in later exercises.
 
-## Establish the project
+## Near-term experiments
 
-Update `state/project-state.md` with:
+- From the real-source corpus, isolate practical differences among `=`, `=:`, `==`, and `==:`.
+- Explore `EQUALS` and `.SCALAR` in controlled examples.
+- Explore storage/layout pseudo-ops: `BLOCK`, `LOC`, `CONSTANTS`, `VARIABLES`.
+- Explore symbol definitions, labels, and expression syntax more deliberately.
+- Exercise numeric syntax, especially octal-default versus decimal notation.
+- Explore literals/constants and placement beyond the current `ASCIZ` use.
+- Test `.INSRT` with a small controlled include file.
+- Determine more precisely which TOPS-20 monitor/JSYS symbols are predefined.
+- Compare old-style names such as `PSOUT` with `%`-style aliases such as `PSOUT%`.
+- Add one new macro capability at a time: text concatenation with `!`, richer macro argument forms, nested/composed macros, more IRP-family iteration, and assembly-time assertions/errors.
+- Use `TECO.MID` after each learned mechanism to identify a real historical usage pattern.
+- Explore output modes and the relationship among MIDAS output, LINK, SAVE, and direct executable formats.
 
-- project name;
-- objective;
-- scope;
-- known environment;
-- available evidence and documentation;
-- accepted observations;
-- current working models;
-- explicit unknowns;
-- next useful experiment.
+## Documentation / archaeology
 
-Update `state/session-log.md` with the initial discussion, evidence, decisions,
-and unresolved alternatives.
+- Add `midas.doc.txt` to the Library `reference/` set after curation; treat it as the strongest current general-manual candidate.
+- Continue hunting for TOPS-20 `HLP:MIDAS.HLP`; likely value is executable command/switch documentation analogous to `HLP:MACRO.HLP`.
+- If `MIDAS.HLP` remains unavailable, collect command/switch names from MIDAS source and test them harmlessly on MIDAS.458.
+- Continue AIM-90 verbatim transcription as a separate preservation/lineage effort; scan remains authoritative and reconstructions must stay marked.
 
-Create one or more files under `domain/` when stable conceptual knowledge
-begins to emerge.
+## Questions to keep open
 
-Start small. A single domain file is sufficient.
+- Exactly which TOPS-20-specific symbols and definitions are built into MIDAS.458?
+- Which parts of the initial symbol environment are core MIDAS versus OS-specific additions?
+- Where do meaningful source-level differences from MACRO-20 begin outside the assembly-time facilities?
+- What output mode is selected by the simple `@MIDAS FOO` workflow?
+- Which additional MIDAS features recur heavily enough in `TECO.MID` to deserve early study?
 
----
+## Maintenance rules
 
-## During the first session
-
-- Distinguish observation, documentation, inference, hypothesis, working
-  model, and verified conclusion.
-- Ask for missing factual or conceptual context.
-- Prefer a small discriminating experiment over speculative expansion.
-- Keep unresolved alternatives visible.
-- Do not create a large domain taxonomy before the investigation requires it.
-
----
-
-## Generate the bootstrap
-
-Run:
-
-```bash
-./create-project-prompt.sh <project>
-```
-
-Confirm that this creates:
-
-```text
-projects/<project>/<project>.md
-```
-
-Upload the generated file to a new conversation.
+- Prefer late/contemporary evidence for MIDAS.458: live experiments, `midas.doc`, and later INFO material. Treat AIM-90 as PDP-6 lineage evidence.
+- Keep live verification distinct from documentation and inference.
+- Treat MACRO-20 knowledge as a hypothesis generator, not MIDAS evidence.
+- Do not generalize ITS runtime examples to TOPS-20 without testing.
+- Accrue MIDAS features gradually and reuse them in subsequent exercises.
 
 ---
-
-## Validate reconstruction
-
-Use:
-
-```text
-validation/handover-validation.md
-```
-
-A successful handover should demonstrate that the new collaborator can:
-
-- identify the current accepted state;
-- distinguish state from history;
-- reconstruct important conceptual relationships;
-- respect uncertainty and boundaries;
-- begin productive work.
-
-Record any reconstruction failure.
-
-Use observed failures to improve the smallest relevant project or common
-artefact.
-
----
-
-## After validation
-
-- Correct missing or misleading project knowledge.
-- Regenerate the bootstrap.
-- Continue the investigation.
-- Perform maintenance at natural milestones.
-- Compact only after successful reconstruction has been demonstrated.
-
----
-
-## Bootstrap Completion
-
-Once the project has completed its first successful maintenance:
-
-- Replace state/TODO.md with the contents of state/standard-project-TODO.md, 
-  then delete state/standard-project-TODO.md.
-- Remove bootstrap-specific instructions that no longer apply.
-- Keep only work items relevant to the active project.
-
-The TODO should thereafter function as the project's active work queue,
-not as bootstrap documentation.
-

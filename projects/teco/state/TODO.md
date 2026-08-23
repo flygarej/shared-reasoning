@@ -36,6 +36,10 @@ before being removed from this file.
 - [ ] Resolve TECOC search case-sensitivity.
 - [ ] Continue mapping command producer/consumer relationships.
 - [ ] Continue investigation of TECO EMACS runtime structures.
+- [ ] Continue MIDAS TECO capability fingerprinting against TOPS-20 TECO and TECOC.
+- [ ] Determine whether `@emacs\:teco` performs implicit bootstrap loading before the interactive prompt.
+- [ ] Determine the meaning/representation of large negative `Qq` values for text-valued MIDAS TECO Q-registers.
+- [ ] Test MIDAS TECO macro numeric-argument passing and additional execution-context behaviour.
 
 ---
 

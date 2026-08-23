@@ -51,6 +51,52 @@ Experiments establish only the tested cases. Interactive transcripts can mix pro
 
 Authoritative whenever deciding actual TOPS-20 TECO 540 semantics.
 
+### MIDAS TECO / EMACS bootstrap TECO experiments
+
+**Scope**
+
+Startup behaviour and capability fingerprinting of the MIDAS-written TECO used
+by original TECO EMACS, with particular attention to separating interpreter
+facilities from later TECO/ELIB/EMACS layers.
+
+**Observed reliability**
+
+Highest authority for the exact tested startup MIDAS TECO environment. The
+startup command was `@emacs\:teco`, identifying as `TECO.16510`; whether this
+startup implicitly loads bootstrap material remains unresolved.
+
+**Experimentally confirmed areas**
+
+- TTY/cursor-aware screen presentation exists at startup;
+- ordinary numeric Q-register store/read works;
+- `Xq` copies text without deleting the source buffer in tested behaviour;
+- `Gq` inserts stored text and can insert the textual form of an observed numeric value;
+- Q-register storage appears single-current-value rather than TECOC-style
+  simultaneous numeric/text components;
+- `[q`/`]q` form a Q-register PDL within one active execution context;
+- that PDL does not persist across separately executed interactive command
+  streams;
+- nested `M` execution shares the active Q-register PDL.
+
+**Important limitations**
+
+The precise startup layer is not yet known. Large negative numeric values
+returned by `Qq` for text-valued registers have been observed but not
+interpreted. The internal execution-context representation is likewise unknown.
+
+**Known disagreements**
+
+The tested implementation combines features that do not match either retained
+comparison model wholesale: its Q-register storage appears single-current-value
+like historical TECO-10, while tested `Xq` behaviour is non-destructive like
+TECOC rather than the tested TOPS-20 implementation.
+
+**Recommended use**
+
+Authoritative for tested MIDAS TECO runtime behaviour and as a discriminator
+when assigning functionality to the base interpreter versus loaded EMACS
+layers. Do not project untested TOPS-20 or TECOC semantics onto it.
+
 ### TECOC executable experiments
 
 **Scope**
@@ -473,20 +519,20 @@ Orientation and source discovery only.
 
 #### Code presented in conversation or documentation
 
-TECO code shown for human reading shall use `$` to represent an ESC
+TECO code shown for human reading shall use `$` to represent an ESC\
 character unless another representation is explicitly required.
 
-This follows the established TECO convention and makes command
-termination and delimited arguments easier to recognize in visual
+This follows the established TECO convention and makes command\
+termination and delimited arguments easier to recognize in visual\
 examples.
 
-A literal dollar sign in TECO text must be identified explicitly when
+A literal dollar sign in TECO text must be identified explicitly when\
 ambiguity is possible.
 
 #### Downloadable source
 
-Downloadable TECO source files shall use literal ESC (`0x1B`)
-characters unless the user explicitly requests a human-readable or
+Downloadable TECO source files shall use literal ESC (`0x1B`)\
+characters unless the user explicitly requests a human-readable or\
 escaped form.
 
 Rationale
@@ -534,14 +580,14 @@ promoted to accepted project knowledge.
 
 **Primary reference**
 
-https://raw.githubusercontent.com/blakemcbride/TECOC/refs/heads/master/doc/teco-manual.txt
+[https://raw.githubusercontent.com/blakemcbride/TECOC/refs/heads/master/doc/teco-manual.txt](https://raw.githubusercontent.com/blakemcbride/TECOC/refs/heads/master/doc/teco-manual.txt)
 
 **Purpose**
 
 Authoritative implementation documentation for TECOC.
 
-Preferred source when resolving command-local semantics,
-startup behaviour, implementation-specific facilities, and
+Preferred source when resolving command-local semantics,\
+startup behaviour, implementation-specific facilities, and\
 features not yet represented by accepted project knowledge.
 
 ---
@@ -550,16 +596,16 @@ features not yet represented by accepted project knowledge.
 
 **Primary index**
 
-https://raw.githubusercontent.com/fpjohnston/TECO-64/refs/heads/master/doc/index.md
+[https://raw.githubusercontent.com/fpjohnston/TECO-64/refs/heads/master/doc/index.md](https://raw.githubusercontent.com/fpjohnston/TECO-64/refs/heads/master/doc/index.md)
 
 **Purpose**
 
 Indexed implementation documentation for TECO-64.
 
-Preferred source when resolving TECO-64 command semantics,
+Preferred source when resolving TECO-64 command semantics,\
 extensions, and implementation-specific behaviour.
 
-Use the index to locate the relevant command documentation
+Use the index to locate the relevant command documentation\
 rather than relying on repository structure.
 
 **Note:**

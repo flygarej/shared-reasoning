@@ -9,9 +9,14 @@ The scanned document is authoritative. Original spelling, punctuation,
 capitalization, and apparent typographical errors are preserved.
 
 Text supplied or reconstructed by the transcriber is explicitly marked.
-A question mark following reconstructed text indicates uncertainty.
+A question mark <?> following reconstructed text indicates uncertainty.
 
 Page breaks in the source are preserved.
+
+Several handdrawn typgraphical symbols are in the PDF, those have been given
+a tag and are referred in text as <tag>, exception is when space is explicitly
+marked in text, then _ (underscore) is used.
+
 
 
 		MASSACHUSETTS INSTITUTE OF TECHNOLOGY
@@ -80,30 +85,30 @@ N		   Load selected input file without local symbols.
 
 (Transcriber note, if there are commands for the functions on this page,
 the command is missing in the original PDF, suggested command letters
-listed with a ?)
+listed with a <?> if not known <missing> is used)
 
 					-2-
 
-L?    	       	   Load selected input file, saving local symbol definitions
+L<?>   	       	   Load selected input file, saving local symbol definitions
 		   	for DDT. (N and L set the Current Starting
 			Address to that specified in the program
 			loaded if that is not 0.
 
-C?		   Copy all defined global symbols in the Loader Table
+C<?>		   Copy all defined global symbols in the Loader Table
 		   	into the local symbol table (for DDT); then
 			delete same from the Loader Table.
 
-R?		   Read in the relocatable version of DDT from DECtape
+R<?>		   Read in the relocatable version of DDT from DECtape
 		   	unit 1, tell it of all symbols in the local
 			symbol table; wipe out the loader and transfer
 			control to DDT.
 
-nL?		   List files of DECtape unit n. (As in the M command,
+nL<?>		   List files of DECtape unit n. (As in the M command,
 		   	the argument n may be omitted.)
 
-T?		   Transfer control to the Current STarting Address.
+T<?>		   Transfer control to the Current STarting Address.
 
-S?		   Set the Current Starting Address to n and transfer
+S<?>		   Set the Current Starting Address to n and transfer
 		       control thereto.
 
 <missing>	   Has the value of the Current Starting Address
@@ -111,13 +116,13 @@ S?		   Set the Current Starting Address to n and transfer
 <missing>	   Has the value of the lowest address currently used
 		       by the loader
 
-D?		   Delete all local and global symbols from the local
+D<?>		   Delete all local and global symbols from the local
 		       symbol table and the Loader Table.
 
-Z?		   Zero core except registers 20 through 37 and the loader
+Z<?>		   Zero core except registers 20 through 37 and the loader
 		   	from E up.
 
-nP?		   Print contents of location n.
+nP<?>		   Print contents of location n.
 
 <missing>	   Has the current value of program relocation.
 
@@ -1155,3 +1160,606 @@ are performed:
 
 					25.
 		     
+The pseudoinstruction .QUOTE takes the symbol following and passes it on
+unchanged, protecting it from being taken as a dummy symbol or as either of
+the pseudoinstructions DEFINE and TERMIN. In all other cases, a name which
+is currently a dummy symbol will appear to be replaced by its string value
+whenever it appears bounded on each side by non-syllable constituents. For
+example, if A is an accumulator as well as a dummy symbol within a macro
+definition, one might need to say
+	    ADD_.QUOTE_A,A
+to differentiate the two meanings.
+
+
+.TAG<tri>name<rtri> may be used within the range of IRP, IRPS or IRPC; or in the
+.GO<tri>name<rtri>  body of a macro definition. Only the first 6 characters of
+		    the name are used. The .TAG has no effect except to mark
+		    a place in the IRP etc. or macro which may be referred to
+		    by a .GO. As one of these repeats or a macro is being
+		    processed, sending characters to the assembler, when a
+		    .GO is encountered it is not output nor does outputting
+		    resume right after the .GO; instead, the range of the
+		    repeat (or body of the macro) in which the .GO occurred
+		    is searched for a .TAG with the matching name. If it is
+		    found, outputting to the assembler resumes to the right
+		    of the tag. If it is not found, processing of the current
+		    repeat or macro is terminated and processing returns to the
+		    point just beyond the range of the repeat or just after
+		    the macro usage; if this is within an outer repeat or macro
+		    body, searching for the missing tag is done therein, etc.,
+		    if a tag is not found anywhere until processing reaches the
+		    top level (outside all repeats and macro calls), assembling
+		    then resumes from the point just after the outermost
+		    repeat or macro.
+
+
+
+					26.
+
+.GSSET<tri>no<ret>	Sets generated-symbol counter to value of no
+
+PSEUDOINSTRUCTIONS PART III
+---------------------------
+
+Binary Output Formats.
+
+Storage words are output in one of two modes: absolute or relocatable.
+There are three possible formats for absolute output, named Read-in mode,
+Half-word read-in mode, and simple block formats; there is one relocatable
+format. The Read-in mode format, if punched on paper tape, can be read by the
+RIM Loader (at 20); the simple block format, if on DECtape, can be read by
+MACDMP, or HACTRN (the DDT in time sharing) and on paper tape is preceded by
+SBLK loader in RIM format; the relocatable format can be read by the linking
+loader. Virtual quantities, and strorage words with non-zero relocation, may
+not occur in absolute mode output.
+
+RIM<ret>     	      selects read-in mode format output
+RIM1<ret>    	      selects half-word read-in mode format output
+SBLK<ret>    	      selects simple block format output
+RELOCA<ret>  	      selects relocatable format output and sets
+	     	      current location counter to 0 with relocation 1.
+1PASS<ret>   	      like RELOCA, but also causes 1-pass assembly.
+SBLK is initially selected.
+.SLDR		      causes output of SBLK loader and enters SBLK format
+WORD<tri>wrd<ret>     The value of wrd is output as a 36-bit word. In
+		      relocatable and simple block formats, which output
+		      storage words in blocks, any block currently
+		      being accumulated is immediately output so that
+		      wrd appears in the proper place and between blocks.
+
+
+
+					27.
+
+NOSYMS		      Suppresses output of symbol table which normally
+		      accompanies binary program.
+.NSTGW		      enables SWD error printout to occur if a storage
+		      word is generated.
+.YSTGW		      disables SWD error printout. .YSTGW is
+		      initially selected.
+
+Loader commands.
+
+In relocatable format, certain pseudoinstructions are available to cause special
+action by the Linking Loader when encountered.
+
+.LIBRA_namelist<ret>  This must occur before any storage words. It
+		      tells the loader that the program to follow is
+		      a library program. The entries in the namelist,
+		      separated by commas, are either names or groups of
+		      names separated by space, +, and -. An entry is
+		      said to be satisfied by a list of symbols if
+		      either (a) the entry is a name and that name appears
+		      in the list of symbols; or (b) the entry is a group
+		      of names, all of which names preceded by space or +
+		      are in the list of symbols, and none of which names
+		      preceded by - are. The Linking Loader will omit to
+		      load a library program unless one or more entries in
+		      its namelist are satisfied by the list of undefined
+		      global symbols used in programs already loaded.
+
+.LIFS_namelist<ret>   Load If Seen.
+
+.ELDC<ret>	      End Load Time Conditional. Any storage words
+		      appearing between .LIFS and .ELDC are passed on
+		      to the loader which will load them only if one or
+		      more entries in the namelist are satisfied by the
+		      list of defined and undefined global symbols used
+		      in programs already loaded.
+
+		      NOTE: .ELDC should always be followed by a location
+		      assignment (LOC pseudoinstruction). Sometimes if
+		      there is a series of load-time conditionals with no
+		      intervening non-conditional matter the LOC need
+		      only be used after the last. Notice the LOC $."
+		      may be used to continue loading storage words
+		      into subsequent locations where the effect of the
+		      load-time conditionals is not necessarily known.
+		      Load Time Conditionals may be nested.
+
+
+
+					28.
+
+.LIFE<tri>word<ret>   Load Time Conditionals on Value. Any one of
+.LIFLE<tri>word<ret>  these starts a range which is ended by .ELDC
+.LIFL<tri>word<ret>   In each case the word is evaluated by the Loader,
+.LIFG<tri>word<ret>   and the storage words in the range are loaded
+.LIFGE<tri>word<ret>  only if the value of word is respectively
+.LIFN<tri>word<ret>   = 0, <= 0, < 0, > 0, >= 0, neq 0.
+
+.LNKOT		      If output is relocatable format, causes
+		      immediate output of all accumulated linking
+		      pointers.
+
+.LOP<tri>f1<tri>f2<tri>f3
+		      like .OP, but occurs when encountered by
+		      loader in relocatable format. (f1 is an
+		      instruction, f2 is taken as the contents of
+		      the specified accumulator, and f3 as the
+		      contents of the specified memory location).
+		      Has no value; loader sets variable .LVAL1
+		      to resultant memory contents. (Initially,
+		      .LVAL1 and .LVAL2 have the value 0)
+
+.GLOBA<tri>nam1<tri>nam2,...<ret>
+		      has same effect as appearance of each name
+		      followed by a ", but generates no storage
+		      words.
+
+.LIBRQ<tri>nam1<tri>,...<ret>
+		      will output the given names to the relocatable
+		      loader such that the loader "sees" them in this
+		      program when queried by load-time conditionals.
+		      No definition is given to the loader, and a use
+		      of .LIBRE does not cause the names to be seen
+		      at all by the assembler.
+
+ERROR MESSAGES
+--------------
+
+	An error message typed out by MIDAS is in the following form:
+
+SYM+NN  MMM   L   XXX   CCC
+
+
+					29.
+
+SYM+NN is the current location in terms of symbols; MMM is the current location
+in octal; L is the depth in macro-instructions; XXX is the offending syllable
+(if any); CCC is a 3-character error code, as listed below. A dagger + in the
+following listing marks a fatal error, which MIDAS will not proceed past.
+
+ [All undefined symbol errors treat the symbol as having value 0, relocation 0]
+
+USW   		undefined symbol in a storage word
+
+USC   		undefined symbol in a constant word
+
+USP   		undefined symbol in a parameter assignment
+			  (to right of =)
+
+USR   		undefined symbol in count field of REPEAT
+
+UCD   		undefined symbol in test field of conditional assembly
+
+USE   		undefined symbol in END pseudoinstruction
+
+USL   		undefined symbol in LOC pseudoinstruction
+
+USB   		undefined symbol in BLOCK pseudoinstruction
+
+USS   		undefined symbol in numeric field of SQUOZE
+			  pseudoinstruction
+
+USM   		undefined symbol in field following \ in
+			  macroinstruction argument
+
+USO   		undefined symbol in OFFSET pseudoinstruction
+
+MDT		multiply defined tag. A variable, defined symbol or
+		macroinstruction appeared to the
+		left of : and was not redefined.
+
+MDV		multiply defined variable. A defined symbol
+		or macroinstruction appeared to the
+		left of : and was not redefined.
+
+RES		reserved. An attempt was made to redefine a
+		pseudoinstruction. It was not redefined.
+
+
+
+					30.
+
+ILT		illegal tag. Something other than a symbol appeared
+		to the left of : and no action was taken.
+
+IPA		illegal parameter assignment. Something other than
+		a symbol appeared to the left of = and
+		no action was taken.
+
+QPA		questionable parameter assignment. A macro name
+		or pseudoinstruction appeared to the
+		left of = and WAS redefined
+
+IEQ		illegal EQUALS. One of the arguments was not a
+		name, no action was taken.
+
+MGT		multiply defined tag at virtual location.
+
+N6B		not sixbit. A non-printing character appeared in
+		the text argument of SIXBIT or to the
+		right of '.
+
+EPO		exponent overflow. Floating point number too large.
+
+XSG		lost significance. Fixed point number too large.
+
+UFM		unused format of fields in a word. The word
+		is taken as 0.
+
+SWD		(turned on by .NSTGW) storage word generated.
+
+NOS		no separator. A(B)C or ASCII /X/3 for instance.
+
+ILC		illegal closing. Attempt to match ( with ] or
+		[ with )
+
+ILA		virtual quantity used in absolute assembly
+
+IRA		non-zero relocation used in absolute assembly
+
+IRL		illegal relocation. A field with relocation 1
+		was put other than with its right end
+		between bits 17 and 18 or 35 and 36.
+
+
+
+					31.
+
+IRC		illegal relocation count. A field had a relocation
+		other than +1 or 0.
+
+IGS		illegal virtual. A virtual quantity was put
+		other than with its right end between
+		bits 12 and 13, 17 and 18, 30 and 31
+		or 35 and 36.
+
+IMY		illegal multiplication of virtual quantities.
+
+IDV		division by virtual quantity
+
+PNI		. used when location indefinite, 0 assumed
+
+CLI		: used at indefinite location
+
+LAI		location assignment contains illegal relocation
+
++TCA		too many constant word areas
+
++TVA		too many variable areas
+
++TMC		too many constant words in one area
+
++CLD		constant word area differs from
+		previous pass
+
++VLD		variable area location differs from previous pass
+
++CRD		relocation of constant word area differs from
+		previous pass
+
++VRD		relocation of variable area differs from previous
+		pass
+
+CRI		relocation of constant word area illegal
+
++TMA		too many dummy symbols in macro definition
+
++TMD		too much arguments (strings too long) at use
+		of macroinstruction
+
++MCE		macroinstruction capacity exceeded
+
++SCE		storage capacity exceeded
+
+ILF		illegal format. Programmer's intent unclear
+
++IAE		internal assembler error
+
++ILM		assembler made illegal memory reference
+
+
+
+					32.
+
+OPERATING INSTRUCTIONS NON TIME-SHARING
+---------------------------------------
+
+With MACDMP, load from the MACDMP SYSTEM tape the dump-mode file MIDAS.
+(There may exist also a file MIDAS NEW. It may have new features, or fix
+errors in old. Its use for assemblies instead of the MIDAS file would be
+appreciated as an in vivo check-out of the new version.) When MIDAS is started,
+it will accept a string of commands from the on-line Teletype, ended by two
+successive ALTMODE characters. The effect is the same whether all the commands
+are in one string or they are each in a separate string delimited by ALT MODES.
+
+(<esc> will be used as a symbol for ALT MODE.) In normal use, one should give
+commands in the following order: (1) select an input file; (2) select an
+output medium; (3) direct the assembly; (4) file the output (numbers (1) and
+(2) may be interchanged).
+
+    (1) Input Selection: the command nERname1_name2<esc>
+    will select for input the file named name1 name2
+    or the DECtape on unit n. If the ER command is
+    not given, input is selected from the paper tape
+    reader or on-line teletype. (The reader is checked
+    initially, and after each character is typed in.)
+
+    (2) Output Selection: the command mEI will select for
+    output on the DECtape on unit m. If the EI command
+    is not given, output will be on paper tape.
+
+
+
+					33.
+
+    (3) Assembly: the command A causes the program to
+    be assembled. This is the command normally used;
+    it is composed of five parts which can be commanded
+    separately. In order these are
+    I		Initialize. Forget all symbols, macros, etc
+    		except for those in the Initial Symbol Table:
+		set the Current Radix to 8, set the Current
+		Location Counter to 100 with relocation 0;
+		select SBLK output format; clear all input and
+		output buffers.
+    O		pass one. Read the input file and assemble
+    		it, defining symbols and macros, developing
+		values of storage words, etc. No output is
+		done unless the 1PASS pseudoinstruction was
+		used in the program.
+    S		punch SBLK loader if SBLK is output format
+    T		pass two. If 1PASS was not used, read
+    		the input file and assemble it, outputting
+		storage words (and in the relocatable format,
+		various data concerning virtual usages) to
+		the output device previously selected. If
+		PASS1 was used, do none of this but instead
+		check if any symbols were used which are
+		still undefined.
+
+
+
+					34.
+
+     L		symbols. Output a symbol table (unless
+     		NOSYMS was used).
+
+     (4)  Output Filing: the command EF name1_name2<esc>
+     	  will file DECtape output in SBLK mode for
+	  absolute-mode output or RELOC mode for
+	  relocatable mode output. There is no need
+	  for this output if output was to paper tape, or if
+	  the assembled program is not going to be used
+	  (for instance, due to a large number of
+	  assembly errors).
+
+When one program has been assembled, another may be without reloading MIDAS.
+To leave MIDAS and return to MACDMP, use the command D.
+
+There are also several characters which may be typed in and take effect
+immediately, without being part of command strings. These are various letters
+with the CTRL key hold:
+
+^A   	      type out all input characters processed by MIDAS.
+     	      This includes expansions of macros, IRP, etc.
+
+^Z   	      turn off typeout.
+
+^G   (bell)   Quit current activities and wait for typed-in
+     	      commands. It is advisable to go to MACDMP and
+     	      load a fresh MIDAS if you have Quit.
+
+^E   	      Turn on line printer output.
+
+^B	      Turn off line printer output.
+
+^R	      Commence output to paper tape.
+
+^I	      Cease paper-tape output.
+
+
+
+					35.
+
+^W	      Commence DECtape output
+
+^V	      Cease output to DECtape
+
+^Q	      resume reading from DECtape.
+
+^S	      interrupt reading DECtape.
+
+OPERATING INSTRUCTIONS TIME SHARING
+___________________________________
+
+To DDT type MIDAS ^H (alternatively, any other commands which will load
+and start the program TS MIDAS on device SYS). Into MIDAS type a command
+line comprised of (a) the destination file designation; (b) the character
+<l-arrow> (shift 0); (c) the source file designation; (d) a carriage return. A
+file designation consists of: a) (optional) a "system name" ended by
+; (semicolon). If no system is specified, the name the user gave as he
+logged in is assumed. b) a device name ended by : (colon). c) the file
+name consisting of two subnames separated by a space. If a system name
+or device name is not specified in the destination description, the
+name used in the source description will be taken. If no file name is
+given in the destination description, one will be assumed whose first
+subname is the first subname of the source file, and whose second subname
+is BIN. When the carriage return is typed, MIDAS will read the
+designated source file, and output the assembled result and file it
+accordingly to the destination file designation. The title (on each
+pass), PRINTX output, etc. and error messages will appear on the user's
+console. When finished, MIDAS will do a Value Return to DDT.
+
+
+
+
+					36.
+
+			    Radix-50 SQUOZE Code
+
+This is the form in which symbol names are represented internally and in symbol
+table output.
+
+Character	Value (octal)	|	Character	Value (octal)
+null		0     		|	J		24
+0		1		|	K		25
+1		2		|	L		26
+2		3		|	M		27
+3		4		|	N		30
+4		5		|	O		31
+5		6		|	P		32
+6		7		|	Q		33
+7	       10		|	R		34
+8	       11		|	S		35
+9	       12		|	T		36
+A	       13		|	U		37
+B	       14		|	V		40
+C	       15		|	W		41
+D	       16		|	X		42
+E	       17		|	Y		43
+F	       20		|	Z		44
+G	       21		|	.		45
+H	       22		|	$		46
+I	       23		|	%		47
+
+
+
+					37.
+
+Say the name is ABCDEF; the Squoze code is
+    20 + 50 * <17 + 50 * <16 + 50 * <15 + 50 * <14 + 50 * 13>>>>
+
+i.e. the last character is least significant in the radix-50 (octal) represen-
+tation. If the name has fewer than 6 characters, the last characters are
+taken as null.
+
+The radix-50 scheme leaves 4 free bits at the high order end of a 36-bit
+word; these are used as Code Bits to describe the type and relocation of the
+symbol.
+
+
+
+
+					38.
+
+				Initial Symbol Table
+
+Symbol		Value			Symbol		Value
+		(octal)					(octal)
+
+1PASS		pseudo		|	AOJ		(340000)
+ADD		(270000)	|	AOJA		(344000)
+ADDB		(273000)	|	AOJE		(342000)
+ADDI		(271000)	|	AOJG		(347000)
+ADDM		(272000)	|	AOJGE		(345000)
+AND		(404000)	|	AOJL		(341000)
+ANDB		(407000)	|	AOS		(350000)
+ANDCA		(410000)	|	AOSA		(354000)
+ANDCAB		(413000)	|	AOSE		(352000)
+ANDCAI		(411000)	|	AOSG		(357000)
+ANDCAM		(412000)	|	AOSGE		(355000)
+ANDCB		(440000)	|	AOSL		(351000)
+ANDCBB		(443000)	|	AOSLE		(353000)
+ANDCBI		(441000)	|	AOSN		(356000)
+ANDCBM		(442000)	|	APR		0
+ANDCM		(420000)	|	ASCII		pseudo
+				|	ASCIZ		pseudo
+ANDCMB		(423000)	|	ASH		(240000)
+ANDCMI		(421000)	|	ASHC		(244000)
+ANDCMM		(422000)	|	BLKI		(700000) pseudo
+ANDI		(405000)	|	AOJLE		(343000)
+ANDM		(406000)	|	AOJN		(346000)
+AOBJN		(252000)		BLKO		(700100) pseudo
+					BLOCK		pseudo
+AOBJP		(252000)		BLT		(251000)
+-----------------------------------------------------------------------
+CAI		(300000)		CONSZ		(700300) pseudo
+CAIA		(304000)		CR		114
+CAIE		(302000)	|	DATAI		(700040) pseudo
+CAIG		(307000)	|	DATAO		(700140) pseudo
+CAIGE		(305000)	|	DC		200
+CAIL		(301000)	|	DCSA		300
+CAILE		(303000)	|	DCSB		304
+				|	DECIMA		pseudo
+				|	DEFINE		pseudo
+CAIN		(306000)	|	DIS		130
+CAM		(310000)	|	DIV		(234000)
+				|	DIVB		(237000)
+				|	DIVI		(235000)
+CAMA		(314000)	|	DIVM		(236000)
+CAME		(312000)	|	DPE		(137000)
+					DPBI		(136000)
+
+
+
+					39.
+
+Symbol		Value		|	Symbol		Value
+				|
+CAMG		(317000)	|	END		pseudo
+CAMGE		(315000)	|	EQUALS		pseudo
+CAML		(311000)	|	EQV		(444000)
+CAMLE		(313000)	|	EQVB		(447000)
+CAMN		(316000)	|	EQVI		(445000)
+CLEAR		(400000)	|	EQVM		(446000)
+				|	EXCH		(250000)
+CLEARB		(403000)	|	EXP		pseudo
+CLEARI		(401000)	|	EXPUNG		pseudo
+CLEARM		(402000)	|	FAD		(140000)
+CONI		(700240) pseudo	|	FADB		(143000)
+CONO		(700200) pseudo	|	FADL		(141000)
+CONSO		(700340) pseudo	|	FADM		(142000)
+CONSTA		pseudo	 	|
+------------------------------------------------------------------------------
+FADR		(144000)	|	FSBM		(152000)
+FADRB		(147000)	|	FSBR		(154000)
+FADRL		(145000)	|	FSBRB		(157000)
+FADRM		(146000)	|	FSBRL		(155000)
+FDV		(170000)	|	FSBRM		(156000)
+FDVB		(173000)	|	FSC		(132000)
+FDVL		(171000)	|	HLL		(500000)
+FDVM		(172000)	|	HLLE		(530000)
+FDVR		(174000)	|	HLLEI		(531000)
+FDVRB		(177000)	|	HLLEM		(532000)
+FDVRL		(175000)	|	HLLES		(533000)
+FDVRM		(176000)	|	HLLI		(501000)
+FMP		(160000)	|	HLLM		(502000)
+FMPB		(163000)	|	HLLO		(520000)
+FMPL		(161000)	|	HLLOI		(521000)
+FMPM		(162000)	|	HLLOM		(522000)
+FMPR		(164000)	|	HLLOS		(523000)
+FMPRB		(167000)	|	HLLS		(503000)
+FMPRL		(165000)	|	HLLZ		(510000)
+FMPRM		(166000)	|	HLLZI		(511000)
+FSB		(150000)	|	HLLZM		(512000)
+FSBB		(153000)	|	HLLZS		(514000)
+FSBL		(151000)	|	HLR		(544000)
+------------------------------------------------------------------------------
+HLRE		(574000)	|	HRLOI		(525000)
+HLREI		(575000)	|	HRLOM		(526000)
+HLREM		(576000)	|	HRLOS		(527000)
+HLRES		(577000)	|	HRLS		(507000)
+HLRI		(545000)	|	HRLZ		(514000)
+HLRM		(546000)	|	HRLZI		(515000)
+HLRO		(564000)	|	HRLZM		(516000)
+HLROI		(565000)	|	HRLZS		(517000)
+
+
+
+					40.
+
+Symbol		Value		|	Symbol		Value
+				|

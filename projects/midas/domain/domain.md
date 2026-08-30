@@ -102,3 +102,15 @@ Use these to derive experiments rather than inventing a complete curriculum from
 AIM-90 states that MIDAS is a PDP-6 assembly program and describes PDP-6 machine instructions. Preserve it as a primary historical source for MIDAS ancestry and PDP-6 -> PDP-10 lineage comparison. Do not use it to settle later TOPS-20 MIDAS behavior when later evidence exists.
 
 ---
+
+## Definition-file and symbol-environment anchors
+
+Late MIDAS documentation distinguishes reusable definition files from the assembler's own initial symbols. Do not infer that a name present in `DECDFS`, `DECBTS`, or `TNXDFS` is necessarily compiled into the live MIDAS.458; verify the executable/environment independently. `.SYMCNT` is documented as counting both initial and user-defined symbols (excluding expunged symbols), making it useful for measuring the bare initial environment.
+
+`DECDFS` is organized around definition/iteration machinery for DEC system-call families. `DECBTS` is a large declarative monitor-symbol corpus built from repeated `DEFSYM name==:value` forms and cleans up temporary helper machinery. `TNXDFS` is a parameterized table: `.TNXJS DEF` applies the supplied operation to a large JSYS list, while `.TNXDF` supplies `.TNXSET` by default. This is evidence for mature textual/meta-programming in later MIDAS, not by itself evidence that every listed JSYS is an initial symbol.
+
+`TNXDFS` provides strong later-source continuity evidence for `DEFINE ... TERMIN` and dummy substitution. Its extensive use of `=:` makes exact assignment semantics a high-priority language question. `.AUXIL`, `.INIT"XXX`, and the richer dummy/delimiter syntax are source-derived questions to resolve from late documentation before designing live tests.
+
+## Historical comparison rule
+
+For PDP-6 -> PDP-10 MIDAS comparison, compare like with like. Separate machine instruction names from assembler pseudo-ops/special symbols and from monitor/site vocabulary. AIM-090's Initial Symbol Table is a historical baseline; the later TOPS-20 namespace is expected to contain substantial OS-interface accretion, so raw table size alone does not measure architectural or language change.

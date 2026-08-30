@@ -64,3 +64,17 @@ AIM-90 was identified unambiguously as documentation for PDP-6 MIDAS, not TOPS-2
 The project learning strategy is now explicitly source-driven: observe constructs in real code, consult the best-era documentation, formulate narrow hypotheses, verify uncertain/TOPS-20-specific behavior on MIDAS.458, then promote supported conclusions.
 
 ---
+
+## 2026-08-30 — AIM-090 completion, initial-symbol question, and TOPS-20 definition files
+
+The diplomatic transcription of AIM-090 was completed and proofread. It now serves as a usable PDP-6 MIDAS lineage source while remaining subordinate to its scan for textual authority. This made a new comparison question practical: AIM-090's PDP-6 Initial Symbol Table is visibly much smaller than the initial environment suggested by later TOPS-20 MIDAS.
+
+The project therefore shifted immediate attention toward inventorying the actual initial symbols of live MIDAS.458. Late documentation establishes `.SYMCNT` as counting user-defined plus initial symbols, excluding expunged symbols. A raw output-file symbol table must not be confused with MIDAS's internal initial table. The intended end product is a classified inventory that can be compared directly with AIM-090 rather than a misleading raw name/count comparison.
+
+Live TOPS-20 exploration established that there is no `MIDAS:` logical name. `SYS:MIDAS.*` resolves `MIDAS.EXE.458` in `TOPS20:<SUBSYS>`. `SYS:` is a search list, and `UNV:` aliases `SYS:`. This redirected the hunt for `MIDAS.HLP` and definition/support files through `SYS:`, `HLP:`, `DOC:`, and their physical components.
+
+Source archaeology of DEC/TENEX definition files sharpened the model. `DECBTS` is a large declarative DEC monitor-symbol corpus; `DECDFS` provides definition/iteration machinery; `TNXDFS` contains a parameterized JSYS table. These files are evidence about available definition packages, not proof that every symbol was compiled into this exact MIDAS.458 build.
+
+`TNXDFS` also changed the language-learning priority. Production source clearly preserves `DEFINE ... TERMIN` and textual dummy substitution familiar from AIM-090, while extensive `=:` use, `.AUXIL`, `.INIT"XXX`, and richer macro argument/delimiter syntax provide better next questions than an invented generic test ladder. The working route is now AIM-090 -> real later source -> late documentation -> small discriminating MIDAS.458 experiments.
+
+---

@@ -25,7 +25,7 @@ Legacy reference still present:
 
 - `reference/midas.info.txt` — alternate/older INFO-derived copy.
 - `reference/AIM-090_ocr.pdf` and `reference/midas-aim-090.txt` — searchable scan/OCR of Peter Samson's AIM-90. AIM-90 explicitly documents PDP-6 MIDAS and is therefore historical lineage evidence, not authority for MIDAS.458/TOPS-20.
-- `midas.doc.txt` has been found and is currently the strongest candidate for the best general late MIDAS manual/change-history source; add it to `reference/` when curated.
+- `reference/midas.doc.txt` is cached and is currently the strongest candidate for the best general late MIDAS manual/change-history source.
 
 Historical EMACS MIDAS files examined during exploration include `SYSTEM.MID`, `CVT.MID`, `TNXDFS.MID`/`TWXDFS.MID`, `XJSYS.MID`, `EMACS.CTL`, `TWENEX.INSTALL`, and `TECO.MID`. These are evidence/examples, not MIDAS language authorities.
 
@@ -205,8 +205,18 @@ The small source corpus (`elink.mid`, `itags.mid`, `qm.mid`, `wm.mid`, `xjsys.mi
 
 AIM-90 is explicitly a PDP-6 MIDAS document. It is being transcribed separately for historical preservation and lineage study. The scan is authoritative; original spelling, punctuation, capitalization, and apparent errors are preserved; reconstructions are marked. This transcription is useful for tracing PDP-6 -> later MIDAS evolution but must not silently override later MIDAS documentation or live MIDAS.458 behavior.
 
+## Initial-symbol inventory and PDP-6 lineage comparison
+
+The completed diplomatic transcription of AIM-090 now makes its PDP-6 Initial Symbol Table usable as a historical baseline. The immediate comparison target is the much larger initial environment of the live MIDAS.458/TOPS-20 assembler. Keep three things distinct: the assembler's internal initial symbol table, symbols emitted in an output-file symbol table, and definition/support files used to construct an assembler or program environment.
+
+Late documentation provides an important measurement hook: `.SYMCNT` counts user-defined plus initial symbols (excluding expunged symbols). Determine the bare MIDAS.458 initial count, then seek a way to enumerate/classify the names rather than merely count them. Desired classes include PDP-10 opcodes, MIDAS pseudo-ops/special symbols, DEC monitor/bit definitions, TENEX/TOPS-20 JSYS definitions, aliases/compatibility names, and possible site-specific additions.
+
+Current source archaeology shows that definition packages are important evidence but are not automatically proof of what was compiled into this particular MIDAS.458. `DECDFS` uses iterator-like definition machinery; `DECBTS` is a large declarative monitor-symbol corpus; `TNXDFS` exposes a parameterized JSYS definition table. The live executable remains authority for its actual initial environment.
+
+`TNXDFS.MID` strongly reinforces macro-language continuity with AIM-090 through production use of `DEFINE ... TERMIN` and macro dummy substitution. It also raises concrete source-derived questions: `=:` is heavily used in JSYS/instruction definitions; `.AUXIL`, `.INIT"XXX`, and richer macro argument/delimiter forms need documentation before experiments. These now outrank an arbitrary test ladder.
+
 ## Current direction
 
-Continue to accrue MIDAS assembly-time capabilities one layer at a time, primarily from real source. Near-term language targets exposed by the corpus include symbol assignment (`=`, `=:`, `==`, `==:`), `EQUALS`, `.SCALAR`, storage/layout (`BLOCK`, `LOC`, `CONSTANTS`, `VARIABLES`), followed by pass-sensitive and richer macro facilities. Continue hunting `HLP:MIDAS.HLP` as a likely TOPS-20 executable-interface reference; if it remains unavailable, commands/switches found in MIDAS source can be tested experimentally.
+Use the chain **AIM-090 -> real later MIDAS source -> late documentation -> targeted MIDAS.458 experiment**. First characterize the MIDAS.458 initial symbol environment and resolve source-exposed constructs such as `=:`, `.AUXIL`, and the `TNXDFS` macro idioms. Then resume the broader language targets (`=`, `=:`, `==`, `==:`, `EQUALS`, `.SCALAR`, storage/layout, pass-sensitive facilities). Continue hunting `HLP:MIDAS.HLP` for executable command/switch documentation.
 
 ---

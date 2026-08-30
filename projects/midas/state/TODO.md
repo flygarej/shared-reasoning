@@ -18,9 +18,17 @@ The following no longer need isolated introductory tests unless a boundary quest
 
 Use these naturally in later exercises.
 
+## Immediate investigation: MIDAS.458 initial symbols
+
+- Determine the bare MIDAS.458 `.SYMCNT` value without adding avoidable user symbols.
+- Find a documented listing/cref/debug/source mechanism that can enumerate untouched initial symbols; do not assume an output-file symbol table contains them.
+- Locate and preserve relevant support files (`DECDFS.MID`, `DECBTS.MID`, `TNXDFS.MID`) and continue hunting `HLP:MIDAS.HLP`.
+- Establish provenance/build relevance before claiming a support-file definition was compiled into MIDAS.EXE.458.
+- Build a classified later symbol inventory suitable for direct comparison with AIM-090: machine opcodes, MIDAS pseudo-ops/specials, DEC monitor symbols, TOPS-20/TENEX JSYS symbols, aliases/compatibility names, site-specific additions.
+
 ## Near-term experiments
 
-- From the real-source corpus, isolate practical differences among `=`, `=:`, `==`, and `==:`.
+- From `TNXDFS` and the real-source corpus, resolve `=:` first, then isolate practical differences among `=`, `=:`, `==`, and `==:`.
 - Explore `EQUALS` and `.SCALAR` in controlled examples.
 - Explore storage/layout pseudo-ops: `BLOCK`, `LOC`, `CONSTANTS`, `VARIABLES`.
 - Explore symbol definitions, labels, and expression syntax more deliberately.
@@ -35,10 +43,10 @@ Use these naturally in later exercises.
 
 ## Documentation / archaeology
 
-- Add `midas.doc.txt` to the Library `reference/` set after curation; treat it as the strongest current general-manual candidate.
+- Keep `reference/midas.doc.txt` as the strongest current late general-manual/change-history candidate and use it before inventing experiments.
 - Continue hunting for TOPS-20 `HLP:MIDAS.HLP`; likely value is executable command/switch documentation analogous to `HLP:MACRO.HLP`.
 - If `MIDAS.HLP` remains unavailable, collect command/switch names from MIDAS source and test them harmlessly on MIDAS.458.
-- Continue AIM-90 verbatim transcription as a separate preservation/lineage effort; scan remains authoritative and reconstructions must stay marked.
+- AIM-090 diplomatic transcription is complete and proofread; retain the scan as authority and use the transcription as the working historical lineage source.
 
 ## Questions to keep open
 

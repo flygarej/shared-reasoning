@@ -2095,7 +2095,7 @@ EXAMPLE
 
 The following page is an example of coding in the MIDAS language. (It is the
 first page of a program which uses a TV camera.) It demonstrates many,
-though by no means all, of the features of MIDAS. The FIX macro is intended a
+though by no means all, of the features of MIDAS. The FIX macro is indeed a
 sequence of instructions which will convert a floating-point number to fixed-
 point.
 

@@ -202,9 +202,9 @@ loaded that make reference to the library subroutines.
 
 Command string examples:
 
-(a1)	To load the program APHLA RALPHA from DECtape unit 3, the program
-	SUBR 1 from unit 2 and the program SUBR 2 from unit 2; then to (Transcriber
-	note: original text is 'BR for SUBR 2)
+(a1)	To load the program APLHA RALPHA from DECtape unit 3, the program
+	SUBR 1 from unit 2 and the program BR 2 from unit 2; then to
+	(Transcriber note: Original APLHA probably ALPHA and BR should be SUBR 2)
 	get a storage map and missing list:
 
 	3MALPHA RALPHA$L2MSUBR 1$LMSUBR 2$L?$$

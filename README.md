@@ -37,6 +37,54 @@ understanding.
 
 ---
 
+## 🌪️ The Three-Tier Context Funnel (Why this beats Naive RAG)
+
+Traditional Retrieval-Augmented Generation (RAG) throws all documentation, history, and code into a single vector store, performs a fuzzy keyword search, and floods the LLM's context window. This causes **context drift**, **recency bias**, and **silent code corruption** during long debugging sessions.
+
+Shared Reasoning fixes this by organizing your repository into a deterministic **Three-Tier Context Funnel**. Instead of guessing where to look, the LLM is governed by a semantic memory bus that downsteps through knowledge layers *only when explicitly triggered by uncertainty or a missing local token*.
+
+```text
+       [ Live Task / Complex Bug ]
+                   │
+                   ▼
+  ┌─────────────────────────────────────────┐
+  │ TIER 1: The Shared Reasoning Core       │ ◄── Always Active
+  │ (state/ & domain/)                      │     - Hyper-compressed invariants
+  │                                         │     - Generators, boundaries, anchors
+  └────────────────────┬────────────────────┘
+                       │ [ Hit a Boundary or Missing Local Semantics? ]
+                       ▼
+  ┌─────────────────────────────────────────┐
+  │ TIER 2: Reference Summaries             │ ◄── Read-on-Demand (Context Safe)
+  │ (reference/)                            │     - Distilled manual layouts
+  │                                         │     - Faster parameter verification
+  └────────────────────┬────────────────────┘
+                       │ [ Still uncertain on bit-level edge-cases? ]
+                       ▼
+  ┌─────────────────────────────────────────┐
+  │ TIER 3: Raw Background Material         │ ◄── Tool-Guided Precision Retrieval
+  │ (background/)                           │     - Massive 500-page specs / logs
+  │                                         │     - Targeted, automated extraction
+  └─────────────────────────────────────────┘
+```
+
+### How the Tiers Cooperate
+
+1. **Tier 1: The Core (`state/` and `domain/`)**
+   The immediate chat context contains only your absolute source of truth (`project-state.md`) and dense conceptual **Generators** (e.g., *"A64 instructions are fixed 32-bit words; evaluate constraints against the encoding budget"*). This keeps the prompt ultra-light and fast.
+2. **Tier 2: Reference Summaries (`reference/`)**
+   If Tier 1 logic lacks local precision (e.g., specific command modifiers or register layouts), the LLM downsteps to Tier 2. It checks high-level maps of the target dialect without loading full books.
+3. **Tier 3: Background Documentation (`background/`)**
+   When an obscure hardware flag or error code forces an investigation into the deepest layers, the LLM utilizes its tooling to execute a precision retrieval into your `background/` folder.
+
+### The Self-Correcting Memory Loop
+When the LLM uncovers a hidden truth deep in **Tier 3 (Background)**, that knowledge isn't discarded when the session ends. 
+
+Following our **State Promotion Rules**, the LLM automatically distills that newly discovered constraint into a permanent **Semantic Anchor** (e.g., `SETOM stores -1 into memory`) and promotes it up to **Tier 1 (Domain Knowledge)**. 
+
+The raw, verbose documentation stays in the background, but the AI architecture scales horizontally and becomes permanently smarter after every single session.
+
+
 ## The central idea
 
 A project keeps several kinds of knowledge separate.

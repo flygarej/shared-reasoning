@@ -250,12 +250,12 @@ ls -R projects/learn-perl
 learn-perl should have a prompt learn-perl.md in the root, and state should contain TODO.md, session-log.md and project-state.md.
 domain folder is empty.
 
-### Set up cache if available
+#### Set up cache if available
 
 OpenAI provides a library that's available to the LLM.
 Create library/projects/learn-perl and create domain and state folders.
 
-### Start with the prompt
+#### Start with the prompt
 
 Upload the learn-perl.md and state something along the lines of:
 ```text
@@ -264,7 +264,7 @@ This is your prompt. Describe current project status and if there are inconsiste
 
 You should get a response stating that this is a new project that needs to be bootstrapped.
 
-### Set up cache and/or handling of domain/state.
+#### Set up cache and/or handling of domain/state.
 
 If you have a library available to the LLM, state:
 ```text
@@ -280,7 +280,7 @@ In this project we do not have a cache available to you, so during maintenance I
 domain and state files  as downloadable markdown files.
 ```
 
-### Bootstrap
+#### Bootstrap
 
 Let the LLM know the project goal, expectations and what environment you have to test ideas in.
 
@@ -322,7 +322,7 @@ We can discover that naturally through the first exercises.
 So: bootstrap information is sufficient. We can now replace the fresh-project placeholders and begin the project proper.
 ```
 
-### Create and (if needed) download the bootstrap files
+##### Create and (if needed) download the bootstrap files
 
 ```text
 Great, create the bootstrap files in the cache. I will download them later.
@@ -336,3 +336,38 @@ The files should now be created. If using cache, check that the files are create
 download them. If given the files to download manually, overwrite the files in projects/learn-perl/state.
 If you want you can now recreate the prompt and test it in a new chat, the LLM should know this is a perl project
 for self learning.
+
+### Starting an existing project
+
+#### Create an up-to-date prompt for the project
+
+in top level of repo, do
+```bash
+bash create-project-prompt.sh macro-20
+```
+to create a current and up-to-date prompt. In this case the file projects/macro-20/macro-20.md will be created.
+
+#### If needed, transfer project files to library cache
+
+In this example, recreate and transfer all the folders and files under local projects/macro-20 *EXCEPT* the created
+prompt macro-20.md. This will ensure the LLM can update state, domain, references and background materials if
+needed.
+
+#### Upload the prompt and validate it
+
+Upload macro-20.md and tell the LLM it is the prompt to use, describe the project purpose etc.
+
+#### Test the prompt
+
+Ask the LLM to either produce a program or analyze code.
+
+```text
+Create a macro-20 program that uses sane aliases for accumulators used, reads a number and a string from the terminal using COMND
+and then loops the given number of times, printing "Hello <string given>" with a CRLF after each line.
+```
+
+or
+
+```text
+Analyze the program pasted and tell me what it does.
+```

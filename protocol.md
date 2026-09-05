@@ -145,16 +145,16 @@ Incrementally incorporate newly accepted knowledge.
 
 Transfer work between conversations.
 
-Read:
-
-- protocol.md
-- project-State.md
-
-Optionally read:
-
-- session-log.md
+Reconstruct the project from the supplied handover/bootstrap context, including collaboration methodology, common knowledge architecture, and project-specific artefacts.
 
 Request missing artefacts before making project-specific assumptions.
+
+Before relying on project artefacts embedded in a handover prompt, 
+check whether a more current authoritative or persistent copy is available. 
+If freshness is uncertain, compare against the available project storage 
+or ask the collaborator for the current artefact. 
+Treat the newest confirmed project artefact as current; do not silently 
+reconcile differing versions.
 
 ---
 

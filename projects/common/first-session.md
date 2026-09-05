@@ -26,8 +26,10 @@ A project is normally introduced by concatenating:
 -   `projects/<project>/observations/*.md` (optional)
 -   `projects/<project>/domain/*.md`
 
-Treat this concatenated prompt as the authoritative working context for
-the session.
+Treat this concatenated prompt as the initial working context for the session. 
+Project-specific artefacts embedded in it remain subject to the Handover 
+freshness rules in protocol.md.
+
 
 There is a utility script "create-project-prompt.sh" that will do that for you and store the 
 concatenated file as `projects/<project>/<project>.md`
@@ -98,7 +100,7 @@ Do not promote them unless the project state or current collaboration explicitly
 
 ### 4. Reconstruct the conceptual graph
 
-Read only the domain capsules needed for the current work.
+Actively reconstruct/use only the domain capsules needed for the current work.
 
 Rather than memorizing files, identify:
 

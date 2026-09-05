@@ -147,16 +147,16 @@ Incrementally incorporate newly accepted knowledge.
 
 Transfer work between conversations.
 
-Read:
-
-- protocol.md
-- project-State.md
-
-Optionally read:
-
-- session-log.md
+Reconstruct the project from the supplied handover/bootstrap context, including collaboration methodology, common knowledge architecture, and project-specific artefacts.
 
 Request missing artefacts before making project-specific assumptions.
+
+Before relying on project artefacts embedded in a handover prompt, 
+check whether a more current authoritative or persistent copy is available. 
+If freshness is uncertain, compare against the available project storage 
+or ask the collaborator for the current artefact. 
+Treat the newest confirmed project artefact as current; do not silently 
+reconcile differing versions.
 
 ---
 
@@ -1281,8 +1281,6 @@ Encourages filesystem navigation instead of conceptual reasoning.
 The request should arise from the missing concept. The filename is only the
 storage location.
 
-###
-
 When the visible branch has no suitable distilled capsule, fall back to the branch’s indexed original source rather than abandoning retrieval or answering from ungoverned model knowledge.
 
 ---
@@ -1441,8 +1439,10 @@ A project is normally introduced by concatenating:
 -   `projects/<project>/observations/*.md` (optional)
 -   `projects/<project>/domain/*.md`
 
-Treat this concatenated prompt as the authoritative working context for
-the session.
+Treat this concatenated prompt as the initial working context for the session. 
+Project-specific artefacts embedded in it remain subject to the Handover 
+freshness rules in protocol.md.
+
 
 There is a utility script "create-project-prompt.sh" that will do that for you and store the 
 concatenated file as `projects/<project>/<project>.md`
@@ -1513,7 +1513,7 @@ Do not promote them unless the project state or current collaboration explicitly
 
 ### 4. Reconstruct the conceptual graph
 
-Read only the domain capsules needed for the current work.
+Actively reconstruct/use only the domain capsules needed for the current work.
 
 Rather than memorizing files, identify:
 
@@ -2157,135 +2157,281 @@ A well-maintained knowledge base:
 
 
 
-<!-- projects/learn-awk/state/project-state.md -->
+<!-- projects/learn-perl/state/project-state.md -->
 
-# Project state (project-state.md)
+# project-state.md
 
-## Scope
+## Project
 
-Learning GNU awk on Ubuntu 24.10 through practical text-processing exercises.
+`learn-perl`
 
-The objective is to develop an accurate mental model of awk rather than merely producing working one-liners.
+## Objective
 
-The project focuses on idiomatic GNU awk unless portability becomes an explicit investigation.
+Refresh existing Perl skills while deliberately identifying and learning useful Perl concepts, idioms, and techniques that are new to the user.
+
+This is not assumed to be a beginner-from-zero course. Existing knowledge should be discovered through use rather than guessed in advance.
+
+## Current scope
+
+- Perl 5 programming.
+- Practical learning through small exercises and experiments.
+- Revisit rusty material as needed.
+- Expand into unfamiliar material when experiments or discussion reveal useful gaps.
+
+The detailed curriculum is intentionally not fixed yet. It should emerge from observed strengths, gaps, and interests.
+
+## Verified environment
+
+Observation supplied by the user:
+
+```text
+This is perl 5, version 38, subversion 2 (v5.38.2) built for x86_64-linux-gnu-thread-multi
+(with 64 registered patches, see perl -V for more detail)
+```
+
+Accepted environment:
+
+- Operating system: Ubuntu.
+- Architecture/build target: `x86_64-linux-gnu-thread-multi`.
+- Perl: 5.38.2.
+
+## Learning model
+
+Working model:
+
+Use compact exercises and experiments to reveal the user's current Perl knowledge. Use the results to decide what should be refreshed, what can be skipped quickly, and which unfamiliar areas are worth exploring more deeply.
+
+Prefer practical use over a fixed introductory sequence.
+
+## Accepted project knowledge
+
+At bootstrap, no detailed Perl language knowledge has yet been established as project-specific accepted knowledge.
+
+The user's prior Perl experience is known to exist, but its exact scope, depth, and recency have not yet been established.
+
+## Explicit unknowns
+
+- Which Perl concepts remain fluent.
+- Which concepts are rusty.
+- Which areas of modern Perl are unfamiliar.
+- The user's historical Perl usage patterns and preferred problem domains.
+- Which advanced topics will prove most useful or interesting.
+
+These should be discovered through collaboration rather than inferred.
+
+## Current direction
+
+Begin with small, discriminating Perl exercises that exercise ordinary language usage without assuming either novice or expert level.
+
+Use the solutions and discussion to establish the first real domain knowledge and refine the learning path.
+
+## Next useful experiment
+
+Give the user a compact first Perl exercise that is broad enough to expose current habits and knowledge, then inspect the solution collaboratively rather than grading against a predetermined style.
+
+
+<!-- projects/learn-perl/state/session-log.md -->
+
+# session-log.md
+
+## 2026-09-05 — Project bootstrap
+
+### Operation
+
+Bootstrap of project `learn-perl`.
+
+### User objective
+
+The user wants to brush up existing Perl skills and hopefully learn something new.
+
+### Environment observation
+
+The user reported running Perl on Ubuntu. `perl -v` reported:
+
+```text
+This is perl 5, version 38, subversion 2 (v5.38.2) built for x86_64-linux-gnu-thread-multi
+(with 64 registered patches, see perl -V for more detail)
+```
+
+### Decisions
+
+- Treat this as a refresher/exploration project rather than a beginner-from-zero course.
+- Do not infer the user's exact prior Perl knowledge from the project name or general programming background.
+- Let the learning path emerge through small exercises and experiments.
+- Use early exercises to distinguish fluent, rusty, and unfamiliar areas.
+- Keep detailed Perl domain knowledge out of Project State until it has actually emerged through the project.
+
+### Working model
+
+A sequence of compact practical exercises should reveal the user's current Perl habits and knowledge efficiently. The resulting evidence can then guide both review and exploration of new material.
+
+### Open questions
+
+- Which areas of Perl are already fluent?
+- Which are rusty?
+- Which modern or advanced areas are unfamiliar?
+- What kinds of Perl tasks are most useful or interesting to the user?
+
+### Next step
+
+Begin with a small Perl exercise and use the solution as evidence for refining the learning path.
+
+
+<!-- projects/learn-perl/state/TODO.md -->
+
+# Fresh Project TODO
+
+## Goal
+
+Establish enough accepted project knowledge that another collaborator can
+continue the investigation without replaying the original conversation.
 
 ---
 
-## Current Objective
+## Initial setup
 
-Learn awk by incrementally solving realistic text-processing problems.
-
-Current exercise:
-
-Convert timestamps from
-
-DD/MM/YYYY HH:MM:SS
-
-to ISO 8601 using the host's local timezone.
-
----
-
-## Verified Conclusions
-
-- GNU awk provides built-in date/time functions including `mktime()` and `strftime()`.
-- The current exercise can be solved entirely within awk without invoking external programs.
-- Input records are tab-separated.
-- The first field contains the timestamp.
-- Timestamp conversion is an appropriate first exercise because it touches field handling, string parsing, formatting and date/time functions.
+- Choose a short project name.
+- Rename or copy `projects/fresh-project` to `projects/<project>`.
+- Confirm that the repository contains:
+  - `protocol.md`;
+  - `rationale.md`;
+  - `create-project-prompt.sh`;
+  - `validation/handover-validation.md`;
+  - `projects/common/`.
 
 ---
 
-## Working Model
+## Establish the project
 
-Learning should proceed from simple mechanisms toward complete solutions.
+Update `state/project-state.md` with:
 
-Prefer understanding:
+- project name;
+- objective;
+- scope;
+- known environment;
+- available evidence and documentation;
+- accepted observations;
+- current working models;
+- explicit unknowns;
+- next useful experiment.
 
-- field splitting
-- string manipulation
-- built-in functions
-- record modification
-- output formatting
+Update `state/session-log.md` with the initial discussion, evidence, decisions,
+and unresolved alternatives.
 
-before optimization or compact one-liners.
+Create one or more files under `domain/` when stable conceptual knowledge
+begins to emerge.
 
----
-
-## Open Questions
-
-- Exact input timestamp variations.
-- Best idiomatic organization of larger awk programs.
-- When associative arrays become preferable to shell tooling.
-- Where awk's practical limits are compared with sed, grep and Perl.
-
----
-
-## Next Experiments
-
-1. Parse fields using FS.
-2. Parse the timestamp.
-3. Rearrange date components.
-4. Convert via `mktime()`.
-5. Format with `strftime()`.
-6. Produce strict ISO 8601 timezone formatting.
-
-
-<!-- projects/learn-awk/state/session-log.md -->
-
-# Session log (session-log.md)
-
-## Session Purpose
-
-Bootstrap an awk learning project.
+Start small. A single domain file is sufficient.
 
 ---
 
-## Chronology
+## During the first session
 
-Initial project direction established.
+- Distinguish observation, documentation, inference, hypothesis, working
+  model, and verified conclusion.
+- Ask for missing factual or conceptual context.
+- Prefer a small discriminating experiment over speculative expansion.
+- Keep unresolved alternatives visible.
+- Do not create a large domain taxonomy before the investigation requires it.
 
-Goals:
+---
 
-- Learn GNU awk rather than alternative Unix text-processing tools.
-- Use practical text-processing tasks as learning exercises.
-- Prefer understanding over shortest possible solutions.
+## Generate the bootstrap
 
-First exercise selected:
+Run:
 
-Convert timestamps from
+```bash
+./create-project-prompt.sh <project>
+```
 
-DD/MM/YYYY HH:MM:SS
+Confirm that this creates:
 
-to ISO 8601 while preserving the host's local timezone.
+```text
+projects/<project>/<project>.md
+```
 
-An initial solution outline was discussed using:
+Upload the generated file to a new conversation.
 
-- FS
-- split()
-- sprintf()
-- mktime()
-- strftime()
+---
 
-Future work will build the solution incrementally rather than immediately optimizing it.
+## Validate reconstruction
+
+Use:
+
+```text
+validation/handover-validation.md
+```
+
+A successful handover should demonstrate that the new collaborator can:
+
+- identify the current accepted state;
+- distinguish state from history;
+- reconstruct important conceptual relationships;
+- respect uncertainty and boundaries;
+- begin productive work.
+
+Record any reconstruction failure.
+
+Use observed failures to improve the smallest relevant project or common
+artefact.
+
+---
+
+## After validation
+
+- Correct missing or misleading project knowledge.
+- Regenerate the bootstrap.
+- Continue the investigation.
+- Perform maintenance at natural milestones.
+- Compact only after successful reconstruction has been demonstrated.
+
+---
+
+## Bootstrap Completion
+
+Once the project has completed its first successful maintenance:
+
+- Replace state/TODO.md with the contents of state/standard-project-TODO.md, 
+  then delete state/standard-project-TODO.md.
+- Remove bootstrap-specific instructions that no longer apply.
+- Keep only work items relevant to the active project.
+
+The TODO should thereafter function as the project's active work queue,
+not as bootstrap documentation.
 
 
-<!-- projects/learn-awk/state/TODO.md -->
 
-# TODO (TODO.md)
+<!-- projects/learn-perl/domain/domain.md -->
 
-## Planned Exercises
+# Domain knowledge
 
-- Timestamp conversion
-- Strict ISO 8601 timezone formatting
-- Record filtering
-- Conditional processing
-- Associative arrays
-- Counting and aggregation
-- Grouping records
-- Sorting strategies
-- Reading multiple files
-- Functions
-- Modular awk programs
-- Performance considerations
+## Purpose
+
+This file is the initial domain capsule for the `learn-perl` project.
+
+The project has completed bootstrap, but detailed Perl domain knowledge has not yet been established through collaboration.
+
+## Current learning generator
+
+Existing skill should be reconstructed through use rather than assumed from labels such as beginner, intermediate, or advanced.
+
+Small practical exercises can reveal:
+
+- concepts that remain fluent;
+- concepts that need refreshing;
+- habits inherited from older Perl usage;
+- unfamiliar language features or idioms worth exploring.
+
+The learning path should adapt to that evidence rather than follow a fixed introductory curriculum.
+
+## Boundary
+
+Do not treat general Perl knowledge from the model as accepted project knowledge merely because it is likely correct.
+
+Promote Perl-specific generators, anchors, boundaries, and examples here as they become useful and are accepted during the project.
+
+## Current unknowns
+
+No specific Perl language generators, semantic anchors, or boundaries have yet been established by this project.
 
 

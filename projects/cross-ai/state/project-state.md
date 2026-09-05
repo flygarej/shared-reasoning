@@ -14,21 +14,22 @@ Compare startup behavior and collaboration friction across OpenAI, Copilot, and 
 ## Known environment
 - This repository contains the shared reasoning protocol and common collaboration artefacts.
 - The project is being maintained in `projects/cross-ai/`.
-- The current discussion is exploratory and does not yet establish domain-specific technical conclusions.
+- User handles persistence manually via local file replacement and Git commits.
 
 ## Accepted observations
 - The project exists to reduce user friction across multiple AI platforms.
-- This chat is currently being used as a general test of startup issues and cross-platform differences.
+- The shared reasoning prompt format is robust and functionally model-agnostic during bootstrap.
+- Gemini accepts and parses the concatenated prompt cleanly, exhibiting high startup compatibility alongside ChatGPT.
+- Unlike platforms with direct workspace writeback (OpenAI cache, Copilot IDE integration), Gemini in this environment is constrained to text-based state output, requiring the user to manually enforce the Persistence Boundary.
 
 ## Working models
-- Startup behavior can differ materially between platforms.
-- Differences are worth documenting as observations before drawing conclusions.
-- Small, explicit records of friction will be more useful than broad summaries.
+- Startup behavior can differ materially between platforms, but Shared Reasoning filters the structural noise effectively.
+- Explicit mapping of platform boundaries (e.g., tool writeback vs. manual text extraction) directly informs how prompt architecture must be structured to minimize user workflow friction.
 
 ## Explicit unknowns
-- Which startup behaviors differ most across platforms.
-- Which differences are reproducible.
-- Which differences materially affect user workflow.
+- Long-term context drift characteristics in Gemini compared to ChatGPT under extended debugging.
+- Best optimization rules for Gemini's large context window when handling deep background libraries.
 
 ## Next useful experiment
-Record the first observed differences in startup, context handling, and handoff behavior for each platform.
+Test Gemini's ability to navigate down the Three-Tier Context Funnel (Core -> Reference -> Background) when an obscure local semantic issue is injected.
+

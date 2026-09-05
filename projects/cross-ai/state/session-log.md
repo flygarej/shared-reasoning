@@ -1,9 +1,10 @@
 # session-log.md
 
-## 2026-09-04 — project bootstrap
-
+## 2026-09-04 — project bootstrap & platform boundary verification
 - Established the project as `cross-ai`.
-- Confirmed the purpose is to compare startup behavior and collaboration friction across OpenAI, Copilot, and Gemini.
-- Defined the current session as a general test of startup issues and cross-platform differences.
-- Agreed to treat platform differences as observations to be recorded before promotion into accepted knowledge.
-- Identified the next step as capturing the first reproducible differences in startup, context handling, and handoff behavior.
+- Confirmed that the shared reasoning prompt format executes successfully and cleanly in both ChatGPT and Gemini during the initial bootstrap.
+- Executed an initial verification drill regarding platform-specific infrastructure limitations.
+- Confirmed Gemini's awareness of its structural constraints (lack of direct workspace/cache writeback) compared to OpenAI or Copilot.
+- Formally accepted the operational model where Gemini provides the state updates via markdown code blocks and the user manually replaces local files to satisfy the Persistence Boundary.
+- Formulated the next experimental target: Testing the Three-Tier Context Funnel logic within Gemini's native context window.
+

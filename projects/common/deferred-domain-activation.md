@@ -485,8 +485,6 @@ Encourages filesystem navigation instead of conceptual reasoning.
 The request should arise from the missing concept. The filename is only the
 storage location.
 
-###
-
 When the visible branch has no suitable distilled capsule, fall back to the branch’s indexed original source rather than abandoning retrieval or answering from ungoverned model knowledge.
 
 ---

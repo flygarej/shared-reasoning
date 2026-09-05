@@ -2,8 +2,6 @@
 
 ## Planned Exercises
 
-- Timestamp conversion
-- Strict ISO 8601 timezone formatting
 - Record filtering
 - Conditional processing
 - Associative arrays
@@ -14,3 +12,8 @@
 - Functions
 - Modular awk programs
 - Performance considerations
+
+## Deferred questions
+
+- Malformed timestamp/input handling.
+- Portability differences outside GNU awk.

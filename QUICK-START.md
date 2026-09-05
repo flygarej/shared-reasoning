@@ -371,3 +371,11 @@ or
 ```text
 Analyze the program pasted and tell me what it does.
 ```
+
+### Maintenance
+
+Whenever you feel you have made substantial progress you can ask the LLM to do maintenance. It will then update domain or state files 
+in the cache (if available) or provide them for download so the next time you generate a prompt it will be up to date.
+
+You  can also ask the LLM how the context is doing, if it is feeling context load it will suggest maintenance and a restart in a new chat to 
+clean out un-needed stuff.

@@ -104,7 +104,24 @@ cp -a projects/fresh-project projects/my-project
 Choose a short project name and replace `my-project` in the command as
 needed.
 
-At minimum, edit:
+You may generate the project bootstrap first (bash create-project-prompt.sh my-project) and upload it to an LLM.
+
+Ask it to help establish:
+
+- the initial project state;
+- the first session log;
+- the initial domain structure;
+- the first TODO list.
+
+Review the generated files before accepting them as the project's starting
+point.
+
+Then generate the bootstrap:
+
+```bash
+./create-project-prompt.sh my-project
+
+If you prefer to edit the initial state yourself, edit:
 
 ```text
 projects/my-project/state/project-state.md
@@ -123,23 +140,7 @@ Describe:
 - current uncertainties;
 - the first useful experiment.
 
-Instead of editing these files manually, you may generate the project
-bootstrap first and upload it to an LLM.
 
-Ask it to help establish:
-
-- the initial project state;
-- the first session log;
-- the initial domain structure;
-- the first TODO list.
-
-Review the generated files before accepting them as the project's starting
-point.
-
-Then generate the bootstrap:
-
-```bash
-./create-project-prompt.sh my-project
 ```
 
 Upload:
@@ -230,3 +231,108 @@ After the first successful trial:
 - read `protocol.md` for collaboration rules;
 - read `rationale.md` for design intent;
 - inspect `projects/common/` for knowledge representation and maintenance.
+
+---
+
+## Step by step
+
+### Create a new project
+
+Assume you want to brush up your perl skills, with the AI in a collaborator role.
+
+```bash
+cd <root of this repo clone>
+cp -r projects/fresh-project projects/learn-perl
+bash create-project-prompt.sh learn-perl
+ls -R projects/learn-perl
+```
+
+learn-perl should have a prompt learn-perl.md in the root, and state should contain TODO.md, session-log.md and project-state.md.
+domain folder is empty.
+
+### Set up cache if available
+
+OpenAI provides a library that's available to the LLM.
+Create library/projects/learn-perl and create domain and state folders.
+
+### Start with the prompt
+
+Upload the learn-perl.md and state something along the lines of:
+```text
+This is your prompt. Describe current project status and if there are inconsistencies in the prompt.
+```
+
+You should get a response stating that this is a new project that needs to be bootstrapped.
+
+### Set up cache and/or handling of domain/state.
+
+If you have a library available to the LLM, state:
+```text
+Project name is learn-perl.
+Your cache is in the library with path projects/learn-perl. The state and domain folder is currently
+empty but after bootstrap you can write current domain and state there.
+```
+
+If you do not have a library, state:
+```text
+Project name is learn-perl.
+In this project we do not have a cache available to you, so during maintenance I will need the updated
+domain and state files  as downloadable markdown files.
+```
+
+### Bootstrap
+
+Let the LLM know the project goal, expectations and what environment you have to test ideas in.
+
+```text
+This project will be aimed at brushing up my perl skills and hopefully learn something new.
+I will be running perl in Ubuntu, and perl -v responds:
+
+"This is perl 5, version 38, subversion 2 (v5.38.2) built for x86_64-linux-gnu-thread-multi
+(with 64 registered patches, see perl -V for more detail)"
+
+Is this enough information for you to bootstrap, or do you need anything else?
+```
+
+A typical response would be:
+
+```text
+Yes. That is enough to bootstrap learn-perl without inventing anything we don't yet know.
+
+I would establish the initial project state roughly as follows: the objective is to refresh existing Perl
+skills while deliberately looking for things you haven't learned before; this is therefore not a beginner-from-zero course.
+ The verified execution environment is Ubuntu, x86_64, Perl 5.38.2, threaded build.
+We have not yet established which parts of Perl you remember well, which are rusty, or which areas are genuinely new, s
+o those should remain explicit unknowns rather than assumptions.
+
+For the learning approach, the existing Shared Reasoning machinery gives us a particularly nice path:
+use small exercises and experiments to reveal your current knowledge, then let the curriculum emerge from the results.
+ That avoids spending three sessions patiently explaining $scalar, @array, and %hash to someone who may
+immediately start throwing references and regexes back at me.
+
+A sensible initial working model would therefore be: start with compact exercises covering ordinary modern Perl usage,
+ use your solutions to identify rusty/new areas, and progressively deepen from there.
+We can promote stable Perl concepts into domain/ as they become useful, while project-state.md tracks what we've covered,
+the environment, current direction, and open areas.
+
+Things like whether your historical Perl usage was mostly scripting, sysadmin work, text processing, OO Perl, modules,
+etc. would certainly help later, but I don't need them to bootstrap.
+We can discover that naturally through the first exercises.
+
+So: bootstrap information is sufficient. We can now replace the fresh-project placeholders and begin the project proper.
+```
+
+### Create and (if needed) download the bootstrap files
+
+```text
+Great, create the bootstrap files in the cache. I will download them later.
+```
+or
+```text
+Great, create the bootstrap files as downloadable markdown for me.
+```
+
+The files should now be created. If using cache, check that the files are created (in projects/learn-perl/state) and
+download them. If given the files to download manually, overwrite the files in projects/learn-perl/state.
+If you want you can now recreate the prompt and test it in a new chat, the LLM should know this is a perl project
+for self learning.

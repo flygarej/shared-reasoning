@@ -337,7 +337,7 @@ download them. If given the files to download manually, overwrite the files in p
 If you want you can now recreate the prompt and test it in a new chat, the LLM should know this is a perl project
 for self learning.
 
-### Starting an existing project
+### Starting an existing project (again...)
 
 #### Create an up-to-date prompt for the project
 

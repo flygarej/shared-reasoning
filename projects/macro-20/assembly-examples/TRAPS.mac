@@ -1,0 +1,111 @@
+	TITLE	TRAP, Arithmetic Traps - example 18
+	SEARCH MONSYM, MACSYM
+
+A=1
+B=2
+C=3
+D=4
+ACP=16
+P=17
+
+; The following right-halfword flags are used in FXUTAB
+ACF==1
+DDF==2
+MMF==4
+
+FLNDIF=1B17
+
+FLNDIV=1B17
+
+PDLEN=100
+
+OPDEF	CALL	[PUSHJ, P,]
+OPDEF	RET	[POPJ P,]
+
+PDLIST: BLOCK	PDLEN
+
+;Arithmetic  trap block
+TRAPB:	0
+	0
+	0
+	0,,TRAPIT
+
+; Message table for various PC flags
+TRPMSG: PC%OVF![ASCIZ/Integer Overflow /]
+	PC%FOV![ASCIZ/Floating Overflow /]
+	PC%NDV![ASCIZ/Integer Divisi0on By Zero /]
+	PC%FUF![ASCIZ/Floaing Exponent Underflow /]
+	FLNDIV![ASCIZ/Floationg Divide By Zero (Divide Check) /]
+TRPLMN==.-TRPMSG
+
+DEFINE	FOPX (OP) <		;; Make table of floating point operations
+	F'OP	ACF		;; i.e. FAD   result in AC
+	F'OP'M	MMF		;; 	FADM  result in MEM
+	F'OP'B	ACF!MMF		;;	FADB  result in both
+	F'OP'R	ACF		;;	FADR  result in AC
+	F'OP'RI	ACF		;;	FADRI --""--
+	F'OP'RM	MMF		;; 	FADRM result in MEM
+	F'OP'RB ACF|MMF		;;	FADRB result in both
+	DF'OP	ACF|DDF		;;	DFAD  result in AC and AC+1
+>				;; End of FOPX
+
+;; Table of instructions that might cause floating underflow
+FXUTAB: FOPXX	(AD)
+	FOPXX	(SB)
+	FOPXX 	(MP)
+	FOPX	(DV)
+	FSC	ACF
+FXUTLN==.-FXUTAB
+
+;; Coroutine to save accumulators 0:16 on the stack Call via PUSHJ
+;; The caller of this co-routine must return with either 0 or 1 skips
+
+SAVACS;	ADJSP	P,17  		 ;; Add locations for 0-16
+	MOVEM	16.0(P)		 ;; Save AC 16 on stack
+	MOVEI	16,-16(P)	 ;; place on stack for some AC's 
+	BLT	16,-1(P)	 ;; store AC 0 to 15 on stack
+	MOVEI	ACP.-16(P)	 ;; Address of the saved ACs
+	CALL	@-17(P)		 ;; return to "caller"
+	SKIPA			 ;; Non-skip return. Avoid AOS
+	AOS	-20(P)		 ;; Skip return. Pass skip upwards
+	MOVSI	-16,-16(P)	 ;; restore saved acs to ACS
+	BLT	16,16		 
+	ADJSP	P,-20		 ;; discard saved acs & first return
+	RET
+
+TRAPIT:	CALL	TRAPNT		;; Call trap processing routine
+	XJRST	TRAPB+.ARPFL	;; return to trapped-from sequence
+
+TRAPNT:	CALL SAVACS		;; save accumulators
+	MOVE B,TRAPB+.ARPFL	;; get the flags
+	AND  B,[PC%OVF!PC%FOV!PC%NDV!PC%FUF]	;; keep only the important bits
+	TXNE B,PC%FUF		;; was it a floating underflow?
+	TXZ  B,PC%OVF!PC%FOV	;; yes, report only the underflow
+	TXNE B,PC%NDV		;; was it divide by zero?
+	TXZ  B,PC%OVF		;; yes, don't report "overflow"
+	TXNE B,PC%NDV		;; was it divide by zero?
+	TXZN B,PC%FOV		;; yes and floating?
+	SKIPA			;;not floating divide check
+	TXC	B, PC%NDV!FLNDIV      ;; set flag for floating no divide
+	MOVSI	D,-TRPMLN	      ; Length of message tbl
+TRPNT1:	TDNN	B,TRPMSG(D)	      ; is flag on for this message
+	JRST	TRPNT2		      ; no flag means no print
+	HRRO	A,TRMPSG(D)	      ; set LH of A to -1
+	PSOUT			      ; print msg for this flag
+TRPNT2:	AOBJN	D,TRPNT1	      ; loop through msg table
+	HRROI	A,[ASCIZ/at PC = /]   ; print the adjusted PC
+	PSOUT		       	      ; which is one less  than the
+	MOVEI   A,.PRIOU	      ; trap PC, because the trap
+	MOVE	B,TRAPB+.AROPC	      ; PC points to the next
+	SUBI	B,1		      : instruction
+	MOVEI	C,10
+	NOUT
+	ERJMP	.+1
+
+	HRROI	A,[ASCIZ/
+Failing intsruction: /]
+	PSOUT
+	
+	
+
+

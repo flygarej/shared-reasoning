@@ -147,16 +147,16 @@ Incrementally incorporate newly accepted knowledge.
 
 Transfer work between conversations.
 
-Read:
-
-- protocol.md
-- project-State.md
-
-Optionally read:
-
-- session-log.md
+Reconstruct the project from the supplied handover/bootstrap context, including collaboration methodology, common knowledge architecture, and project-specific artefacts.
 
 Request missing artefacts before making project-specific assumptions.
+
+Before relying on project artefacts embedded in a handover prompt, 
+check whether a more current authoritative or persistent copy is available. 
+If freshness is uncertain, compare against the available project storage 
+or ask the collaborator for the current artefact. 
+Treat the newest confirmed project artefact as current; do not silently 
+reconcile differing versions.
 
 ---
 
@@ -1281,8 +1281,6 @@ Encourages filesystem navigation instead of conceptual reasoning.
 The request should arise from the missing concept. The filename is only the
 storage location.
 
-###
-
 When the visible branch has no suitable distilled capsule, fall back to the branch’s indexed original source rather than abandoning retrieval or answering from ungoverned model knowledge.
 
 ---
@@ -1441,8 +1439,10 @@ A project is normally introduced by concatenating:
 -   `projects/<project>/observations/*.md` (optional)
 -   `projects/<project>/domain/*.md`
 
-Treat this concatenated prompt as the authoritative working context for
-the session.
+Treat this concatenated prompt as the initial working context for the session. 
+Project-specific artefacts embedded in it remain subject to the Handover 
+freshness rules in protocol.md.
+
 
 There is a utility script "create-project-prompt.sh" that will do that for you and store the 
 concatenated file as `projects/<project>/<project>.md`
@@ -1513,7 +1513,7 @@ Do not promote them unless the project state or current collaboration explicitly
 
 ### 4. Reconstruct the conceptual graph
 
-Read only the domain capsules needed for the current work.
+Actively reconstruct/use only the domain capsules needed for the current work.
 
 Rather than memorizing files, identify:
 
@@ -2157,6 +2157,134 @@ A well-maintained knowledge base:
 
 
 
+<!-- projects/common/self-learning.md -->
+
+# Shared Reasoning — Self-Learning Add-on
+
+Use this add-on for projects whose primary purpose is learning, refreshing, or reconstructing knowledge through collaboration.
+
+The normal Shared Reasoning methodology remains authoritative. This add-on exists to counter failure modes that arise when the LLM is simultaneously tutor, exercise generator, evaluator, and source of explanations.
+
+## 1. Treat the learner model as a hypothesis
+
+Maintain a working model of what the user appears to know, what appears rusty, and what appears unfamiliar.
+
+Do not treat that model as established fact merely because later exercises are compatible with it.
+
+Actively look for observations that could falsify or refine it.
+
+## 2. Prefer discriminating exercises
+
+Exercises should not merely advance the curriculum.
+
+Where useful, choose exercises that distinguish between competing explanations of the learner's current understanding.
+
+For example:
+
+* fluent understanding vs successful problem-solving through general programming experience;
+* semantic understanding vs memorized idiom;
+* conceptual understanding vs familiarity with one example;
+* old-language habit vs current-language behaviour.
+
+Occasionally revisit established-looking knowledge from a different angle.
+
+## 3. Separate semantic requirements from stylistic recommendations
+
+Explicitly distinguish:
+
+* required language semantics;
+* common idioms;
+* modern conventions;
+* stylistic preferences;
+* alternative valid approaches.
+
+Do not silently promote the LLM's preferred style into a language rule.
+
+## 4. Introduce independent anchors
+
+When an important generator emerges, seek evidence independent of the explanatory loop.
+
+Useful anchors include:
+
+* executable experiments;
+* compiler/interpreter behaviour;
+* authoritative documentation;
+* specification text;
+* externally supplied examples;
+* independently designed tests.
+
+Cheap experiments are preferred where they can discriminate between explanations.
+
+## 5. Prevent explanation from becoming evidence
+
+A plausible explanation remains an inference until independently supported.
+
+Repeated use of the same explanation does not by itself increase its epistemic status.
+
+Do not allow an inference to become an anchor merely because it has appeared in several conversations or exercises.
+
+## 6. Periodically challenge the curriculum model
+
+Occasionally ask:
+
+* What have we assumed the learner understands?
+* Which of those assumptions have actually been tested?
+* Which conclusions depend mainly on LLM-generated exercises?
+* Are we repeatedly testing the same conceptual path?
+* What result would surprise us?
+
+Use the answers to choose a small discriminating experiment where useful.
+
+## 7. Consolidate generators
+
+Do not allow domain knowledge to become an accumulation of isolated explanatory rules.
+
+Periodically look for:
+
+* several generators that can be reduced to one deeper generator;
+* duplicated explanations;
+* rules that are consequences of a more general semantic model;
+* boundaries that can be expressed more simply;
+* anchors that support several related concepts.
+
+Prefer a compact conceptual graph over a catalogue of lessons.
+
+## 8. Preserve productive uncertainty
+
+The purpose is not to verify every statement before teaching it.
+
+Inference may be used freely to generate explanations, candidate models, exercises, and possible connections.
+
+The important distinction is:
+
+**Inference may guide exploration without automatically becoming accepted knowledge.**
+
+## 9. Learning-state maintenance
+
+Record not only subject knowledge but changes in the working learner model when they become useful.
+
+Useful distinctions include:
+
+* demonstrated fluent;
+* demonstrated but rusty;
+* inferred familiarity;
+* explicitly unfamiliar;
+* not yet tested.
+
+Do not over-record transient impressions.
+
+## 10. Periodic self-check
+
+At suitable intervals, briefly review whether the learning process has become self-confirming.
+
+If so, introduce one independent probe, alternative explanation, or adversarial exercise before continuing normally.
+
+The corrective mechanism should remain lightweight.
+
+The objective is not to burden learning with verification machinery, but to ensure that the collaboration continues to discover rather than merely confirm its own assumptions.
+
+
+
 <!-- projects/learn-awk/state/project-state.md -->
 
 # Project state (project-state.md)
@@ -2171,27 +2299,49 @@ The project focuses on idiomatic GNU awk unless portability becomes an explicit 
 
 ---
 
+## Environment
+
+Verified current environment:
+
+- `awk` resolves to `/usr/bin/gawk`.
+- GNU Awk 5.2.1.
+- Host locale is `sv_SE.UTF-8`.
+- Conversation and project material should remain in English.
+
+---
+
 ## Current Objective
 
 Learn awk by incrementally solving realistic text-processing problems.
 
-Current exercise:
+Current record format:
+
+`datetime<TAB>username<TAB>action<TAB>comment<newline>`
+
+First exercise completed:
 
 Convert timestamps from
 
-DD/MM/YYYY HH:MM:SS
+`DD/MM/YYYY HH:MM:SS`
 
-to ISO 8601 using the host's local timezone.
+to ISO 8601 using the host's local timezone while preserving the remaining tab-separated fields.
 
 ---
 
 ## Verified Conclusions
 
-- GNU awk provides built-in date/time functions including `mktime()` and `strftime()`.
-- The current exercise can be solved entirely within awk without invoking external programs.
-- Input records are tab-separated.
+- Input records are tab-separated; `FS = OFS = "\t"` provides a simple model for reading and rewriting them.
 - The first field contains the timestamp.
-- Timestamp conversion is an appropriate first exercise because it touches field handling, string parsing, formatting and date/time functions.
+- GNU awk's `mktime()` and `strftime()` can perform the timestamp conversion entirely within awk.
+- Splitting the input timestamp on `/`, space, and `:` yields the components needed by `mktime()`.
+- Passing `-1` as the DST field to `mktime()` lets the host determine daylight-saving status.
+- `strftime("%Y-%m-%dT%H:%M:%S%z", timestamp)` supplies the local numeric timezone offset.
+- GNU awk's `%z` output such as `+0200` can be transformed to strict ISO 8601 form `+02:00`.
+- Replacing `$1` and printing the record preserves the other fields with tab output separators.
+- Verified test:
+  - input timestamp: `23/07/2026 09:15:30`
+  - output timestamp: `2026-07-23T09:15:30+02:00`
+  - remaining fields `alice`, `login`, `Successful login` were preserved.
 
 ---
 
@@ -2209,25 +2359,41 @@ Prefer understanding:
 
 before optimization or compact one-liners.
 
+The current working program is:
+
+```awk
+BEGIN {
+    FS = OFS = "\t"
+}
+
+{
+    split($1, part, /[\/ :]/)
+
+    timestamp = mktime(part[3] " " part[2] " " part[1] " " part[4] " " part[5] " " part[6] " -1")
+
+    iso = strftime("%Y-%m-%dT%H:%M:%S%z", timestamp)
+    iso = substr(iso, 1, length(iso) - 2) ":" substr(iso, length(iso) - 1)
+
+    $1 = iso
+    print
+}
+```
+
 ---
 
 ## Open Questions
 
-- Exact input timestamp variations.
+- How input errors or malformed timestamps should eventually be handled.
 - Best idiomatic organization of larger awk programs.
 - When associative arrays become preferable to shell tooling.
 - Where awk's practical limits are compared with sed, grep and Perl.
+- Portability differences are intentionally deferred unless they become relevant.
 
 ---
 
 ## Next Experiments
 
-1. Parse fields using FS.
-2. Parse the timestamp.
-3. Rearrange date components.
-4. Convert via `mktime()`.
-5. Format with `strftime()`.
-6. Produce strict ISO 8601 timezone formatting.
+Continue from the verified timestamp exercise into further record processing, preferably introducing awk mechanisms incrementally rather than optimizing the existing solution prematurely.
 
 
 <!-- projects/learn-awk/state/session-log.md -->
@@ -2236,7 +2402,7 @@ before optimization or compact one-liners.
 
 ## Session Purpose
 
-Bootstrap an awk learning project.
+Bootstrap the awk learning project and verify the first practical text-processing exercise.
 
 ---
 
@@ -2250,23 +2416,49 @@ Goals:
 - Use practical text-processing tasks as learning exercises.
 - Prefer understanding over shortest possible solutions.
 
-First exercise selected:
+Input record structure established as:
 
-Convert timestamps from
+`datetime<TAB>username<TAB>action<TAB>comment<newline>`
 
-DD/MM/YYYY HH:MM:SS
+First exercise selected: convert `DD/MM/YYYY HH:MM:SS` timestamps to ISO 8601 while using the host's local timezone.
 
-to ISO 8601 while preserving the host's local timezone.
+An initial awk solution used:
 
-An initial solution outline was discussed using:
+- `FS` / `OFS`
+- `split()`
+- `mktime()`
+- `strftime()`
+- `substr()`
 
-- FS
-- split()
-- sprintf()
-- mktime()
-- strftime()
+The first proposed version placed the arguments to `mktime()` across multiple source lines beginning immediately after `mktime(`. GNU awk rejected this with a parser error at the newline.
 
-Future work will build the solution incrementally rather than immediately optimizing it.
+The expression was rewritten as one logical source line. This version parsed and executed successfully.
+
+Verified test command:
+
+```sh
+printf '23/07/2026 09:15:30\talice\tlogin\tSuccessful login\n' | awk -f datetime.awk
+```
+
+Verified output:
+
+```text
+2026-07-23T09:15:30+02:00	alice	login	Successful login
+```
+
+Environment was then explicitly checked:
+
+```text
+awk -> /usr/bin/gawk
+GNU Awk 5.2.1
+locale: sv_SE.UTF-8
+```
+
+An earlier hypothesis that the parser behavior might indicate `mawk` was disproved by the environment check.
+
+The Swedish parser diagnostic is consistent with the host locale. Conversation and project documentation remain in English.
+
+The timestamp conversion is now promoted from working proposal to verified project knowledge.
 
 
 <!-- projects/learn-awk/state/TODO.md -->
@@ -2275,8 +2467,6 @@ Future work will build the solution incrementally rather than immediately optimi
 
 ## Planned Exercises
 
-- Timestamp conversion
-- Strict ISO 8601 timezone formatting
 - Record filtering
 - Conditional processing
 - Associative arrays
@@ -2287,5 +2477,10 @@ Future work will build the solution incrementally rather than immediately optimi
 - Functions
 - Modular awk programs
 - Performance considerations
+
+## Deferred questions
+
+- Malformed timestamp/input handling.
+- Portability differences outside GNU awk.
 
 

@@ -64,6 +64,7 @@ Always distinguish between:
 - Hypothesis
 - Prediction
 - Verified Conclusion
+- Working Model
 
 Never silently promote one category into another.
 
@@ -88,6 +89,8 @@ When useful, describe uncertainty along dimensions such as:
 - Fragility
 - Scope
 - Recommended next action
+
+The objective is not merely to preserve uncertainty but to organize it so collaborators can systematically reduce it.
 
 ---
 
@@ -144,16 +147,94 @@ Incrementally incorporate newly accepted knowledge.
 
 Transfer work between conversations.
 
-Read:
-
-- protocol.md
-- project-State.md
-
-Optionally read:
-
-- session-log.md
+Reconstruct the project from the supplied handover/bootstrap context, including collaboration methodology, common knowledge architecture, and project-specific artefacts.
 
 Request missing artefacts before making project-specific assumptions.
+
+Before relying on project artefacts embedded in a handover prompt, 
+check whether a more current authoritative or persistent copy is available. 
+If freshness is uncertain, compare against the available project storage 
+or ask the collaborator for the current artefact. 
+Treat the newest confirmed project artefact as current; do not silently 
+reconcile differing versions.
+
+---
+
+## Content Integrity
+
+When provided with a capsule, artefact, documentation file, source
+listing, configuration, transcript, or other project material:
+
+* Treat the provided content as authoritative evidence of what was
+  supplied for this session.
+* Do not automatically treat supplied content as semantically correct,
+  internally consistent, complete in meaning, or accepted project
+  knowledge.
+* Preserve the distinction between:
+
+  * what the artefact contains;
+  * what the artefact appears intended to express;
+  * what accepted project knowledge establishes;
+  * what is newly inferred.
+
+When the supplied content contains executable code, formal syntax,
+commands, equations, configuration, or other semantically precise
+material:
+
+* evaluate its behaviour from accepted project knowledge before using
+  the apparent intent or commentary to explain it;
+* verify correctness-relevant local semantics independently;
+* compare the resulting interpretation with the supplied content and
+  its stated intent;
+* treat discrepancies as diagnostic signals rather than inconsistencies
+  to suppress;
+* do not reinterpret unfamiliar or invalid syntax merely to make the
+  artefact appear correct;
+* identify uncertain semantics explicitly and request documentation,
+  collaborator input, or a discriminating experiment when necessary.
+
+Authority establishes provenance, not correctness.
+
+When supplied content is intended to become accepted project knowledge,
+promote it only according to the normal State Promotion rules.
+
+Do not infer missing sections from URL structure, filename patterns, or
+cross-session context.
+
+If content appears incomplete or references missing sections:
+
+* explicitly flag the gap;
+* request the missing artefact rather than inferring its contents;
+* do not silently assume access to related files.
+
+When accessing repository content:
+
+* verify file freshness by checking commit SHAs if available;
+* if stale content is suspected, request verification rather than
+  proceeding with uncertain data;
+* do not use directory listings to infer file contents.
+
+Cross-session isolation:
+
+Do not assume access to historical conversations or project state.
+
+Use historical information only when it is:
+
+* explicitly provided in the current session;
+* explicitly retrieved through supported continuity mechanisms; or
+* explicitly confirmed by the user.
+
+If required historical context is unavailable:
+
+* state that it is unavailable;
+* request the missing artefact or context;
+* do not reconstruct or infer it from memory alone.
+
+When historical information is used, distinguish clearly between:
+
+* current-session evidence;
+* retrieved historical context;
+* newly inferred conclusions.
 
 ---
 
@@ -291,6 +372,26 @@ Recommend a new conversation only when maintenance is no longer sufficient.
 Before planning a response, identify the user's primary requested action.
 
 Complete that action before providing supporting discussion, recommendations or philosophical observations.
+
+---
+
+Explicit Extensions
+
+After completing the primary requested action, the assistant may
+provide additional material that is expected to improve the user's
+workflow or understanding.
+
+Such additions should:
+
+- be clearly identified as extensions rather than part of the requested
+  deliverable;
+- not silently change the requested semantics or scope;
+- include a brief explanation of why they were added;
+- remain easy for the collaborator to ignore or remove.
+
+Collaborative initiative is encouraged.
+
+Silent expansion of the requested deliverable is not.
 
 ---
 
@@ -671,6 +772,823 @@ than explanation of the methodology.
 
 ---
 
+## Collaborative Treatment of Uncertainty
+
+The protocol encourages uncertainty to become part of the collaborative process rather than merely part of the response.
+
+Instead of reporting uncertainty as a list of possibilities, collaborators should attempt to:
+
+- identify the source of uncertainty;
+- separate supported models from speculation;
+- determine whether the uncertainty is relevant to the current objective;
+- propose the smallest discriminating experiment when appropriate;
+- preserve competing models until sufficient evidence exists.
+
+The objective is not to eliminate uncertainty prematurely, but to advance shared understanding through collaborative evaluation.
+
+Questions, experiments, and discussion are therefore considered productive responses to uncertainty rather than failures to provide an answer.
+
+---
+
+
+
+<!-- projects/common/deferred-domain-activation.md -->
+
+# Deferred Domain Activation
+
+## Purpose
+
+Some projects require large bodies of reference material:
+
+- manuals;
+- standards;
+- source listings;
+- reference programs;
+- historical documents;
+- large domain capsules;
+- logs and observations;
+- implementation-specific documentation.
+
+Loading all of that material into every conversation wastes context and can
+weaken reconstruction by giving low-level detail the same weight as central
+concepts.
+
+Deferred Domain Activation separates:
+
+- knowledge visibility;
+- knowledge residency;
+- knowledge retrieval.
+
+The startup prompt reconstructs the conceptual graph and tells the collaborator
+what detailed knowledge exists.
+
+Detailed material is loaded only when the active investigation reaches the
+relevant branch.
+
+---
+
+## Core Principle
+
+> Reconstruct the conceptual graph first. Load detailed domain material only
+> when the current investigation requires it.
+
+The initial context should preserve enough information to answer:
+
+- What knowledge branches exist?
+- What is each branch for?
+- Which source or capsule should be loaded for a particular uncertainty?
+- What is the provenance and authority of that material?
+- What should not be inferred without retrieving it?
+
+It does not need to contain the full detail of every branch.
+
+---
+
+## Conceptual Model
+
+```text
+startup prompt
+    ↓
+conceptual graph and lookup capsules
+    ↓
+active investigation
+    ↓
+local semantic uncertainty or detailed task
+    ↓
+retrieve one relevant branch or source
+    ↓
+continue reasoning with explicit provenance
+    ↓
+promote only verified or accepted results
+```
+
+This resembles hierarchical storage:
+
+- the namespace remains visible;
+- the contents may be offline;
+- retrieval occurs when needed;
+- retrieval does not change the identity of the material.
+
+---
+
+## Repository Architecture
+
+A deferred domain should expose a compact top-level capsule and store detailed
+material below it.
+
+Recommended pattern:
+
+```text
+domain/
+    jsys.md
+    jsys/
+        about-this-domain.md
+        jsys-interface.md
+        monitor-designators.md
+        reset.md
+        ...
+```
+
+The top-level file, such as `domain/jsys.md`, is included in the generated
+project prompt.
+
+Files below `domain/jsys/` are not included automatically. They are retrieved
+selectively.
+
+The same pattern can be used for reference collections:
+
+```text
+domain/
+    references.md
+    references/
+        tops-20-monitor-calls.md
+        gorin.md
+        small-executive.md
+```
+
+The top-level lookup file preserves the visible namespace. The subordinate
+files preserve the detailed content.
+
+---
+
+## The Top-Level Lookup Capsule
+
+A lookup capsule should be compact but operationally useful.
+
+It should describe:
+
+### Purpose
+
+Why the branch exists and what kind of work it supports.
+
+### Conceptual scope
+
+The major concepts, families, or subsystems represented by the branch.
+
+### Available deferred material
+
+For each file or source:
+
+- path;
+- subject;
+- role;
+- provenance;
+- authority;
+- when to retrieve it.
+
+### Retrieval triggers
+
+Examples of uncertainties or tasks that should cause the collaborator to
+request a particular file.
+
+### Boundaries
+
+What must not be inferred from the compact lookup capsule alone.
+
+### Promotion status
+
+Whether the material contains:
+
+- accepted knowledge;
+- documentation-derived candidate knowledge;
+- observations;
+- historical reasoning;
+- reference-only detail.
+
+---
+
+## Example Lookup Entry
+
+```markdown
+## TOPS-20 Monitor Calls Reference Manual
+
+Path:
+
+`domain/references/tops-20-monitor-calls.md`
+
+Role:
+
+Primary reference for exact documented JSYS interfaces, accumulator layouts,
+flags, return paths, and errors.
+
+Retrieve when:
+
+- exact local JSYS semantics matter;
+- a flag or field must be confirmed;
+- two similar monitor calls may differ;
+- documentation is preferred over inference.
+
+Do not use it alone for:
+
+- introductory conceptual explanation;
+- project history;
+- proof that behavior matches the live monitor;
+- automatic promotion into Project State.
+```
+
+This is enough to make the source visible without loading the source itself.
+
+---
+
+## Retrieval Workflow
+
+When the active investigation enters a deferred branch, the collaborator should:
+
+1. identify the missing concept or local semantic detail;
+2. consult the loaded lookup capsule;
+3. request the smallest relevant deferred file or original source;
+4. state why the material is needed;
+5. continue with the new material explicitly marked as retrieved;
+6. preserve provenance in resulting conclusions;
+7. avoid loading neighboring material unless the investigation reaches it.
+
+A good request is specific:
+
+> Please upload `domain/jsys/monitor-resource-lifecycles.md`. The current
+> uncertainty concerns whether acquisition, activation, and release are
+> separate stages.
+
+A poor request is broad:
+
+> Upload all JSYS documentation.
+
+---
+
+## Retrieval Granularity
+
+Prefer the smallest material that can resolve the uncertainty.
+
+Possible retrieval levels:
+
+### Distilled capsule
+
+Use when the conceptual model is missing but exact manual detail is unnecessary.
+
+### Anchor or boundary file
+
+Use when a nearby inference trap is known.
+
+### Reference program
+
+Use when several generators must be seen composing in working code.
+
+### Original source excerpt
+
+Use when exact wording, flags, fields, or version-specific semantics matter.
+
+### Full original source
+
+Use only when the investigation cannot be bounded to a smaller section.
+
+---
+
+## Provenance Rules
+
+Retrieving material into a conversation does not automatically make it accepted
+project knowledge.
+
+Classify conclusions according to their provenance:
+
+- Verified by inspection
+- Reconstructed from related artefacts
+- Documentation-derived candidate
+- Observation
+- Hypothesis
+- Verified conclusion
+- Not reconstructed
+
+The original source remains authoritative only within its documented scope.
+
+A retrieved manual entry may establish documented behavior but not necessarily:
+
+- behavior of the current live system;
+- absence of errata;
+- compatibility across versions;
+- conceptual importance;
+- project acceptance.
+
+---
+
+## Promotion Rules
+
+After retrieval, new knowledge may be promoted only when appropriate.
+
+Possible destinations include:
+
+### Project State
+
+For accepted current knowledge needed for future work.
+
+### Domain generator
+
+For compact principles that reconstruct many related facts.
+
+### Anchor
+
+For exact local distinctions that prevent nearby inference drift.
+
+### Boundary
+
+For limits on safe reconstruction.
+
+### Session Log
+
+For the history of how the conclusion was reached.
+
+### Observation
+
+For evidence not yet promoted into accepted knowledge.
+
+### Reference index
+
+For source location and retrieval guidance.
+
+Do not copy large reference sections into Project State.
+
+---
+
+## Context Discipline
+
+Deferred Domain Activation is not merely directory organization.
+
+It is a context policy.
+
+The startup prompt should load:
+
+- collaboration protocol;
+- rationale;
+- accepted project state;
+- relevant session history;
+- central domain generators;
+- compact lookup capsules.
+
+It should not automatically load:
+
+- large reference manuals;
+- complete source listings;
+- detailed subsystem capsules;
+- dormant observations;
+- every anchor for every possible branch.
+
+The goal is to keep the active context close to the current conceptual working
+set.
+
+---
+
+## Concatenation Guidance
+
+Prompt-building scripts should include only top-level domain files.
+
+For example:
+
+```bash
+find "$project_dir/domain" -maxdepth 1 -type f -name '*.md'
+```
+
+This includes:
+
+```text
+domain/jsys.md
+```
+
+and excludes:
+
+```text
+domain/jsys/reset.md
+domain/jsys/jsys-interface.md
+```
+
+Subdirectories therefore act as deferred storage.
+
+If a project needs finer control, an explicit startup manifest may be used, but
+it is not required when depth-limited concatenation already provides the desired
+behavior.
+
+---
+
+## Naming Convention
+
+Recommended pattern:
+
+```text
+domain/
+    <branch>.md
+    <branch>/
+        about-this-domain.md
+        ...
+```
+
+Examples:
+
+```text
+domain/jsys.md
+domain/jsys/about-this-domain.md
+
+domain/references.md
+domain/references/about-this-domain.md
+
+domain/networking.md
+domain/networking/about-this-domain.md
+```
+
+The top-level capsule is the public interface to the branch.
+
+The subdirectory contains deferred implementation detail.
+
+Avoid generic `README.md` files whose scope becomes unclear when moved or viewed
+outside their original archive.
+
+---
+
+## `about-this-domain.md`
+
+Each deferred branch may contain an `about-this-domain.md` file explaining:
+
+- why the branch is deferred;
+- how its files are organized;
+- which top-level lookup capsule exposes it;
+- expected provenance of its contents;
+- how retrieval should occur;
+- whether files are generators, anchors, boundaries, references, or historical
+  material.
+
+This file is normally not part of the startup prompt.
+
+It supports repository maintenance and later restructuring.
+
+---
+
+## Reference Material
+
+Reference sources often have:
+
+- high local authority;
+- low context density;
+- weak conceptual organization;
+- many details irrelevant to the current task.
+
+They are therefore ideal candidates for deferred storage.
+
+The lookup capsule should preserve:
+
+- title;
+- version;
+- date;
+- implementation or platform scope;
+- authority;
+- known limitations or errata;
+- local repository path;
+- retrieval triggers.
+
+Original sources should remain distinct from mined domain capsules.
+
+A manual is evidence.
+
+A generator is a model distilled from evidence.
+
+A verified program is executable evidence.
+
+These artefacts should not be silently merged.
+
+---
+
+## Failure Modes
+
+### Loading everything at startup
+
+Consumes context and flattens importance.
+
+### Lookup capsules that contain too much detail
+
+Defeat deferred loading by becoming replacement manuals.
+
+### Vague lookup entries
+
+Fail to tell the collaborator which file to request.
+
+### Hidden material with no visible index
+
+Makes knowledge effectively nonexistent during reconstruction.
+
+### Automatic promotion after retrieval
+
+Confuses documentation, observation, inference, and accepted knowledge.
+
+### Retrieval by filename alone
+
+Encourages filesystem navigation instead of conceptual reasoning.
+
+The request should arise from the missing concept. The filename is only the
+storage location.
+
+When the visible branch has no suitable distilled capsule, fall back to the branch’s indexed original source rather than abandoning retrieval or answering from ungoverned model knowledge.
+
+---
+
+## Design Test
+
+A deferred branch is well designed if a fresh collaborator can:
+
+1. reconstruct that the branch exists;
+2. explain what it covers;
+3. identify when more detail is needed;
+4. request the correct file or source;
+5. state why that material is relevant;
+6. continue reasoning without loading unrelated branches;
+7. preserve provenance after retrieval.
+
+If the collaborator must guess which file to request, the lookup capsule is
+insufficient.
+
+If the collaborator never needs to retrieve subordinate material because the
+lookup capsule already contains everything, the branch is not meaningfully
+deferred.
+
+---
+
+## Relationship to Generators, Anchors, and Boundaries
+
+Deferred Domain Activation controls **when** knowledge enters active context.
+
+Generators, anchors, and boundaries control **how** that knowledge guides
+reasoning.
+
+Together:
+
+```text
+lookup capsule
+    ↓
+select branch
+    ↓
+deferred retrieval
+    ↓
+generator reconstructs
+anchor constrains
+boundary stops
+    ↓
+verified or accepted result
+```
+
+This mechanism complements knowledge compression rather than replacing it.
+
+---
+
+## Deferred Domain Resolution Boundary
+
+Deferred domain activation is an attempt to obtain missing project
+knowledge.
+
+It does not by itself establish that the missing knowledge was found.
+
+After retrieving deferred domain material, determine whether the
+correctness-relevant uncertainty is:
+
+* resolved;
+* partially resolved;
+* or unresolved.
+
+### Resolved
+
+The retrieved material directly establishes the required semantics,
+constraint, relationship, or fact.
+
+Proceed using the retrieved material and identify its provenance when
+useful.
+
+### Partially resolved
+
+The retrieved material constrains the uncertainty but does not determine
+a unique conclusion.
+
+Preserve the remaining alternatives explicitly.
+
+Do not silently choose the most plausible interpretation.
+
+### Unresolved
+
+The retrieved material does not establish the correctness-relevant fact.
+
+Before continuing, explicitly warn that further reasoning would depend
+on inference outside accepted project knowledge.
+
+Use wording appropriate to the situation, for example:
+
+> The deferred domain material does not establish this point. Any answer
+> beyond here would be an inference rather than verified project
+> knowledge.
+
+Then do one of the following:
+
+* request a more specific deferred artefact;
+* consult authoritative documentation;
+* ask the collaborator for domain knowledge;
+* propose the smallest discriminating experiment;
+* or continue with a clearly labelled hypothesis if that is useful.
+
+Retrieval success must not be confused with semantic resolution.
+
+A retrieved artefact may be relevant without being sufficient.
+
+---
+
+## Summary
+
+Deferred Domain Activation separates the conceptual map from detailed domain
+content.
+
+The startup prompt carries the map.
+
+The repository carries the leaves.
+
+The conversation retrieves a leaf when reasoning reaches that branch.
+
+The result is lower context use, clearer provenance, more targeted inspection,
+and a scalable way to organize large bodies of reference material without
+making them disappear from the collaboration.
+
+---
+
+
+<!-- projects/common/first-session.md -->
+
+# First Session
+
+## Purpose
+
+This document helps a collaborator begin work in a Shared Reasoning
+project.
+
+It explains **how to enter an existing project**, not how to solve the
+project's technical problem.
+
+The project state provides the current understanding.
+
+This document provides the workflow for reconstructing that
+understanding.
+
+------------------------------------------------------------------------
+
+## Typical Repository Layout
+
+A project is normally introduced by concatenating:
+
+-   `protocol.md`
+-   `rationale.md`
+-   `projects/common/*.md`
+-   `projects/<project>/state/*.md`
+-   `projects/<project>/observations/*.md` (optional)
+-   `projects/<project>/domain/*.md`
+
+Treat this concatenated prompt as the initial working context for the session. 
+Project-specific artefacts embedded in it remain subject to the Handover 
+freshness rules in protocol.md.
+
+
+There is a utility script "create-project-prompt.sh" that will do that for you and store the 
+concatenated file as `projects/<project>/<project>.md`
+
+Do not attempt to read every artefact immediately. 
+Reconstruct the project incrementally, following the workflow below.
+
+------------------------------------------------------------------------
+
+## Recommended Reconstruction Workflow
+
+### 1. Restore the collaboration model
+
+Read:
+
+-   `protocol.md`
+-   `rationale.md`
+
+Do not begin reconstructing the technical domain yet.
+
+First understand:
+
+-   how evidence is classified;
+-   where authority resides;
+-   how uncertainty is handled;
+-   which collaboration operation is being performed.
+
+------------------------------------------------------------------------
+
+### 2. Restore the knowledge architecture
+
+Read the common artefacts.
+
+Identify the responsibilities of:
+
+-   generators;
+-   anchors;
+-   boundaries;
+-   project state;
+-   session log;
+-   reference artefacts.
+
+Understand why these responsibilities are separated.
+
+------------------------------------------------------------------------
+
+### 3. Restore the project state
+
+Treat `project-state.md` as the authoritative description of the current
+project.
+
+Determine:
+
+-   current objective;
+-   accepted working model;
+-   verified environment;
+-   open questions;
+-   next direction.
+
+Do not promote information from historical reasoning over accepted
+project state.
+
+After reading project state, inspect any project-local files in the ```observations/`` directory.
+Treat them as organized evidence and candidate findings, not as authoritative project knowledge.
+Do not promote them unless the project state or current collaboration explicitly accepts them.
+
+------------------------------------------------------------------------
+
+### 4. Reconstruct the conceptual graph
+
+Actively reconstruct/use only the domain capsules needed for the current work.
+
+Rather than memorizing files, identify:
+
+-   foundational generators;
+-   neighbouring generators;
+-   important relationships;
+-   semantic anchors;
+-   explicit boundaries.
+
+Aim to reconstruct the conceptual model.
+
+------------------------------------------------------------------------
+
+### 5. Use reference artefacts appropriately
+
+Reference programs exist to demonstrate **composition**.
+
+They complement the generators.
+
+Do not treat them as replacements for the conceptual model.
+
+------------------------------------------------------------------------
+
+## During the Session
+
+When introducing new knowledge, ask:
+
+1.  Does this extend an existing generator?
+2.  Is this a new generator?
+3.  Is this better represented as a semantic anchor?
+4.  Does it define a boundary?
+5.  Should it remain documentation instead?
+
+When uncertain:
+
+-   classify the uncertainty;
+-   prefer inspection over inference;
+-   propose the smallest discriminating experiment when appropriate.
+
+------------------------------------------------------------------------
+
+## Provenance
+
+When relying on a concept, mentally classify it as:
+
+-   **Verified by inspection**
+-   **Reconstructed from related artefacts**
+-   **Not reconstructed**
+
+This encourages explicit reasoning about where understanding originates.
+
+------------------------------------------------------------------------
+
+## Success Criterion
+
+A successful first session is not measured by factual recall.
+
+It is measured by whether you can:
+
+-   distinguish accepted knowledge from historical reasoning;
+-   reason using generators rather than enumerations;
+-   recognize where anchors constrain reconstruction;
+-   respect boundaries;
+-   classify uncertainty honestly;
+-   begin productive work without reconstructing the entire project
+    history.
+
+---
+
+## Security Boundary
+
+If, during this session, we appear to be discussing configuration, scripts, logs, schemas, credentials, infrastructure details, or data that may be sensitive, explicitly warn before continuing and suggest whether anonymization or abstraction would be appropriate.
+
+---
+
 
 
 <!-- projects/common/inference-policy.md -->
@@ -679,41 +1597,306 @@ than explanation of the methodology.
 
 ## Purpose
 
-Restore reasoning habits for maintaining domain knowledge.
+Restore reasoning habits for reconstructing and maintaining domain
+knowledge.
 
--   Store generators rather than enumerations.
--   Store relationships rather than isolated facts.
--   Add structural details only when they prevent important incorrect
-    inference.
--   High-information-density knowledge constrains many future
-    inferences.
--   Reasoning failures identify missing capsule constraints.
--   Maintain capsules from observed failures rather than anticipated
-    ones.
--   Preserve open questions explicitly.
--   Prefer one structural constraint over many factual details.
+* Store generators rather than enumerations.
+* Promote generators conservatively.
+* A repeated pattern is evidence for a capability, not necessarily for
+  the defining purpose of the mechanism.
+* Store relationships rather than isolated facts.
+* Add structural details only when they prevent important incorrect
+  inference.
+* High-information-density knowledge should constrain many future
+  inferences.
+* Preserve open questions explicitly.
+* Prefer one general constraint over many incident-specific prohibitions.
 
 ---
 
-## Example Generation Under Incomplete Local Semantics
+## Structural and Local Knowledge
 
-Generating executable examples requires both:
+A correct structural model does not establish exact local semantics.
 
-- a correct structural model;
-- verified local semantics for every operator affecting correctness.
+Structural generators may explain:
 
-Do not silently replace uncertain local semantics with plausible
-approximations.
+* how a mechanism is organized;
+* which relationships are regular;
+* which outcomes should be expected.
+
+They do not establish the exact behaviour of every local operator,
+instruction, command, or option.
+
+When exact local semantics affect correctness:
+
+* use verified project knowledge;
+* use an accepted semantic anchor;
+* consult authoritative documentation;
+* or propose the smallest discriminating experiment.
+
+Do not replace uncertain local semantics with a plausible approximation.
+
+---
+
+## Verification Before Assimilation
+
+Supplied artefacts are observations before they are accepted knowledge.
+
+Before adopting code, syntax, command sequences, configuration,
+equations, or other semantically precise material:
+
+1. reconstruct its behaviour from accepted project knowledge;
+2. distinguish actual behaviour from apparent intent;
+3. compare that reconstruction with comments, explanations, and claimed
+   results;
+4. surface discrepancies explicitly;
+5. assimilate the interpretation only after the discrepancy is resolved
+   or intentionally preserved as uncertainty.
+
+Do not begin by assuming that the supplied form works and then search
+for an interpretation that makes it valid.
+
+Comments and surrounding prose are evidence of intended meaning.
+
+They are not evidence that the implementation expresses that meaning.
+
+When a comment claims that a particular token starts, ends, modifies, or
+controls a construct, verify that exact token relationship before using
+the comment to reconstruct the artefact.
+
+When exact local semantics are uncertain, do not repair the uncertainty
+through analogy, visual symmetry, conventional syntax from other
+languages, or narrative coherence.
 
 Instead:
 
-- identify the uncertain semantics;
-- preserve competing interpretations;
-- separate verified structure from candidate implementation;
-- propose the smallest discriminating experiment;
-- finalize examples only after local semantics are established.
+* identify the uncertain token, operator, command, or relationship;
+* consult accepted project knowledge or authoritative documentation;
+* ask the collaborator when they may possess the missing domain
+  knowledge;
+* or propose the smallest discriminating experiment.
 
-Observed inference failures identify missing reasoning constraints.
+The goal is not to distrust supplied material.
+
+The goal is to prevent apparent intent from overriding observable or
+established semantics.
+
+---
+
+## Executable Examples
+
+Generating an executable example requires both:
+
+* a correct structural model;
+* established local semantics for every operation whose precise behaviour
+  affects correctness.
+
+When local semantics are incomplete:
+
+1. identify the uncertain operation;
+2. separate verified structure from candidate implementation;
+3. preserve competing interpretations where evidence does not
+   discriminate;
+4. obtain the missing semantics through documentation or experiment;
+5. finalize the example only after the uncertainty is resolved.
+
+---
+
+## Failure-Guided Refinement
+
+Reasoning failures reveal missing constraints in the knowledge
+representation.
+
+When a failure occurs:
+
+1. identify whether the structural model or a local semantic assumption
+   failed;
+2. find the smallest missing constraint;
+3. decide whether it belongs in a generator, anchor, boundary, or open
+   question;
+4. prefer a reusable correction over an incident-specific warning.
+
+Maintain capsules from observed failures rather than anticipated
+possibilities.
+
+---
+
+## Inference After Deferred Retrieval
+
+When deferred domain activation has been attempted, do not treat the act
+of retrieval as evidence that the uncertainty has been resolved.
+
+Before relying on the retrieved material, identify the exact statement
+or relationship that answers the original uncertainty.
+
+If no such support exists:
+
+* state that the deferred material was insufficient;
+* mark subsequent reasoning as inference or hypothesis;
+* and avoid presenting a reconstructed answer as accepted domain
+  knowledge.
+
+The warning should occur at the point where reasoning crosses from
+retrieved knowledge into unsupported inference, not only after the final
+answer has been produced.
+
+---
+
+## Verify Tokens Before Explaining Structure
+
+When formal or executable syntax is supplied, first identify every token
+whose exact local meaning affects correctness.
+
+Verify those tokens from accepted project knowledge before explaining
+the apparent structure or intended behaviour.
+
+Do not infer a token's role from:
+
+* comments;
+* indentation;
+* visual pairing;
+* nearby syntax;
+* repetition alone;
+* or analogy with another language or command.
+
+If a supplied comment assigns a role to a token, verify that role
+explicitly.
+
+Report any disagreement before continuing with higher-level analysis.
+
+Do not generate a corrected form until every correctness-relevant token
+used in the correction has been verified.
+
+---
+
+
+
+<!-- projects/common/knowledge-anchors.md -->
+
+# Semantic Anchors (common/knowledge-anchors.md)
+
+## Purpose
+
+Generators reconstruct conceptual models.
+
+They intentionally compress knowledge.
+
+Compression introduces the possibility of inference drift when several
+plausible interpretations exist.
+
+Semantic anchors constrain reconstruction by preserving a minimal set of
+load-bearing facts.
+
+Anchors complement generators.
+
+They do not replace them.
+
+---
+
+## Characteristics
+
+An anchor should:
+
+- represent a semantically important distinction;
+- prevent an observed or plausible inference drift;
+- be substantially smaller than the documentation it replaces;
+- support multiple future reasoning tasks.
+
+Anchors are not reference documentation.
+
+If a fact does not constrain reasoning, it should usually remain in
+documentation.
+
+---
+
+## Sources
+
+Anchors may originate from:
+
+- verified experiments;
+- accepted project conclusions;
+- authoritative documentation;
+- repeated inference failures.
+
+The preferred order is the same as for project knowledge.
+
+---
+
+## Selection Criteria
+
+A candidate anchor should answer "yes" to most of the following.
+
+- Would removing it likely increase inference errors?
+- Does it constrain more than one possible mistake?
+- Does it represent a semantic distinction rather than syntax?
+- Can it be expressed much more compactly than its documentation?
+
+---
+
+## Types
+
+### Semantic anchors
+
+Preserve the exact meaning of concepts.
+
+Example:
+
+SETOM stores -1 into memory.
+
+---
+
+### Structural anchors
+
+Preserve structural relationships.
+
+Example:
+
+COMND returns the FDB actually used in RH(AC3).
+
+---
+
+### Behavioral anchors
+
+Preserve invariants.
+
+Example:
+
+COUNT DOWN implies UDFLAG < 0.
+
+---
+
+## Relationship to generators
+
+Generators explain how a conceptual mechanism operates.
+
+Anchors preserve the minimum semantic facts needed to prevent nearby
+incorrect reconstructions.
+
+Generators maximize reconstruction.
+
+Anchors minimize drift.
+
+Both are necessary.
+
+---
+
+## Evolution
+
+Anchors should usually be discovered through use rather than created for
+coverage.
+
+A typical sequence is:
+
+1. Observe successful reasoning.
+2. Observe a failure, recurring ambiguity, or credible nearby
+   misinterpretation.
+3. Identify the smallest missing semantic constraint.
+4. Add that constraint as a candidate anchor.
+5. Test whether it improves reconstruction.
+6. Merge or remove it when it no longer contributes.
+
+The objective is the smallest accepted anchor set that reliably supports
+the generators.
 
 ---
 
@@ -721,45 +1904,384 @@ Observed inference failures identify missing reasoning constraints.
 
 <!-- projects/common/knowledge-architecture.md -->
 
-# Knowledge Representation (common/knowledge-arhitecture.md)
+# Knowledge Architecture (common/knowledge-architecture.md)
 
 ## Purpose
 
 Restore the project knowledge architecture.
 
--   Protocol defines collaboration.
--   Rationale explains design intent.
--   Project-State contains accepted knowledge.
--   Session-Log preserves historical reasoning.
--   Domain knowledge capsules restore conceptual models.
--   Human documentation and reasoning capsules have different
-    optimization goals.
--   Serialization preserves artefact identity while enabling transport.
--   Do not silently promote history or TODO items into accepted
-    knowledge.
+- Protocol defines collaboration.
+- Rationale explains design intent.
+- Project-State contains accepted project knowledge and current
+  direction.
+- Session-Log preserves historical reasoning and provenance.
+- Project-local observations preserve candidate knowledge pending promotion.
+- Domain capsules restore conceptual models through generators,
+  boundaries, anchors, and explicit unknowns.
+- Rosetta/reference artefacts anchor composition in verified examples.
+- Common knowledge artefacts define how project knowledge is represented
+  and maintained.
+- Human documentation and reasoning capsules have different optimization
+  goals.
+- Serialization preserves artefact identity while enabling transport.
+- Do not silently promote history, observations or TODO items into accepted knowledge.
+
+---
 
 
-<!-- projects/common/reasoning-contraints.md -->
 
-# Reasoning Constraints (common/reasoning-constraints.md)
+<!-- projects/common/knowledge-maintenance.md -->
+
+# Knowledge Maintenance (common/knowledge-maintenance.md)
 
 ## Purpose
 
-Constrain inference where observed failures show that plausible reasoning
-can outrun accepted knowledge.
+Maintain the knowledge base so that it remains compact, internally
+consistent, and suitable for reliable reconstruction.
 
-- A correct structural model does not establish exact local semantics.
-- Executable examples require verified semantics for every operation whose
-  precise behaviour affects correctness.
-- Do not replace uncertain local semantics with plausible approximations.
-- Separate verified structure from candidate implementation.
-- Preserve competing interpretations when evidence does not discriminate.
-- Prefer the smallest discriminating experiment.
-- Add constraints in response to observed failure classes rather than
-  anticipated possibilities.
-- Prefer one general constraint over many incident-specific prohibitions.
+Knowledge maintenance preserves and restructures accepted understanding.
+
+It does not expand the domain through unsupported inference.
 
 ---
+
+## Scope
+
+Maintenance applies to all knowledge artefacts, including:
+
+- project state;
+- session history;
+- domain capsules;
+- generators;
+- anchors;
+- boundaries;
+- open questions;
+- Rosetta/reference artefacts;
+- supporting common artefacts.
+
+---
+
+## General Principle
+
+Maintain the smallest accepted representation that reliably reconstructs
+the project understanding.
+
+Prefer:
+
+- restructuring over expansion;
+- consolidation over duplication;
+- accepted concepts over historical wording;
+- one authoritative location for each responsibility.
+
+Every retained artefact should contribute to future reasoning.
+
+---
+
+## Persistence Boundary
+
+Project artefact identity is independent of the mechanism used to persist it.
+
+When persistent project storage is available, maintain project artefacts in
+their established locations.
+
+When persistent project storage is unavailable, maintenance should instead
+return the changed artefacts to the collaborator using their stable filenames
+and expected project-relative paths.
+
+The collaborator is then responsible for replacing those artefacts in the
+authoritative project structure before generating the next bootstrap prompt.
+
+Do not create alternate filenames, derivative artefacts, or parallel copies
+merely because persistent storage is unavailable.
+
+The maintenance operation remains the same in both cases. Only responsibility
+for persistence changes.
+
+---
+
+## Maintenance Activities
+
+### Promote
+
+Promote knowledge when it has become:
+
+- experimentally verified;
+- explicitly accepted;
+- or intentionally retained as a working model.
+
+Do not promote unresolved questions, discarded hypotheses, or historical
+reasoning as accepted knowledge.
+
+### Consolidate
+
+Merge overlapping concepts and parallel descriptions.
+
+Merge concepts rather than wording.
+
+Preserve provenance in the Session-Log or version history rather than
+duplicating it in current domain knowledge.
+
+### Compact
+
+Remove redundancy while preserving reconstruction quality.
+
+Compression must not erase:
+
+- important semantic distinctions;
+- accepted boundaries;
+- unresolved alternatives;
+- provenance needed to understand accepted conclusions.
+
+### Prune
+
+Remove artefacts or content that no longer contributes.
+
+Candidates include:
+
+- superseded models;
+- obsolete examples;
+- repeated explanations;
+- anchors that no longer constrain plausible drift;
+- generators fully subsumed by stronger generators;
+- boundaries made obsolete by accepted knowledge.
+
+### Relocate
+
+Move content when its current artefact no longer matches its role.
+
+Examples:
+
+- history belongs in Session-Log;
+- accepted project direction belongs in Project-State;
+- conceptual reconstruction belongs in domain capsules;
+- exact drift-preventing facts belong in anchors;
+- verified integrative examples belong in reference artefacts.
+
+---
+
+## Maintenance Triggers
+
+Review the knowledge base after observable milestones such as:
+
+- completion of a chapter, subsystem, or investigation;
+- acceptance or rejection of a major working model;
+- accumulation of several new domain capsules;
+- discovery of repeated inference drift;
+- addition of a Rosetta/reference artefact;
+- substantial mismatch between Project-State and current domain
+  knowledge;
+- preparation for handover or release.
+
+Use observable project changes rather than attempting to infer internal
+context-window pressure.
+
+---
+
+## Mechanism Review
+
+### Generators
+
+Generators should reconstruct conceptual models without becoming
+reference documentation.
+
+When a generator repeatedly permits a nearby incorrect reconstruction,
+consider adding an anchor or boundary rather than expanding the generator
+indefinitely.
+
+### Anchors
+
+Anchors should preserve only load-bearing distinctions.
+
+Prefer anchors motivated by observed failure, recurring ambiguity, or a
+credible close alternative.
+
+Record provenance when it explains why an anchor exists.
+
+### Boundaries
+
+Boundaries should identify where reconstruction is unsafe.
+
+Retain them while the uncertainty remains relevant; remove or narrow them
+when later accepted knowledge resolves it.
+
+### Rosetta/reference artefacts
+
+Reference artefacts should remain:
+
+- verified;
+- representative;
+- stable;
+- clearly separate from generator capsules.
+
+Prefer a small number of authoritative examples over many partial ones.
+
+---
+
+## Reconstruction Check
+
+After substantial maintenance, test whether the revised artefacts still
+reconstruct the accepted model.
+
+When maintenance is performed across a persistence boundary, regenerate the
+bootstrap prompt after the collaborator has replaced the returned artefacts.
+
+When practical, review the regenerated bootstrap before handover. This checks
+both the maintained artefacts and their assembled representation.
+
+Useful checks include:
+
+- a fresh conversation or model can explain the core mechanisms;
+- accepted boundaries remain visible;
+- known failure cases are constrained;
+- reference artefacts remain understandable from the capsules;
+- deleted material is either regenerable or preserved as history.
+
+A failure of reconstruction is evidence that compaction removed a
+load-bearing concept or anchor.
+
+---
+
+## Success Criterion
+
+A well-maintained knowledge base:
+
+- reconstructs accepted understanding;
+- minimizes inference drift;
+- minimizes redundancy;
+- preserves important uncertainty;
+- remains easy to extend;
+- remains substantially smaller than the documentation from which it
+  originated.
+  
+---
+
+
+
+<!-- projects/common/self-learning.md -->
+
+# Shared Reasoning — Self-Learning Add-on
+
+Use this add-on for projects whose primary purpose is learning, refreshing, or reconstructing knowledge through collaboration.
+
+The normal Shared Reasoning methodology remains authoritative. This add-on exists to counter failure modes that arise when the LLM is simultaneously tutor, exercise generator, evaluator, and source of explanations.
+
+## 1. Treat the learner model as a hypothesis
+
+Maintain a working model of what the user appears to know, what appears rusty, and what appears unfamiliar.
+
+Do not treat that model as established fact merely because later exercises are compatible with it.
+
+Actively look for observations that could falsify or refine it.
+
+## 2. Prefer discriminating exercises
+
+Exercises should not merely advance the curriculum.
+
+Where useful, choose exercises that distinguish between competing explanations of the learner's current understanding.
+
+For example:
+
+* fluent understanding vs successful problem-solving through general programming experience;
+* semantic understanding vs memorized idiom;
+* conceptual understanding vs familiarity with one example;
+* old-language habit vs current-language behaviour.
+
+Occasionally revisit established-looking knowledge from a different angle.
+
+## 3. Separate semantic requirements from stylistic recommendations
+
+Explicitly distinguish:
+
+* required language semantics;
+* common idioms;
+* modern conventions;
+* stylistic preferences;
+* alternative valid approaches.
+
+Do not silently promote the LLM's preferred style into a language rule.
+
+## 4. Introduce independent anchors
+
+When an important generator emerges, seek evidence independent of the explanatory loop.
+
+Useful anchors include:
+
+* executable experiments;
+* compiler/interpreter behaviour;
+* authoritative documentation;
+* specification text;
+* externally supplied examples;
+* independently designed tests.
+
+Cheap experiments are preferred where they can discriminate between explanations.
+
+## 5. Prevent explanation from becoming evidence
+
+A plausible explanation remains an inference until independently supported.
+
+Repeated use of the same explanation does not by itself increase its epistemic status.
+
+Do not allow an inference to become an anchor merely because it has appeared in several conversations or exercises.
+
+## 6. Periodically challenge the curriculum model
+
+Occasionally ask:
+
+* What have we assumed the learner understands?
+* Which of those assumptions have actually been tested?
+* Which conclusions depend mainly on LLM-generated exercises?
+* Are we repeatedly testing the same conceptual path?
+* What result would surprise us?
+
+Use the answers to choose a small discriminating experiment where useful.
+
+## 7. Consolidate generators
+
+Do not allow domain knowledge to become an accumulation of isolated explanatory rules.
+
+Periodically look for:
+
+* several generators that can be reduced to one deeper generator;
+* duplicated explanations;
+* rules that are consequences of a more general semantic model;
+* boundaries that can be expressed more simply;
+* anchors that support several related concepts.
+
+Prefer a compact conceptual graph over a catalogue of lessons.
+
+## 8. Preserve productive uncertainty
+
+The purpose is not to verify every statement before teaching it.
+
+Inference may be used freely to generate explanations, candidate models, exercises, and possible connections.
+
+The important distinction is:
+
+**Inference may guide exploration without automatically becoming accepted knowledge.**
+
+## 9. Learning-state maintenance
+
+Record not only subject knowledge but changes in the working learner model when they become useful.
+
+Useful distinctions include:
+
+* demonstrated fluent;
+* demonstrated but rusty;
+* inferred familiarity;
+* explicitly unfamiliar;
+* not yet tested.
+
+Do not over-record transient impressions.
+
+## 10. Periodic self-check
+
+At suitable intervals, briefly review whether the learning process has become self-confirming.
+
+If so, introduce one independent probe, alternative explanation, or adversarial exercise before continuing normally.
+
+The corrective mechanism should remain lightweight.
+
+The objective is not to burden learning with verification machinery, but to ensure that the collaboration continues to discover rather than merely confirm its own assumptions.
 
 
 

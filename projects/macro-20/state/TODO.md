@@ -2,9 +2,11 @@
 
 ## Project TODO's
 
-- Continue with Chapter 29, traps and interrupts.
-  Expand the Small Executive as later chapters introduce pseudo-interrupts,
-  traps, asynchronous control transfer and related facilities.
+- Continue Chapter 29 with Gorin's discussion of good versus bad trap coding,
+  then PSI interrupt handling. The arithmetic-trap Example 18 mechanism is
+  verified and should be retained as the reference experiment.
+- Park the historical address-layout discrepancy in Example 18 unless later
+  assembler/linker material explains it naturally; do not treat it as a trap-semantic issue.
 - Revisit MACRO-20 macro expansion semantics after the introductory chapters:
   nested angle brackets, argument substitution, rescanning, redefinition,
   and emitted source.

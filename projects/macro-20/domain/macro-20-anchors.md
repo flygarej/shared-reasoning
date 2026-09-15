@@ -199,6 +199,53 @@ Do not infer that the processor interprets local operations or preserves the ori
 
 ---
 
+
+## Trap and Control-Transfer Semantics
+
+### XJRSTF versus XJRST for the arithmetic trap block
+
+The verified arithmetic-trap return sequence is:
+
+```asm
+XJRSTF TRAPB+.ARPFL
+```
+
+`XJRSTF` consumes the trap block's saved flags/PC pair beginning at `.ARPFL`:
+the first word supplies flags and the following `.AROPC` word supplies the
+continuation PC.
+
+A transcription error using `XJRST` instead was experimentally decisive. The
+saved `.ARPFL` word contained the failing `IDIVI` instruction image
+`231040,,0`; `XJRST` treated that whole word as a PC and attempted to transfer
+to `231040`, producing an illegal-instruction failure.
+
+#### Guarded distinction
+
+Do not reconstruct `XJRST` and `XJRSTF` as interchangeable extended jump
+forms. For this trap-block layout, `XJRSTF` is required because return depends
+on restoring both flags and the saved continuation PC.
+
+#### Provenance
+
+Verified against Gorin Example 18, the SWTRP trap-block documentation, and the
+observed failure/success pair on TOPS-20.
+
+---
+
+### Arithmetic trap block continuation PC
+
+For the verified `.SWART` trap block, `.AROPC` contains the location of the
+trapping instruction plus one. Gorin's example subtracts one only for display
+of the failing instruction's address; normal resumption uses `.AROPC` as the
+continuation PC through `XJRSTF`.
+
+#### Guarded distinction
+
+Do not subtract one from `.AROPC` when reconstructing the normal trap return
+path merely because the diagnostic print routine does so.
+
+---
+
 ## File and JFN Semantics
 
 ### JFN identity and access

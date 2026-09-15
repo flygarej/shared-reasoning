@@ -1,0 +1,34 @@
+        TITLE   LUUO1
+        SEARCH  MONSYM,MACSYM
+
+P=17
+PDLEN==20
+
+        OPDEF   HELLO [001000,,0]
+
+        LOC     41
+        PUSHJ   P,UUOHND
+        RELOC
+
+MSG:    ASCIZ   /Hello from a made-up instruction!
+/
+
+PDLIST: BLOCK   PDLEN
+
+START:  RESET
+        MOVE    P,[IOWD PDLEN,PDLIST]
+
+        HELLO
+
+        HRROI   1,[ASCIZ /Back from HELLO.
+/]
+        PSOUT%
+
+        HALTF%
+        JRST    START
+
+UUOHND: HRROI   1,MSG
+        PSOUT%
+        POPJ    P,
+
+        END     START

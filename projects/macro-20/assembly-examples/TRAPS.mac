@@ -13,13 +13,11 @@ ACF==1
 DDF==2
 MMF==4
 
-FLNDIF=1B17
-
 FLNDIV=1B17
 
 PDLEN=100
 
-OPDEF	CALL	[PUSHJ, P,]
+OPDEF	CALL	[PUSHJ P,]
 OPDEF	RET	[POPJ P,]
 
 PDLIST: BLOCK	PDLEN
@@ -33,48 +31,48 @@ TRAPB:	0
 ; Message table for various PC flags
 TRPMSG: PC%OVF![ASCIZ/Integer Overflow /]
 	PC%FOV![ASCIZ/Floating Overflow /]
-	PC%NDV![ASCIZ/Integer Divisi0on By Zero /]
-	PC%FUF![ASCIZ/Floaing Exponent Underflow /]
-	FLNDIV![ASCIZ/Floationg Divide By Zero (Divide Check) /]
+	PC%NDV![ASCIZ/Integer Division By Zero /]
+	PC%FUF![ASCIZ/Floating Exponent Underflow /]
+	FLNDIV![ASCIZ/Floating Divide By Zero (Divide Check) /]
 TRPLMN==.-TRPMSG
 
-DEFINE	FOPX (OP) <		;; Make table of floating point operations
+DEFINE	FOPXX (OP) <		;; Make table of floating point operations
 	F'OP	ACF		;; i.e. FAD   result in AC
 	F'OP'M	MMF		;; 	FADM  result in MEM
 	F'OP'B	ACF!MMF		;;	FADB  result in both
 	F'OP'R	ACF		;;	FADR  result in AC
 	F'OP'RI	ACF		;;	FADRI --""--
 	F'OP'RM	MMF		;; 	FADRM result in MEM
-	F'OP'RB ACF|MMF		;;	FADRB result in both
-	DF'OP	ACF|DDF		;;	DFAD  result in AC and AC+1
->				;; End of FOPX
+	F'OP'RB ACF!MMF		;;	FADRB result in both
+	DF'OP	ACF!DDF		;;	DFAD  result in AC and AC+1
+>				;; End of FOPXX
 
 ;; Table of instructions that might cause floating underflow
 FXUTAB: FOPXX	(AD)
 	FOPXX	(SB)
 	FOPXX 	(MP)
-	FOPX	(DV)
+	FOPXX	(DV)
 	FSC	ACF
 FXUTLN==.-FXUTAB
 
 ;; Coroutine to save accumulators 0:16 on the stack Call via PUSHJ
 ;; The caller of this co-routine must return with either 0 or 1 skips
 
-SAVACS;	ADJSP	P,17  		 ;; Add locations for 0-16
-	MOVEM	16.0(P)		 ;; Save AC 16 on stack
+SAVACS:	ADJSP	P,17  		 ;; Add locations for 0-16
+	MOVEM	16,0(P)		 ;; Save AC 16 on stack
 	MOVEI	16,-16(P)	 ;; place on stack for some AC's 
 	BLT	16,-1(P)	 ;; store AC 0 to 15 on stack
-	MOVEI	ACP.-16(P)	 ;; Address of the saved ACs
+	MOVEI	ACP,-16(P)	 ;; Address of the saved ACs
 	CALL	@-17(P)		 ;; return to "caller"
 	SKIPA			 ;; Non-skip return. Avoid AOS
 	AOS	-20(P)		 ;; Skip return. Pass skip upwards
-	MOVSI	-16,-16(P)	 ;; restore saved acs to ACS
+	MOVSI	16,-16(P)	 ;; restore saved acs to ACS
 	BLT	16,16		 
 	ADJSP	P,-20		 ;; discard saved acs & first return
 	RET
 
 TRAPIT:	CALL	TRAPNT		;; Call trap processing routine
-	XJRST	TRAPB+.ARPFL	;; return to trapped-from sequence
+	XJRSTF	TRAPB+.ARPFL	;; return to trapped-from sequence
 
 TRAPNT:	CALL SAVACS		;; save accumulators
 	MOVE B,TRAPB+.ARPFL	;; get the flags
@@ -87,25 +85,150 @@ TRAPNT:	CALL SAVACS		;; save accumulators
 	TXZN B,PC%FOV		;; yes and floating?
 	SKIPA			;;not floating divide check
 	TXC	B, PC%NDV!FLNDIV      ;; set flag for floating no divide
-	MOVSI	D,-TRPMLN	      ; Length of message tbl
+	MOVSI	D,-TRPLMN	      ; Length of message tbl
 TRPNT1:	TDNN	B,TRPMSG(D)	      ; is flag on for this message
 	JRST	TRPNT2		      ; no flag means no print
-	HRRO	A,TRMPSG(D)	      ; set LH of A to -1
+	HRRO	A,TRPMSG(D)	      ; set LH of A to -1
 	PSOUT			      ; print msg for this flag
 TRPNT2:	AOBJN	D,TRPNT1	      ; loop through msg table
 	HRROI	A,[ASCIZ/at PC = /]   ; print the adjusted PC
 	PSOUT		       	      ; which is one less  than the
 	MOVEI   A,.PRIOU	      ; trap PC, because the trap
 	MOVE	B,TRAPB+.AROPC	      ; PC points to the next
-	SUBI	B,1		      : instruction
+	SUBI	B,1		      ; instruction
 	MOVEI	C,10
 	NOUT
 	ERJMP	.+1
 
 	HRROI	A,[ASCIZ/
-Failing intsruction: /]
+Failing instruction: /]
+	PSOUT				; display octal image of
+	MOVEI	A,.PRIOU		; the failing instruction
+	HRRZ	B,TRAPB+.ARPFL		; opcode & AC of failing
+	MOVEI	C,10			; instruction
+	NOUT
+	ERJMP	.+1
+	HRROI	A,[ASCIZ/,,/]
 	PSOUT
+	MOVEI	A,.PRIOU
+	MOVE	B,TRAPB+.AREFA		; this might be as many
+	MOVEI	C,10			; as 30 bits of address
+	NOUT
+	ERJMP	.+1
+	HRROI	A,[ASCIZ/
+/]
+	PSOUT
+					; special processing for underflow
+	MOVE	B,TRAPB+.ARPFL		; get trap flags again
+	TXNE	B,PC%FUF		; check for exponent underflow
+	CALL	DOFXU			; process exponent underflow
+	MOVX	B,PC%OVF!PC%FOV!PC%NDV!PC%FUF	; clear selected PC flags
+	ANDCAM	B,TRAPB+.ARPFL		; before exiting and restoring
+	RET
 	
+; For floating underflow, we change the erroneous result to zero. An underflow
+; means that a result too small to be representable has been computed
+; the result of this instruction will be too large by a factor of approximately
+; 1.0E77. It's usually much better to store a zero result instead.
+DOFXU:	MOVSI  D,-FXUTLN    	      	      ; Length of the table
+	LDB    A,[POINT 9,TRAPB+.ARPFL,26]    ; Opcode of failed instr
+DOFXU1: LDB    B,[POINT 9,FXUTAB(D),8]	      ; get opcode from table
+	CAMN   A,B			      ; do we match
+	JRST   DOFXU2			      ; yes, D=index to table
+	AOBJN  D,DOFXU1			      ; advance to next instr
+	HRROI  A,[ASCIZ/The instruction that caused this trap is
+not known to this program as one of the floating point instructions.
+I give up.
+/]
+	PSOUT
+	HALTF
+	RET
 	
+; here, register D contains index to the floating instruction table:
+; the right half of FXUTAB tells where the result will be, AC, MEM BOTH, etc.
+DOFXU2: HRRZ	 A,FXUTAB(D)	       	   	  ; where is the result
+	LDB	 B,[POINT 4,TRAPB+.ARPFL,30]	  ;AC field of instruction
+	CAIL	 B,17	  			  ; mustn't reference stack AC
+	JRST	 DOFXU0				  ; We think this can't happen.
+	ADD	 B,ACP				  ;offset to saved acs
+	TRNN	 A,ACF				  ; is result in AC?
+	JRST	 DOFXU3				  ; no
+	MOVE	 C,(B)				  ; computed result to C
+	SETZM	 (B)				  ; clear saved copy of AC
 
+DOFXU3:	TRNN	 A,MMF				  ; is result in memory?
+	JRST	 DOFXU4				  ; no.
+	HRRZ	 B,TRAPB+.AREFA			  ; yes, get in-section result addr
+	HLRZ	 D,TRAPB+.AREFA			  ; get the section # of result
+	CAIG	 B,16				  ;skip if this is not an AC address
+	CAILE	 D,1				  ; skip if definite AC address
+	JRST	 DOFXU6				  ; not an AC address
+	ADD	 B,ACP				  ; offset to stored acs
+	MOVE	 C,(B)				  ; copy result to C
+	SETZM	 (B)				  ; and clear result location
+	JRST	 DOFXU4
 
+DOFXU6:	MOVE	 C,@TRAPB+.AREFA		  ; computed result to C
+	SETZM	 @TRAPB+.AREFA			  ; clear memory result
+DOFXU4: TRNN	 A,DDF				  ;is result in AC+1
+	JRST	 DOFXU5				  ;no
+	LDB	 B,[POINT 4,TRAPB+.ARPFL,30]	  ;AC field of instr again
+	ADDI	 B,1	  			  ; advance to AC+1
+	CAIL	 B,17				  ; Mustn't reference stack AC
+	JRST	 DOFXU0				  ; We think this can't happen
+	ADD	 B,ACP				  ;offset to saved ACs
+	SETZM	 (B)				  ; clear saved AC+1
+DOFXU5:	HRROI	 A,[ASCIZ/Changing the computed result, /]
+	PSOUT
+	MOVEI	A,.PRIOU			  ; print result as floating
+	MOVE	B,C				  ; the data items to print
+	MOVEI	C,0				  ; format control flags
+	FLOUT					  ; convert floating to characters
+	ERJMP	.+1				  
+	HRROI	A,[ASCIZ/, to zero
+/]
+	PSOUT
+	RET
+
+DOFXU0: HRROI	A,[ASCIZ/Instruction seems to reference the stack
+accumulator. This is very confusing.
+/]
+	PSOUT
+	HALTF
+	RET
+
+START:	RESET
+	MOVE	P,[IOWD PDLEN,PDLIST]
+	MOVEI	A,.FHSLF			;affect this fork
+	MOVEI	B,.SWART			;set trap block address
+	MOVEI	C,TRAPB				;the trap block address
+	SWTRP%
+; Now, let's make some traps;
+       MOVEI A,100				; begin with zero divide
+       IDIVI A,0				;which should produce an error
+       CALL  PNTA				;now show what's in A
+       MOVE  A,[032400000000]			;approximately 0.98E-31
+       FSBR  A,[031777777777]			;also approximately 0.98E-31
+       CALL  PNTA
+
+       HRROI A,[ASCIZ/done
+/]
+       PSOUT
+       HALTF					; it isn't much of a program
+       JRST  START
+
+PNTA:  PUSH  P,A				;display contents of A
+       HRROI A,[ASCIZ/The current result is /]
+       PSOUT
+       MOVEI A,.PRIOU
+       MOVE  B,(P)				; the saved copy of A
+       MOVEI C,10
+       NOUT
+       ERJMP	.+1
+       HRROI A,[ASCIZ/
+/]
+       PSOUT
+       POP	P,A				; restore A and
+       RET					; return
+
+       END	START

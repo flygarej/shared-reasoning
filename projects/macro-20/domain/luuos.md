@@ -27,6 +27,11 @@ When a LUUO executes:
 6. the processor executes the instruction at location `41` as though
    through `XCT 41`.
 
+Gorin states that location `41` is presumed to contain a subroutine call to
+the program's LUUO handler; either `JSR` or `PUSHJ` may be used. Because the
+instruction at `41` is executed in the `XCT 41` context, the PC saved by that
+subroutine call points to the instruction following the original LUUO.
+
 The processor does not interpret the local opcode beyond invoking this
 mechanism.
 
@@ -97,6 +102,39 @@ return to following instruction
 
 Dispatch tables make the relationship between local opcodes and software
 handlers explicit and maintainable.
+
+### Verified minimal PUSHJ pattern
+
+A minimal `HELLO` LUUO was assembled, linked, and run successfully on the
+project Panda 7.1 system. The verified entry/return pattern is:
+
+```asm
+        OPDEF   HELLO [001000,,0]
+
+        LOC     41
+        PUSHJ   P,UUOHND
+        RELOC
+
+        ...
+
+START:  ...
+        MOVE    P,[IOWD PDLEN,PDLIST]
+        HELLO
+        ...
+
+UUOHND: ...
+        POPJ    P,
+```
+
+Observed output proved that the handler ran and that `POPJ P,` resumed at the
+instruction following `HELLO`. The saved `assembly-examples/luuo1.mac` is the
+canonical minimal executable anchor for this pattern.
+
+Gorin also explicitly permits `JSR` at location `41`, but the project does not
+yet have a verified JSR-style handler pattern. An attempted JSR variant returned
+to the continuation without executing the intended handler body. Do not infer
+the exact JSR handler layout from generic JSR knowledge; revisit it against the
+source material.
 
 ---
 

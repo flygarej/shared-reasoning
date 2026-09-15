@@ -191,3 +191,67 @@ Chapter 28 complete.
 Next: Chapter 29, traps and interrupts.
 
 ---
+
+## Chapter 29 — arithmetic traps (partial)
+
+- Adopted Gorin's framing that TOPS-20 blurs the hardware trap/interrupt
+  distinction; arithmetic exceptions use traps while the remaining event
+  mechanisms are introduced through PSI later in the chapter.
+- Transcribed Example 18 (`TRAP`) and verified the `.SWART` four-word trap
+  block: `.ARPFL`, `.AROPC`, `.AREFA`, `.ARNPC`.
+- Corrected two important transcription errors in the working source:
+  - `XJRSTF TRAPB+.ARPFL`, not `XJRST`;
+  - `PC%NDV`, not the earlier mistyped flag name.
+- The wrong `XJRST` produced a diagnostic failure: the saved failing
+  instruction image `231040,,0` was interpreted as a PC and execution attempted
+  at `231040`. This became a semantic anchor for `XJRSTF` versus `XJRST`.
+- After correction, the complete example ran successfully:
+  - integer divide by zero trapped and reported;
+  - execution resumed with the integer result still `100`;
+  - floating exponent underflow trapped and reported;
+  - `DOFXU` recognized the `FSBR`, printed the computed value, changed the
+    underflow result to zero, and resumed;
+  - the program reached `done`.
+- Generated a MACRO listing using the native command form
+  `*relfile,listfile=sourcefile`.
+- Generated a LINK map with `@LOAD TRAPS /MAP`; because the program TITLE is
+  `TRAP`, LINK produced `TRAP.MAP`.
+- The map verified that program `TRAP` begins at low-segment address `140`.
+  Listing addresses plus `140` exactly reproduce the observed runtime addresses:
+  `START 335 -> 475`, `IDIVI 344 -> 504`, `FSBR 347 -> 507`, and literal
+  `530 -> 670`.
+- Gorin's printed run instead shows PCs `500`/`503` and EA `661`. The current
+  executable is internally consistent, so the historical layout discrepancy was
+  parked rather than treated as a semantic problem. CR/LF and literal-pool
+  differences remain hypotheses only.
+- Scans of Gorin's five source pages were checked against the transcription;
+  the important control-flow and error-return instructions, including the
+  `ERJMP .+1` instances and `XJRSTF`, agree with the printed source.
+
+Next: Gorin's discussion of good versus bad trap coding, followed by PSI
+interrupt handling. Extended addressing and assembler discussion follow this
+chapter.
+
+---
+
+
+## LUUO executable anchor revisit
+
+- Revisited LUUOs with a deliberately minimal user-defined `HELLO` instruction.
+- Gorin restated the processor mechanism: resolve EA, normalize the instruction
+  into location `40`, then execute location `41` as though by `XCT 41`.
+- Gorin explicitly states that location `41` may contain either `JSR` or `PUSHJ`
+  to the LUUO handler; the saved PC points to the instruction following the LUUO.
+- An initial `JRST` dispatch reached the handler but had no valid subroutine return.
+- An attempted JSR-style handler returned to the continuation but did not execute
+  the intended handler body; exact JSR handler layout remains unverified.
+- Verified the minimal PUSHJ pattern end-to-end using an initialized pushdown list:
+  `HELLO -> XCT 41 -> PUSHJ P,UUOHND -> handler -> POPJ P, -> continuation`.
+- Observed output was `Hello from a made-up instruction!` followed by
+  `Back from HELLO.`
+- Saved `assembly-examples/luuo1.mac` as the canonical minimal executable anchor.
+- Knowledge-representation lesson: the existing LUUO generator was broadly correct
+  but too abstract at the concrete entry/return convention; add an executable
+  anchor rather than replacing the generator.
+
+---

@@ -1,0 +1,112 @@
+        TITLE   MULT2
+
+        SEARCH  MONSYM,MACSYM
+
+A=1
+B=2
+C=3
+D=4
+P=17
+
+PDLEN==100
+CMBSIZ==12
+TXTLEN==200
+ATMLEN==100
+
+; COMND STATE BLOCK
+
+CMDBLK: BLOCK   CMBSIZ
+
+; FUNCTION DESCRIPTOR FOR A DECIMAL NUMBER
+
+NUMFDB: FLDDB.  .CMNUM,,12
+
+PROMP1: ASCIZ   /First number> /
+PROMP2: ASCIZ   /Second number> /
+
+; COMND BUFFERS
+
+BUFFER: BLOCK   40
+ATOMBF: BLOCK   20
+
+PDLIST: BLOCK   PDLEN
+
+
+START:  RESET
+        MOVE    P,[IOWD PDLEN,PDLIST]
+
+; ---------- INITIALIZE COMND STATE BLOCK ----------
+
+        SETZM   CMDBLK+.CMFLG
+
+        MOVE    A,[.PRIIN,,.PRIOU]
+        MOVEM   A,CMDBLK+.CMIOJ
+
+        HRROI   A,PROMP1
+        MOVEM   A,CMDBLK+.CMRTY
+
+        HRROI   A,BUFFER
+        MOVEM   A,CMDBLK+.CMBFP
+        MOVEM   A,CMDBLK+.CMPTR
+
+        MOVEI   A,TXTLEN
+        MOVEM   A,CMDBLK+.CMCNT
+        SETZM   CMDBLK+.CMINC
+
+        HRROI   A,ATOMBF
+        MOVEM   A,CMDBLK+.CMABP
+
+        MOVEI   A,ATMLEN
+        MOVEM   A,CMDBLK+.CMABC
+
+        SETZM   CMDBLK+.CMGJB
+
+
+; ---------- FIRST NUMBER ----------
+
+        MOVEI   A,CMDBLK
+        MOVEI   B,[FLDDB. (.CMINI)]
+        COMND%
+
+        MOVEI   A,CMDBLK
+        MOVEI   B,NUMFDB
+        COMND%
+
+        MOVE    D,B
+
+
+; ---------- SECOND NUMBER ----------
+
+        HRROI   A,PROMP2
+        MOVEM   A,CMDBLK+.CMRTY
+
+        MOVEI   A,CMDBLK
+        MOVEI   B,[FLDDB. (.CMINI)]
+        COMND%
+
+        MOVEI   A,CMDBLK
+        MOVEI   B,NUMFDB
+        COMND%
+
+        IMUL    D,B
+
+
+; ---------- OUTPUT ----------
+
+        HRROI   A,[ASCIZ /Product: /]
+        PSOUT%
+
+        MOVEI   A,.PRIOU
+        MOVE    B,D
+        MOVEI   C,12
+        NOUT%
+         ERJMP  .+1
+
+        HRROI   A,[ASCIZ /
+/]
+        PSOUT%
+
+        HALTF%
+        JRST    START
+
+        END     START

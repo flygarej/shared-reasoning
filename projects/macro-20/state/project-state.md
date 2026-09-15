@@ -56,7 +56,7 @@ Gorin explicitly states that `END` requires its own CRLF.
 
 ## Current Phase
 
-Gorin has been covered through Chapter 28, Interprocess Communication.
+Gorin has been covered through Chapter 28, Interprocess Communication, and Chapter 29 is in progress. The arithmetic-trap example has been transcribed, corrected, assembled, linked, and run successfully.
 
 Accepted areas now include the existing architecture, language, file,
 memory, and COMND models, plus:
@@ -71,7 +71,7 @@ The verified Small Executive now includes working `PUSH` and `QUEUE`
 servers. It anchors process handling and IPCF composition in addition to
 COMND and JFN-based I/O.
 
-The next major subject is Chapter 29, traps and interrupts.
+Current work is Chapter 29, traps and interrupts. The arithmetic-trap mechanism is now experimentally anchored; Gorin's discussion of good and bad trap coding and the PSI interrupt material remain to be covered.
 
 ---
 
@@ -152,6 +152,71 @@ Software remains responsible for:
 
 LUUOs are local program mechanisms and are not equivalent to TOPS-20
 monitor calls.
+
+A minimal LUUO experiment is now verified on the project system. `OPDEF HELLO`
+uses local opcode `001`; location `41` contains `PUSHJ P,UUOHND`; the handler
+returns with `POPJ P,` and execution resumes at the instruction following
+`HELLO`. Gorin explicitly permits either `JSR` or `PUSHJ` in location `41`; the
+project has verified the PUSHJ pattern only. `assembly-examples/luuo1.mac` is
+the executable anchor.
+
+---
+
+
+### Arithmetic traps (Chapter 29, partial)
+
+TOPS-20 blurs the simple hardware distinction between traps and interrupts.
+In the portion of Chapter 29 covered so far, arithmetic exceptions are handled
+through an arithmetic trap block installed with `SWTRP%`, while other event
+handling is deferred to the PSI material later in the chapter.
+
+For function `.SWART`, the verified setup pattern is:
+
+```asm
+MOVEI A,.FHSLF
+MOVEI B,.SWART
+MOVEI C,TRAPB
+SWTRP%
+```
+
+The four-word arithmetic trap block is interpreted as:
+
+- `.ARPFL`: saved PC flags plus normalized failing-instruction image;
+- `.AROPC`: PC of the trapping instruction + 1;
+- `.AREFA`: effective address of the trapping instruction;
+- `.ARNPC`: new-PC/handler word.
+
+The verified Example 18 flow is:
+
+```text
+SWTRP% installs trap block
+        ↓
+arithmetic exception
+        ↓
+TRAPIT / TRAPNT inspect saved context
+        ↓
+optional repair (DOFXU for floating underflow)
+        ↓
+selected arithmetic flags cleared in .ARPFL
+        ↓
+XJRSTF TRAPB+.ARPFL restores flags and resumes via .AROPC
+```
+
+A transcription error replacing `XJRSTF` with `XJRST` was experimentally
+diagnostic: `XJRST` interpreted the saved instruction image `231040,,0` as a
+program counter and attempted execution at `231040`. Restoring the printed
+`XJRSTF` made the example run end-to-end.
+
+The current build also verifies LINK relocation independently of trap
+semantics. MACRO lists `START` at `335`, `IDIVI` at `344`, and `FSBR` at `347`;
+the LINK map places program `TRAP` at low-segment base `140`, producing runtime
+addresses `475`, `504`, and `507` respectively.
+
+Gorin's printed run reports trap PCs `500` and `503` and a floating operand
+effective address `661`, while the current build reports `504`, `507`, and
+`670`. The current executable is internally consistent and correct. The cause
+of the historical layout difference is deliberately left unresolved because it
+does not affect the accepted trap semantics.
 
 ---
 
@@ -484,7 +549,7 @@ The project domain is undergoing maintenance to:
 - Detailed `.CMIFI` interaction with the COMND GTJFN argument block.
 - Detailed capability policy beyond observed IPCF behaviour.
 - Complete execute-only security rules.
-- PSI, traps, and asynchronous control transfer.
+- PSI and asynchronous control transfer beyond the arithmetic-trap mechanism already verified.
 
 ### Knowledge representation
 
@@ -498,9 +563,8 @@ The project domain is undergoing maintenance to:
 
 ## Next
 
-1. Continue with Gorin Chapter 29 on traps and interrupts.
-2. Expand the Small Executive as later chapters introduce asynchronous
-   control facilities.
+1. Continue Chapter 29 with Gorin's discussion of good/bad trap coding, then PSI interrupt handling.
+2. Preserve the arithmetic-trap example as the reference experiment while later asynchronous control facilities are introduced.
 3. Complete maintenance of state, history, domain, anchors, and references.
 4. Compact the candidate anchor set after fresh-session reconstruction tests.
 5. Revisit JOB/FORK/JFN ownership when direct evidence appears.

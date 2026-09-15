@@ -147,16 +147,16 @@ Incrementally incorporate newly accepted knowledge.
 
 Transfer work between conversations.
 
-Read:
-
-- protocol.md
-- project-State.md
-
-Optionally read:
-
-- session-log.md
+Reconstruct the project from the supplied handover/bootstrap context, including collaboration methodology, common knowledge architecture, and project-specific artefacts.
 
 Request missing artefacts before making project-specific assumptions.
+
+Before relying on project artefacts embedded in a handover prompt, 
+check whether a more current authoritative or persistent copy is available. 
+If freshness is uncertain, compare against the available project storage 
+or ask the collaborator for the current artefact. 
+Treat the newest confirmed project artefact as current; do not silently 
+reconcile differing versions.
 
 ---
 
@@ -1281,8 +1281,6 @@ Encourages filesystem navigation instead of conceptual reasoning.
 The request should arise from the missing concept. The filename is only the
 storage location.
 
-###
-
 When the visible branch has no suitable distilled capsule, fall back to the branch’s indexed original source rather than abandoning retrieval or answering from ungoverned model knowledge.
 
 ---
@@ -1441,8 +1439,10 @@ A project is normally introduced by concatenating:
 -   `projects/<project>/observations/*.md` (optional)
 -   `projects/<project>/domain/*.md`
 
-Treat this concatenated prompt as the authoritative working context for
-the session.
+Treat this concatenated prompt as the initial working context for the session. 
+Project-specific artefacts embedded in it remain subject to the Handover 
+freshness rules in protocol.md.
+
 
 There is a utility script "create-project-prompt.sh" that will do that for you and store the 
 concatenated file as `projects/<project>/<project>.md`
@@ -1513,7 +1513,7 @@ Do not promote them unless the project state or current collaboration explicitly
 
 ### 4. Reconstruct the conceptual graph
 
-Read only the domain capsules needed for the current work.
+Actively reconstruct/use only the domain capsules needed for the current work.
 
 Rather than memorizing files, identify:
 
@@ -1977,6 +1977,28 @@ Every retained artefact should contribute to future reasoning.
 
 ---
 
+## Persistence Boundary
+
+Project artefact identity is independent of the mechanism used to persist it.
+
+When persistent project storage is available, maintain project artefacts in
+their established locations.
+
+When persistent project storage is unavailable, maintenance should instead
+return the changed artefacts to the collaborator using their stable filenames
+and expected project-relative paths.
+
+The collaborator is then responsible for replacing those artefacts in the
+authoritative project structure before generating the next bootstrap prompt.
+
+Do not create alternate filenames, derivative artefacts, or parallel copies
+merely because persistent storage is unavailable.
+
+The maintenance operation remains the same in both cases. Only responsibility
+for persistence changes.
+
+---
+
 ## Maintenance Activities
 
 ### Promote
@@ -2100,6 +2122,12 @@ Prefer a small number of authoritative examples over many partial ones.
 After substantial maintenance, test whether the revised artefacts still
 reconstruct the accepted model.
 
+When maintenance is performed across a persistence boundary, regenerate the
+bootstrap prompt after the collaborator has replaced the returned artefacts.
+
+When practical, review the regenerated bootstrap before handover. This checks
+both the maintained artefacts and their assembled representation.
+
 Useful checks include:
 
 - a fresh conversation or model can explain the core mechanisms;
@@ -2126,6 +2154,134 @@ A well-maintained knowledge base:
   originated.
   
 ---
+
+
+
+<!-- projects/common/self-learning.md -->
+
+# Shared Reasoning — Self-Learning Add-on
+
+Use this add-on for projects whose primary purpose is learning, refreshing, or reconstructing knowledge through collaboration.
+
+The normal Shared Reasoning methodology remains authoritative. This add-on exists to counter failure modes that arise when the LLM is simultaneously tutor, exercise generator, evaluator, and source of explanations.
+
+## 1. Treat the learner model as a hypothesis
+
+Maintain a working model of what the user appears to know, what appears rusty, and what appears unfamiliar.
+
+Do not treat that model as established fact merely because later exercises are compatible with it.
+
+Actively look for observations that could falsify or refine it.
+
+## 2. Prefer discriminating exercises
+
+Exercises should not merely advance the curriculum.
+
+Where useful, choose exercises that distinguish between competing explanations of the learner's current understanding.
+
+For example:
+
+* fluent understanding vs successful problem-solving through general programming experience;
+* semantic understanding vs memorized idiom;
+* conceptual understanding vs familiarity with one example;
+* old-language habit vs current-language behaviour.
+
+Occasionally revisit established-looking knowledge from a different angle.
+
+## 3. Separate semantic requirements from stylistic recommendations
+
+Explicitly distinguish:
+
+* required language semantics;
+* common idioms;
+* modern conventions;
+* stylistic preferences;
+* alternative valid approaches.
+
+Do not silently promote the LLM's preferred style into a language rule.
+
+## 4. Introduce independent anchors
+
+When an important generator emerges, seek evidence independent of the explanatory loop.
+
+Useful anchors include:
+
+* executable experiments;
+* compiler/interpreter behaviour;
+* authoritative documentation;
+* specification text;
+* externally supplied examples;
+* independently designed tests.
+
+Cheap experiments are preferred where they can discriminate between explanations.
+
+## 5. Prevent explanation from becoming evidence
+
+A plausible explanation remains an inference until independently supported.
+
+Repeated use of the same explanation does not by itself increase its epistemic status.
+
+Do not allow an inference to become an anchor merely because it has appeared in several conversations or exercises.
+
+## 6. Periodically challenge the curriculum model
+
+Occasionally ask:
+
+* What have we assumed the learner understands?
+* Which of those assumptions have actually been tested?
+* Which conclusions depend mainly on LLM-generated exercises?
+* Are we repeatedly testing the same conceptual path?
+* What result would surprise us?
+
+Use the answers to choose a small discriminating experiment where useful.
+
+## 7. Consolidate generators
+
+Do not allow domain knowledge to become an accumulation of isolated explanatory rules.
+
+Periodically look for:
+
+* several generators that can be reduced to one deeper generator;
+* duplicated explanations;
+* rules that are consequences of a more general semantic model;
+* boundaries that can be expressed more simply;
+* anchors that support several related concepts.
+
+Prefer a compact conceptual graph over a catalogue of lessons.
+
+## 8. Preserve productive uncertainty
+
+The purpose is not to verify every statement before teaching it.
+
+Inference may be used freely to generate explanations, candidate models, exercises, and possible connections.
+
+The important distinction is:
+
+**Inference may guide exploration without automatically becoming accepted knowledge.**
+
+## 9. Learning-state maintenance
+
+Record not only subject knowledge but changes in the working learner model when they become useful.
+
+Useful distinctions include:
+
+* demonstrated fluent;
+* demonstrated but rusty;
+* inferred familiarity;
+* explicitly unfamiliar;
+* not yet tested.
+
+Do not over-record transient impressions.
+
+## 10. Periodic self-check
+
+At suitable intervals, briefly review whether the learning process has become self-confirming.
+
+If so, introduce one independent probe, alternative explanation, or adversarial exercise before continuing normally.
+
+The corrective mechanism should remain lightweight.
+
+The objective is not to burden learning with verification machinery, but to ensure that the collaboration continues to discover rather than merely confirm its own assumptions.
 
 
 
@@ -2183,6 +2339,52 @@ Experiments establish only the tested cases. Interactive transcripts can mix pro
 **Recommended use**
 
 Authoritative whenever deciding actual TOPS-20 TECO 540 semantics.
+
+### MIDAS TECO / EMACS bootstrap TECO experiments
+
+**Scope**
+
+Startup behaviour and capability fingerprinting of the MIDAS-written TECO used
+by original TECO EMACS, with particular attention to separating interpreter
+facilities from later TECO/ELIB/EMACS layers.
+
+**Observed reliability**
+
+Highest authority for the exact tested startup MIDAS TECO environment. The
+startup command was `@emacs\:teco`, identifying as `TECO.16510`; whether this
+startup implicitly loads bootstrap material remains unresolved.
+
+**Experimentally confirmed areas**
+
+- TTY/cursor-aware screen presentation exists at startup;
+- ordinary numeric Q-register store/read works;
+- `Xq` copies text without deleting the source buffer in tested behaviour;
+- `Gq` inserts stored text and can insert the textual form of an observed numeric value;
+- Q-register storage appears single-current-value rather than TECOC-style
+  simultaneous numeric/text components;
+- `[q`/`]q` form a Q-register PDL within one active execution context;
+- that PDL does not persist across separately executed interactive command
+  streams;
+- nested `M` execution shares the active Q-register PDL.
+
+**Important limitations**
+
+The precise startup layer is not yet known. Large negative numeric values
+returned by `Qq` for text-valued registers have been observed but not
+interpreted. The internal execution-context representation is likewise unknown.
+
+**Known disagreements**
+
+The tested implementation combines features that do not match either retained
+comparison model wholesale: its Q-register storage appears single-current-value
+like historical TECO-10, while tested `Xq` behaviour is non-destructive like
+TECOC rather than the tested TOPS-20 implementation.
+
+**Recommended use**
+
+Authoritative for tested MIDAS TECO runtime behaviour and as a discriminator
+when assigning functionality to the base interpreter versus loaded EMACS
+layers. Do not project untested TOPS-20 or TECOC semantics onto it.
 
 ### TECOC executable experiments
 
@@ -2606,20 +2808,20 @@ Orientation and source discovery only.
 
 #### Code presented in conversation or documentation
 
-TECO code shown for human reading shall use `$` to represent an ESC
+TECO code shown for human reading shall use `$` to represent an ESC\
 character unless another representation is explicitly required.
 
-This follows the established TECO convention and makes command
-termination and delimited arguments easier to recognize in visual
+This follows the established TECO convention and makes command\
+termination and delimited arguments easier to recognize in visual\
 examples.
 
-A literal dollar sign in TECO text must be identified explicitly when
+A literal dollar sign in TECO text must be identified explicitly when\
 ambiguity is possible.
 
 #### Downloadable source
 
-Downloadable TECO source files shall use literal ESC (`0x1B`)
-characters unless the user explicitly requests a human-readable or
+Downloadable TECO source files shall use literal ESC (`0x1B`)\
+characters unless the user explicitly requests a human-readable or\
 escaped form.
 
 Rationale
@@ -2630,20 +2832,51 @@ Rationale
 
 ---
 
+### Deferred Reference Retrieval
+
+Deferred TECO reference material is mirrored in the ChatGPT Library under:
+
+    /projects/teco/references/
+
+When accepted project knowledge does not establish correctness-relevant
+command-local semantics:
+
+1. For later/portable TECO semantics, begin with
+   `references/TECO-64/index.md` and use it to locate the relevant
+   TECO-64 topic file.
+
+2. When comparison or additional detail is needed, consult the TECOC
+   monolithic reference under `references/TECOC/`.
+
+3. For TOPS-20-specific questions, consult the searchable reference PDF
+   under `references/TOPS-20/`.
+
+The TOPS-20 reference has not been established as documenting exactly
+the TECO version present in the Panda TOPS-20 images. It is therefore
+documentary evidence, not proof of Panda runtime behaviour.
+
+Verified experiments on the target implementation remain authoritative
+when documentation and observed behaviour disagree.
+
+Retrieved reference material remains evidence. It is not automatically
+promoted to accepted project knowledge.
+
+---
+
 ### Online Source Repositories
 
 #### TECOC
 
 **Primary reference**
 
-https://raw.githubusercontent.com/blakemcbride/TECOC/refs/heads/master/doc/teco-manual.txt
+[https://raw.githubusercontent.com/blakemcbride/TECOC/refs/heads/master/doc/teco-manual.txt](https://raw.githubusercontent.com/blakemcbride/TECOC/refs/heads/master/doc/teco-manual.txt)
 
 **Purpose**
 
 Authoritative implementation documentation for TECOC.
 
-Preferred source when resolving command-local semantics,
-startup behaviour, implementation-specific facilities, and
+Preferred source when resolving command-local semantics,\
+startup behaviour, implementation-specific facilities, and\
 features not yet represented by accepted project knowledge.
 
 ---
@@ -2652,16 +2885,16 @@ features not yet represented by accepted project knowledge.
 
 **Primary index**
 
-https://raw.githubusercontent.com/fpjohnston/TECO-64/refs/heads/master/doc/index.md
+[https://raw.githubusercontent.com/fpjohnston/TECO-64/refs/heads/master/doc/index.md](https://raw.githubusercontent.com/fpjohnston/TECO-64/refs/heads/master/doc/index.md)
 
 **Purpose**
 
 Indexed implementation documentation for TECO-64.
 
-Preferred source when resolving TECO-64 command semantics,
+Preferred source when resolving TECO-64 command semantics,\
 extensions, and implementation-specific behaviour.
 
-Use the index to locate the relevant command documentation
+Use the index to locate the relevant command documentation\
 rather than relying on repository structure.
 
 **Note:**
@@ -2710,6 +2943,47 @@ Project State.
 
 ---
 
+---
+
+## 2026-08-23 — Startup MIDAS TECO fingerprint
+
+A new MIDAS TECO investigation branch was opened to distinguish facilities
+implemented by the TECO executable from later TECO/ELIB/EMACS layers.
+
+The interpreter was started with `@emacs\:teco` in a VT100 TOPS-20 session and
+identified itself as `TECO.16510`. It immediately used a cursor-controlled
+screen layout with command entry at the bottom and output near the top.
+
+Experiments established:
+
+- `5UA$$QA=$$` returned `5`;
+- `HXA` copied `ABC` into A without deleting the source buffer;
+- `GA` inserted stored `ABC`, producing `ABCABC`;
+- after storing numeric `5` in A, `GA` inserted `5`;
+- numeric `QA` on text-valued A returned large negative values, including
+  `-34359735078` and `-34359735063`; their meaning was deliberately left
+  unresolved;
+- `[q`/`]q` worked as Q-register PDL operations within one executing command
+  stream (`5UA[A]BQB=$$` returned `5`);
+- a push performed in one interactive command stream was gone by a later stream:
+  `]A` produced `QRP     Q-register PDL overflow or underflow?`;
+- nested `M` execution shared the active Q-register PDL: a macro containing
+  `]B QB=` successfully popped and printed a value pushed by its caller.
+
+The resulting working model is that ordinary Q-register contents persist across
+interactive command executions, while the Q-register PDL belongs to the active
+execution context: it does not persist between separate interactive command
+streams but survives nested `M` execution.
+
+The tests also showed a hybrid Q-register fingerprint: storage appears
+single-current-value rather than TECOC split-component storage, while `Xq` is
+non-destructive unlike the tested TOPS-20 implementation.
+
+An early push/pop text test produced confusing cumulative output because buffer
+state from earlier experiments had not been cleared. This was treated as a test
+design failure rather than assimilated as semantics; subsequent probes used
+explicit cleanup and smaller discriminating cases.
+
 
 
 <!-- projects/teco/state/TODO.md -->
@@ -2752,6 +3026,10 @@ before being removed from this file.
 - [ ] Resolve TECOC search case-sensitivity.
 - [ ] Continue mapping command producer/consumer relationships.
 - [ ] Continue investigation of TECO EMACS runtime structures.
+- [ ] Continue MIDAS TECO capability fingerprinting against TOPS-20 TECO and TECOC.
+- [ ] Determine whether `@emacs\:teco` performs implicit bootstrap loading before the interactive prompt.
+- [ ] Determine the meaning/representation of large negative `Qq` values for text-valued MIDAS TECO Q-registers.
+- [ ] Test MIDAS TECO macro numeric-argument passing and additional execution-context behaviour.
 
 ---
 
@@ -3040,6 +3318,355 @@ Original TECO EMACS is layered on the TECO interpreter using:
 
 ---
 
+
+
+<!-- projects/teco/domain/midas-teco.md -->
+
+# MIDAS TECO Investigation
+
+## Purpose
+
+Investigate the custom TECO implementation written in MIDAS assembly and used
+as the bootstrap interpreter for original TECO EMACS.
+
+This branch complements the existing TOPS-20 TECO, TECOC, and TECO-64
+implementation work. Its primary purpose is experimental capability discovery:
+determine which TECO facilities are intrinsic to the MIDAS TECO executable,
+which are added by subsequently loaded TECO or ELIB libraries, and which emerge
+only after the full EMACS environment has been initialized.
+
+The investigation should preserve provenance carefully because very little
+direct user documentation for this TECO implementation is currently available.
+
+---
+
+## Working Identity
+
+The implementation under investigation is a TECO written in MIDAS assembly and
+used by original EMACS.
+
+Observed architectural characteristics reported at project bootstrap:
+
+- the executable can operate as a TECO interpreter before full EMACS is loaded;
+- it is TTY-aware and controls terminal cursor/display behaviour;
+- it contains facilities needed to bootstrap EMACS;
+- additional TECO and ELIB files are loaded to construct the full TECO EMACS
+  environment.
+
+These statements are the starting working model for investigation. Exact
+implementation boundaries remain to be established experimentally and, where
+possible, by inspection of the MIDAS sources.
+
+---
+
+## Initial Compatibility Hypotheses
+
+### Hypothesis: TOPS-20 TECO baseline
+
+Until experiments establish otherwise, use TOPS-20 TECO behaviour as the
+initial hypothesis generator for ordinary TECO commands.
+
+This is not an assertion of compatibility.
+
+For each correctness-relevant command:
+
+1. prefer direct experiment on MIDAS TECO;
+2. compare with accepted TOPS-20 TECO behaviour;
+3. record agreement, disagreement, or unresolved behaviour;
+4. do not silently promote agreement on a few commands into general
+   compatibility.
+
+### Hypothesis: EMACS-source compatibility
+
+TECO found in original EMACS TECO source files is a useful source of candidate
+syntax and behaviour.
+
+However, occurrence in an EMACS source file does not establish that the
+facility is implemented by the base MIDAS TECO executable. The command or
+mechanism may instead be supplied by:
+
+- the MIDAS TECO executable itself;
+- bootstrap TECO code;
+- a loaded TECO library;
+- a loaded ELIB library;
+- generated EMACS runtime state;
+- machine-language support reached through the EMACS environment.
+
+The implementation layer must therefore be identified rather than inferred
+from source usage alone.
+
+---
+
+## Layer Model
+
+Use the following provisional layers when classifying discovered behaviour:
+
+```text
+MIDAS TECO executable
+        ↓
+bootstrap TECO environment
+        ↓
+loaded TECO / ELIB facilities
+        ↓
+full TECO EMACS environment
+```
+
+A successful command in full EMACS does not prove that the command exists in
+the MIDAS TECO executable.
+
+Likewise, a command accepted by bare MIDAS TECO is strong evidence that the
+facility belongs to the executable or to whatever startup material has already
+been loaded at that exact test point.
+
+For every experiment, record the environment layer explicitly.
+
+---
+
+## Experimental Method
+
+Prefer small discriminating tests.
+
+For each tested facility record:
+
+- exact implementation/startup state;
+- exact command stream;
+- buffer or Q-register setup when relevant;
+- observed output;
+- point/buffer/state changes;
+- error text or failure mode;
+- comparison with TOPS-20 TECO;
+- whether the facility is also seen in EMACS source;
+- current attribution of the facility to an implementation layer;
+- confidence and unresolved alternatives.
+
+Avoid testing large EMACS macros before the primitive commands they depend on
+have been classified.
+
+---
+
+## Capability Matrix
+
+Use this section as a compact index. Detailed transcripts may remain in the
+session log or separate observation artefacts.
+
+| Area | MIDAS TECO status | TOPS-20 comparison | Layer attribution | Notes |
+| --- | --- | --- | --- | --- |
+| Basic command-stream execution | Untested | Candidate baseline | Unknown | |
+| Buffer `B`, `Z`, `.` | Untested | Candidate baseline | Unknown | |
+| Movement `J`, `C`, `L` | Untested | Candidate baseline | Unknown | |
+| Insert/delete/typeout | Untested | Candidate baseline | Unknown | |
+| Numeric expressions | Untested | Candidate baseline | Unknown | |
+| Q-register numeric storage | Verified basic `Uq`/`Qq`; text store changes numeric view | Differs from TECOC split-component model | Startup MIDAS TECO | Exact numeric interpretation of text-valued register unresolved |
+| Q-register text storage | Verified `Xq`/`Gq` | Hybrid relative to tested TOPS-20/TECOC | Startup MIDAS TECO | `Xq` copies without deleting source; `Gq` reinserts stored value |
+| Search / remembered search | Untested | Candidate baseline | Unknown | |
+| Conditionals | Untested | Candidate baseline | Unknown | |
+| Iteration | Untested | Candidate baseline | Unknown | |
+| `M` macro execution | Verified nested macro execution | Compatible with core TECO macro model | Startup MIDAS TECO | Nested `M` shares active Q-register PDL context |
+| File input/output | Untested | Candidate baseline | Unknown | |
+| Terminal/cursor facilities | Known to exist at some level; details untested | Expected extension | Unknown | Important distinguishing area |
+| EMACS bootstrap commands | Present at some level; details untested | Expected extension | Unknown | Must separate executable from loaded libraries |
+| Named-command machinery | Untested | EMACS-layer candidate | Unknown | Do not assume primitive implementation |
+| ELIB-provided facilities | Untested | N/A | Loaded library candidate | Attribution is a primary research goal |
+
+---
+
+## Verified Startup MIDAS TECO Findings — 2026-08-23
+
+Environment tested:
+
+- TOPS-20 login session with terminal type set to VT100;
+- interpreter started with `@emacs\:teco`;
+- startup display identified itself as `TECO.16510`;
+- no TECO/ELIB files were deliberately loaded by the experimenter after startup.
+
+The startup screen is terminal-aware: the screen is cleared, the version is
+displayed near the top, command entry appears at the bottom, and command output
+appears in the upper display area. Whether startup itself implicitly loads any
+bootstrap material remains unresolved, so this environment is called **startup
+MIDAS TECO**, not proven bare executable TECO.
+
+### Q-register numeric and text behaviour
+
+`5UA$$QA=$$` returned `5`, verifying ordinary numeric Q-register store/read for
+register A.
+
+After storing buffer text `ABC` with `HXA`, `QA=$$` no longer returned the old
+numeric `5`; one observed value was `-34359735078`. A later text-valued state
+produced `-34359735063`. These large negative values are preserved as raw
+observations only. Their representation or meaning is unresolved.
+
+`HXA` was non-destructive to the source buffer: immediately following it,
+`HT$$` still printed `ABC`. This differs from the tested TOPS-20 TECO behaviour
+retained by the project, where `Xq` extracts/removes the source range.
+
+`GA` then inserted the stored text, producing `ABCABC`, verifying that `Gq`
+re-inserts the stored value without consuming it.
+
+After `5UA`, clearing the buffer and executing `GA$$HT$$` produced `5`. Thus a
+numeric Q-register value can be inserted textually by `Gq` in this implementation.
+The previous `ABC` text was not restored, which supports a working model in
+which the register has one current value rather than TECOC-style independent
+numeric and text components.
+
+### Q-register PDL lifetime
+
+A push and pop within one executing command stream worked:
+
+```text
+5UA[A]BQB=$$
+```
+
+returned `5`, verifying the conventional Q-register PDL roles of `[q` and `]q`
+in that context.
+
+When the push and pop were separated by interactive command execution:
+
+```text
+5UA$$
+[A$$
+7UA$$
+QA=$$
+]A$$
+QA=$$
+```
+
+`QA` first returned `7`; `]A` then reported:
+
+```text
+QRP     Q-register PDL overflow or underflow?
+```
+
+and the final `QA` remained `7`.
+
+This establishes that the Q-register PDL does not persist across separately
+executed interactive command streams in the tested startup environment.
+
+A nested macro did, however, access the same active PDL. A macro in register C
+containing `]B QB=` successfully popped a value pushed before `MC` and printed
+`5`. Therefore the current working model is:
+
+```text
+Q-register contents
+    persist across separately executed command streams
+
+Q-register PDL
+    does not persist across separately executed interactive command streams
+
+Q-register PDL
+    is shared across nested M execution within one active execution context
+```
+
+The exact internal lifetime and representation of this execution context remain
+unresolved.
+
+### Current comparison fingerprint
+
+- Q-register storage appears single-current-value rather than TECOC-style
+  simultaneous numeric/text components.
+- `Xq` is non-destructive to the source buffer, unlike the tested TOPS-20 model.
+- `Gq` inserts both text values and the textual form of an observed numeric value.
+- nested `M` execution participates in the active Q-register PDL context.
+- the Q-register PDL is transient across separately executed interactive command
+  streams.
+
+These findings demonstrate that startup MIDAS TECO is not safely modeled as
+either tested TOPS-20 TECO or TECOC as a whole.
+
+---
+
+## Cross-Project Source Work
+
+The MIDAS project is investigating the assembler and source code used to build
+this TECO implementation.
+
+Results from MIDAS source inspection may be imported here as evidence when they
+establish command implementation, dispatch, runtime structures, terminal
+handling, or bootstrap behaviour.
+
+Source-derived conclusions must retain provenance:
+
+- source inspection establishes what the inspected source appears to implement;
+- executable experiments establish observable runtime behaviour;
+- agreement between the two strengthens attribution;
+- disagreement should be preserved and investigated rather than normalized.
+
+The TECO project remains responsible for behavioural experiments and
+TECO-language interpretation. The MIDAS project remains responsible for
+assembly-level reconstruction unless the investigation explicitly crosses that
+boundary.
+
+---
+
+## Reference Routing
+
+Existing TECO references remain useful comparison sources:
+
+- TOPS-20 TECO is the primary initial behavioural comparison for historical
+  ordinary TECO semantics;
+- TECO-64 can help identify later facilities and dialect evolution;
+- TECOC can provide another modern comparison and searchable command
+  documentation;
+- original EMACS TECO and ELIB source files provide candidate usage evidence,
+  but not automatic proof of where a facility is implemented.
+
+Future MIDAS TECO source listings, notes, or documentation should be stored
+under:
+
+`/projects/teco/references/MIDAS-TECO/`
+
+when useful to the TECO investigation.
+
+---
+
+## Boundaries
+
+- Do not equate MIDAS TECO with TOPS-20 TECO merely because ordinary commands
+  behave similarly.
+- Do not infer that a command used by EMACS is primitive MIDAS TECO.
+- Do not infer that a command absent in bare MIDAS TECO is absent from full
+  TECO EMACS.
+- Do not infer implementation layer from command spelling alone.
+- Do not treat TTY awareness as proof of any particular terminal architecture
+  until experimentally or source-verified.
+- Do not promote source-code interpretation over contradictory executable
+  behaviour without resolving the discrepancy.
+- Preserve startup state: a test is meaningful only if we know what bootstrap
+  or library material had already been loaded.
+
+---
+
+## Initial Questions
+
+- What identifies the barest runnable MIDAS TECO environment?
+- Which ordinary TOPS-20 TECO commands are implemented identically?
+- Which TOPS-20 commands differ or are absent?
+- Which additional commands are intrinsic to the executable?
+- Which terminal/cursor operations are implemented directly in MIDAS?
+- Which commands are required to bootstrap the first EMACS libraries?
+- What files are loaded, and in what order, between bare TECO and full EMACS?
+- Which TECO/ELIB files define additional commands or Q-register conventions?
+- At what layer are named-command lookup, variable handling, keyboard dispatch,
+  and display management introduced?
+- Can individual command implementations be mapped from runtime experiments to
+  MIDAS source entry points?
+
+---
+
+## Promotion Rule
+
+This file begins as a working investigation capsule.
+
+Move behaviour into accepted TECO project knowledge only after it is:
+
+- experimentally verified on a clearly identified MIDAS TECO startup state;
+- established by sufficiently clear source inspection and accepted as the
+  current model;
+- or intentionally retained as an explicitly labelled working model.
+
+The central goal is not merely to enumerate commands.
+
+It is to reconstruct the boundary between the MIDAS TECO interpreter and the
+TECO/ELIB machinery that turns it into original EMACS.
 
 
 <!-- projects/teco/domain/reasoning-constraints.md -->

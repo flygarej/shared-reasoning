@@ -3,8 +3,8 @@
 ## Scope
 
 Compact reasoning model for Gorin Chapter 29. This capsule is intentionally
-partial: arithmetic traps are established; PSI interrupt handling is not yet
-covered in enough detail to encode.
+partial: arithmetic traps and the SAVACS trap-coding discussion are established;
+PSI interrupt handling is not yet covered in enough detail to encode.
 
 ## Framing
 
@@ -95,12 +95,28 @@ For Example 18 the TITLE is `TRAP`, so the map file is `TRAP.MAP`. The map
 places the program at low-segment base `140`; adding `140` to relocatable
 listing addresses reproduces observed runtime addresses exactly.
 
+## Trap-coding generator
+
+Gorin compares three ways to preserve accumulators around a subroutine:
+
+1. inline save/restore in the routine;
+2. save in an outer routine and call a worker;
+3. use `CALL SAVACS`, perform the work, and return normally, with the save/restore
+   mechanism factored into reusable coroutine-like code.
+
+The accepted design lesson is:
+
+> Move correctness-sensitive save/restore cleanup out of ordinary exit paths so
+> routines can return normally without each path having to remember the cleanup
+> protocol.
+
+This is a control-flow-safety and reuse argument, not evidence that simple `BLT`
+saves are mechanically insufficient.
+
 ## Boundaries / open questions
 
 - PSI dispatch structure, levels/channels, enabling, masking, and return
   conventions are not yet accepted; wait for the remaining Chapter 29 text.
-- Do not infer good/bad trap coding rules before Gorin's post-example
-  discussion is incorporated.
 - Gorin's printed Example 18 addresses differ from the current build. The
   current executable is internally consistent; the historical layout cause is
   unresolved and deliberately parked.

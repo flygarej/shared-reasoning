@@ -147,16 +147,16 @@ Incrementally incorporate newly accepted knowledge.
 
 Transfer work between conversations.
 
-Read:
-
-- protocol.md
-- project-State.md
-
-Optionally read:
-
-- session-log.md
+Reconstruct the project from the supplied handover/bootstrap context, including collaboration methodology, common knowledge architecture, and project-specific artefacts.
 
 Request missing artefacts before making project-specific assumptions.
+
+Before relying on project artefacts embedded in a handover prompt, 
+check whether a more current authoritative or persistent copy is available. 
+If freshness is uncertain, compare against the available project storage 
+or ask the collaborator for the current artefact. 
+Treat the newest confirmed project artefact as current; do not silently 
+reconcile differing versions.
 
 ---
 
@@ -1281,8 +1281,6 @@ Encourages filesystem navigation instead of conceptual reasoning.
 The request should arise from the missing concept. The filename is only the
 storage location.
 
-###
-
 When the visible branch has no suitable distilled capsule, fall back to the branch’s indexed original source rather than abandoning retrieval or answering from ungoverned model knowledge.
 
 ---
@@ -1441,8 +1439,10 @@ A project is normally introduced by concatenating:
 -   `projects/<project>/observations/*.md` (optional)
 -   `projects/<project>/domain/*.md`
 
-Treat this concatenated prompt as the authoritative working context for
-the session.
+Treat this concatenated prompt as the initial working context for the session. 
+Project-specific artefacts embedded in it remain subject to the Handover 
+freshness rules in protocol.md.
+
 
 There is a utility script "create-project-prompt.sh" that will do that for you and store the 
 concatenated file as `projects/<project>/<project>.md`
@@ -1513,7 +1513,7 @@ Do not promote them unless the project state or current collaboration explicitly
 
 ### 4. Reconstruct the conceptual graph
 
-Read only the domain capsules needed for the current work.
+Actively reconstruct/use only the domain capsules needed for the current work.
 
 Rather than memorizing files, identify:
 
@@ -1977,6 +1977,28 @@ Every retained artefact should contribute to future reasoning.
 
 ---
 
+## Persistence Boundary
+
+Project artefact identity is independent of the mechanism used to persist it.
+
+When persistent project storage is available, maintain project artefacts in
+their established locations.
+
+When persistent project storage is unavailable, maintenance should instead
+return the changed artefacts to the collaborator using their stable filenames
+and expected project-relative paths.
+
+The collaborator is then responsible for replacing those artefacts in the
+authoritative project structure before generating the next bootstrap prompt.
+
+Do not create alternate filenames, derivative artefacts, or parallel copies
+merely because persistent storage is unavailable.
+
+The maintenance operation remains the same in both cases. Only responsibility
+for persistence changes.
+
+---
+
 ## Maintenance Activities
 
 ### Promote
@@ -2100,6 +2122,12 @@ Prefer a small number of authoritative examples over many partial ones.
 After substantial maintenance, test whether the revised artefacts still
 reconstruct the accepted model.
 
+When maintenance is performed across a persistence boundary, regenerate the
+bootstrap prompt after the collaborator has replaced the returned artefacts.
+
+When practical, review the regenerated bootstrap before handover. This checks
+both the maintained artefacts and their assembled representation.
+
 Useful checks include:
 
 - a fresh conversation or model can explain the core mechanisms;
@@ -2126,6 +2154,134 @@ A well-maintained knowledge base:
   originated.
   
 ---
+
+
+
+<!-- projects/common/self-learning.md -->
+
+# Shared Reasoning — Self-Learning Add-on
+
+Use this add-on for projects whose primary purpose is learning, refreshing, or reconstructing knowledge through collaboration.
+
+The normal Shared Reasoning methodology remains authoritative. This add-on exists to counter failure modes that arise when the LLM is simultaneously tutor, exercise generator, evaluator, and source of explanations.
+
+## 1. Treat the learner model as a hypothesis
+
+Maintain a working model of what the user appears to know, what appears rusty, and what appears unfamiliar.
+
+Do not treat that model as established fact merely because later exercises are compatible with it.
+
+Actively look for observations that could falsify or refine it.
+
+## 2. Prefer discriminating exercises
+
+Exercises should not merely advance the curriculum.
+
+Where useful, choose exercises that distinguish between competing explanations of the learner's current understanding.
+
+For example:
+
+* fluent understanding vs successful problem-solving through general programming experience;
+* semantic understanding vs memorized idiom;
+* conceptual understanding vs familiarity with one example;
+* old-language habit vs current-language behaviour.
+
+Occasionally revisit established-looking knowledge from a different angle.
+
+## 3. Separate semantic requirements from stylistic recommendations
+
+Explicitly distinguish:
+
+* required language semantics;
+* common idioms;
+* modern conventions;
+* stylistic preferences;
+* alternative valid approaches.
+
+Do not silently promote the LLM's preferred style into a language rule.
+
+## 4. Introduce independent anchors
+
+When an important generator emerges, seek evidence independent of the explanatory loop.
+
+Useful anchors include:
+
+* executable experiments;
+* compiler/interpreter behaviour;
+* authoritative documentation;
+* specification text;
+* externally supplied examples;
+* independently designed tests.
+
+Cheap experiments are preferred where they can discriminate between explanations.
+
+## 5. Prevent explanation from becoming evidence
+
+A plausible explanation remains an inference until independently supported.
+
+Repeated use of the same explanation does not by itself increase its epistemic status.
+
+Do not allow an inference to become an anchor merely because it has appeared in several conversations or exercises.
+
+## 6. Periodically challenge the curriculum model
+
+Occasionally ask:
+
+* What have we assumed the learner understands?
+* Which of those assumptions have actually been tested?
+* Which conclusions depend mainly on LLM-generated exercises?
+* Are we repeatedly testing the same conceptual path?
+* What result would surprise us?
+
+Use the answers to choose a small discriminating experiment where useful.
+
+## 7. Consolidate generators
+
+Do not allow domain knowledge to become an accumulation of isolated explanatory rules.
+
+Periodically look for:
+
+* several generators that can be reduced to one deeper generator;
+* duplicated explanations;
+* rules that are consequences of a more general semantic model;
+* boundaries that can be expressed more simply;
+* anchors that support several related concepts.
+
+Prefer a compact conceptual graph over a catalogue of lessons.
+
+## 8. Preserve productive uncertainty
+
+The purpose is not to verify every statement before teaching it.
+
+Inference may be used freely to generate explanations, candidate models, exercises, and possible connections.
+
+The important distinction is:
+
+**Inference may guide exploration without automatically becoming accepted knowledge.**
+
+## 9. Learning-state maintenance
+
+Record not only subject knowledge but changes in the working learner model when they become useful.
+
+Useful distinctions include:
+
+* demonstrated fluent;
+* demonstrated but rusty;
+* inferred familiarity;
+* explicitly unfamiliar;
+* not yet tested.
+
+Do not over-record transient impressions.
+
+## 10. Periodic self-check
+
+At suitable intervals, briefly review whether the learning process has become self-confirming.
+
+If so, introduce one independent probe, alternative explanation, or adversarial exercise before continuing normally.
+
+The corrective mechanism should remain lightweight.
+
+The objective is not to burden learning with verification machinery, but to ensure that the collaboration continues to discover rather than merely confirm its own assumptions.
 
 
 
@@ -2189,7 +2345,7 @@ Gorin explicitly states that `END` requires its own CRLF.
 
 ## Current Phase
 
-Gorin has been covered through Chapter 28, Interprocess Communication.
+Gorin has been covered through Chapter 28, Interprocess Communication, and Chapter 29 is in progress. The arithmetic-trap example has been transcribed, corrected, assembled, linked, and run successfully.
 
 Accepted areas now include the existing architecture, language, file,
 memory, and COMND models, plus:
@@ -2204,7 +2360,7 @@ The verified Small Executive now includes working `PUSH` and `QUEUE`
 servers. It anchors process handling and IPCF composition in addition to
 COMND and JFN-based I/O.
 
-The next major subject is Chapter 29, traps and interrupts.
+Current work is Chapter 29, traps and interrupts. The arithmetic-trap mechanism is now experimentally anchored; Gorin's discussion of good and bad trap coding and the PSI interrupt material remain to be covered.
 
 ---
 
@@ -2285,6 +2441,71 @@ Software remains responsible for:
 
 LUUOs are local program mechanisms and are not equivalent to TOPS-20
 monitor calls.
+
+A minimal LUUO experiment is now verified on the project system. `OPDEF HELLO`
+uses local opcode `001`; location `41` contains `PUSHJ P,UUOHND`; the handler
+returns with `POPJ P,` and execution resumes at the instruction following
+`HELLO`. Gorin explicitly permits either `JSR` or `PUSHJ` in location `41`; the
+project has verified the PUSHJ pattern only. `assembly-examples/luuo1.mac` is
+the executable anchor.
+
+---
+
+
+### Arithmetic traps (Chapter 29, partial)
+
+TOPS-20 blurs the simple hardware distinction between traps and interrupts.
+In the portion of Chapter 29 covered so far, arithmetic exceptions are handled
+through an arithmetic trap block installed with `SWTRP%`, while other event
+handling is deferred to the PSI material later in the chapter.
+
+For function `.SWART`, the verified setup pattern is:
+
+```asm
+MOVEI A,.FHSLF
+MOVEI B,.SWART
+MOVEI C,TRAPB
+SWTRP%
+```
+
+The four-word arithmetic trap block is interpreted as:
+
+- `.ARPFL`: saved PC flags plus normalized failing-instruction image;
+- `.AROPC`: PC of the trapping instruction + 1;
+- `.AREFA`: effective address of the trapping instruction;
+- `.ARNPC`: new-PC/handler word.
+
+The verified Example 18 flow is:
+
+```text
+SWTRP% installs trap block
+        ↓
+arithmetic exception
+        ↓
+TRAPIT / TRAPNT inspect saved context
+        ↓
+optional repair (DOFXU for floating underflow)
+        ↓
+selected arithmetic flags cleared in .ARPFL
+        ↓
+XJRSTF TRAPB+.ARPFL restores flags and resumes via .AROPC
+```
+
+A transcription error replacing `XJRSTF` with `XJRST` was experimentally
+diagnostic: `XJRST` interpreted the saved instruction image `231040,,0` as a
+program counter and attempted execution at `231040`. Restoring the printed
+`XJRSTF` made the example run end-to-end.
+
+The current build also verifies LINK relocation independently of trap
+semantics. MACRO lists `START` at `335`, `IDIVI` at `344`, and `FSBR` at `347`;
+the LINK map places program `TRAP` at low-segment base `140`, producing runtime
+addresses `475`, `504`, and `507` respectively.
+
+Gorin's printed run reports trap PCs `500` and `503` and a floating operand
+effective address `661`, while the current build reports `504`, `507`, and
+`670`. The current executable is internally consistent and correct. The cause
+of the historical layout difference is deliberately left unresolved because it
+does not affect the accepted trap semantics.
 
 ---
 
@@ -2617,7 +2838,7 @@ The project domain is undergoing maintenance to:
 - Detailed `.CMIFI` interaction with the COMND GTJFN argument block.
 - Detailed capability policy beyond observed IPCF behaviour.
 - Complete execute-only security rules.
-- PSI, traps, and asynchronous control transfer.
+- PSI and asynchronous control transfer beyond the arithmetic-trap mechanism already verified.
 
 ### Knowledge representation
 
@@ -2631,9 +2852,8 @@ The project domain is undergoing maintenance to:
 
 ## Next
 
-1. Continue with Gorin Chapter 29 on traps and interrupts.
-2. Expand the Small Executive as later chapters introduce asynchronous
-   control facilities.
+1. Continue Chapter 29 with Gorin's discussion of good/bad trap coding, then PSI interrupt handling.
+2. Preserve the arithmetic-trap example as the reference experiment while later asynchronous control facilities are introduced.
 3. Complete maintenance of state, history, domain, anchors, and references.
 4. Compact the candidate anchor set after fresh-session reconstruction tests.
 5. Revisit JOB/FORK/JFN ownership when direct evidence appears.
@@ -2838,6 +3058,70 @@ Next: Chapter 29, traps and interrupts.
 
 ---
 
+## Chapter 29 — arithmetic traps (partial)
+
+- Adopted Gorin's framing that TOPS-20 blurs the hardware trap/interrupt
+  distinction; arithmetic exceptions use traps while the remaining event
+  mechanisms are introduced through PSI later in the chapter.
+- Transcribed Example 18 (`TRAP`) and verified the `.SWART` four-word trap
+  block: `.ARPFL`, `.AROPC`, `.AREFA`, `.ARNPC`.
+- Corrected two important transcription errors in the working source:
+  - `XJRSTF TRAPB+.ARPFL`, not `XJRST`;
+  - `PC%NDV`, not the earlier mistyped flag name.
+- The wrong `XJRST` produced a diagnostic failure: the saved failing
+  instruction image `231040,,0` was interpreted as a PC and execution attempted
+  at `231040`. This became a semantic anchor for `XJRSTF` versus `XJRST`.
+- After correction, the complete example ran successfully:
+  - integer divide by zero trapped and reported;
+  - execution resumed with the integer result still `100`;
+  - floating exponent underflow trapped and reported;
+  - `DOFXU` recognized the `FSBR`, printed the computed value, changed the
+    underflow result to zero, and resumed;
+  - the program reached `done`.
+- Generated a MACRO listing using the native command form
+  `*relfile,listfile=sourcefile`.
+- Generated a LINK map with `@LOAD TRAPS /MAP`; because the program TITLE is
+  `TRAP`, LINK produced `TRAP.MAP`.
+- The map verified that program `TRAP` begins at low-segment address `140`.
+  Listing addresses plus `140` exactly reproduce the observed runtime addresses:
+  `START 335 -> 475`, `IDIVI 344 -> 504`, `FSBR 347 -> 507`, and literal
+  `530 -> 670`.
+- Gorin's printed run instead shows PCs `500`/`503` and EA `661`. The current
+  executable is internally consistent, so the historical layout discrepancy was
+  parked rather than treated as a semantic problem. CR/LF and literal-pool
+  differences remain hypotheses only.
+- Scans of Gorin's five source pages were checked against the transcription;
+  the important control-flow and error-return instructions, including the
+  `ERJMP .+1` instances and `XJRSTF`, agree with the printed source.
+
+Next: Gorin's discussion of good versus bad trap coding, followed by PSI
+interrupt handling. Extended addressing and assembler discussion follow this
+chapter.
+
+---
+
+
+## LUUO executable anchor revisit
+
+- Revisited LUUOs with a deliberately minimal user-defined `HELLO` instruction.
+- Gorin restated the processor mechanism: resolve EA, normalize the instruction
+  into location `40`, then execute location `41` as though by `XCT 41`.
+- Gorin explicitly states that location `41` may contain either `JSR` or `PUSHJ`
+  to the LUUO handler; the saved PC points to the instruction following the LUUO.
+- An initial `JRST` dispatch reached the handler but had no valid subroutine return.
+- An attempted JSR-style handler returned to the continuation but did not execute
+  the intended handler body; exact JSR handler layout remains unverified.
+- Verified the minimal PUSHJ pattern end-to-end using an initialized pushdown list:
+  `HELLO -> XCT 41 -> PUSHJ P,UUOHND -> handler -> POPJ P, -> continuation`.
+- Observed output was `Hello from a made-up instruction!` followed by
+  `Back from HELLO.`
+- Saved `assembly-examples/luuo1.mac` as the canonical minimal executable anchor.
+- Knowledge-representation lesson: the existing LUUO generator was broadly correct
+  but too abstract at the concrete entry/return convention; add an executable
+  anchor rather than replacing the generator.
+
+---
+
 
 <!-- projects/macro-20/state/TODO.md -->
 
@@ -2845,9 +3129,11 @@ Next: Chapter 29, traps and interrupts.
 
 ## Project TODO's
 
-- Continue with Chapter 29, traps and interrupts.
-  Expand the Small Executive as later chapters introduce pseudo-interrupts,
-  traps, asynchronous control transfer and related facilities.
+- Continue Chapter 29 with Gorin's discussion of good versus bad trap coding,
+  then PSI interrupt handling. The arithmetic-trap Example 18 mechanism is
+  verified and should be retained as the reference experiment.
+- Park the historical address-layout discrepancy in Example 18 unless later
+  assembler/linker material explains it naturally; do not treat it as a trap-semantic issue.
 - Revisit MACRO-20 macro expansion semantics after the introductory chapters:
   nested angle brackets, argument substitution, rescanning, redefinition,
   and emitted source.
@@ -5352,6 +5638,11 @@ When a LUUO executes:
 6. the processor executes the instruction at location `41` as though
    through `XCT 41`.
 
+Gorin states that location `41` is presumed to contain a subroutine call to
+the program's LUUO handler; either `JSR` or `PUSHJ` may be used. Because the
+instruction at `41` is executed in the `XCT 41` context, the PC saved by that
+subroutine call points to the instruction following the original LUUO.
+
 The processor does not interpret the local opcode beyond invoking this
 mechanism.
 
@@ -5422,6 +5713,39 @@ return to following instruction
 
 Dispatch tables make the relationship between local opcodes and software
 handlers explicit and maintainable.
+
+### Verified minimal PUSHJ pattern
+
+A minimal `HELLO` LUUO was assembled, linked, and run successfully on the
+project Panda 7.1 system. The verified entry/return pattern is:
+
+```asm
+        OPDEF   HELLO [001000,,0]
+
+        LOC     41
+        PUSHJ   P,UUOHND
+        RELOC
+
+        ...
+
+START:  ...
+        MOVE    P,[IOWD PDLEN,PDLIST]
+        HELLO
+        ...
+
+UUOHND: ...
+        POPJ    P,
+```
+
+Observed output proved that the handler ran and that `POPJ P,` resumed at the
+instruction following `HELLO`. The saved `assembly-examples/luuo1.mac` is the
+canonical minimal executable anchor for this pattern.
+
+Gorin also explicitly permits `JSR` at location `41`, but the project does not
+yet have a verified JSR-style handler pattern. An attempted JSR variant returned
+to the continuation without executing the intended handler body. Do not infer
+the exact JSR handler layout from generic JSR knowledge; revisit it against the
+source material.
 
 ---
 
@@ -5734,6 +6058,53 @@ address of a record field.
 ### Guarded distinction
 
 Do not infer that the processor interprets local operations or preserves the original instruction unchanged. LUUO dispatch normalizes the instruction and transfers control; all interpretation belongs to the handler.
+
+---
+
+
+## Trap and Control-Transfer Semantics
+
+### XJRSTF versus XJRST for the arithmetic trap block
+
+The verified arithmetic-trap return sequence is:
+
+```asm
+XJRSTF TRAPB+.ARPFL
+```
+
+`XJRSTF` consumes the trap block's saved flags/PC pair beginning at `.ARPFL`:
+the first word supplies flags and the following `.AROPC` word supplies the
+continuation PC.
+
+A transcription error using `XJRST` instead was experimentally decisive. The
+saved `.ARPFL` word contained the failing `IDIVI` instruction image
+`231040,,0`; `XJRST` treated that whole word as a PC and attempted to transfer
+to `231040`, producing an illegal-instruction failure.
+
+#### Guarded distinction
+
+Do not reconstruct `XJRST` and `XJRSTF` as interchangeable extended jump
+forms. For this trap-block layout, `XJRSTF` is required because return depends
+on restoring both flags and the saved continuation PC.
+
+#### Provenance
+
+Verified against Gorin Example 18, the SWTRP trap-block documentation, and the
+observed failure/success pair on TOPS-20.
+
+---
+
+### Arithmetic trap block continuation PC
+
+For the verified `.SWART` trap block, `.AROPC` contains the location of the
+trapping instruction plus one. Gorin's example subtracts one only for display
+of the failing instruction's address; normal resumption uses `.AROPC` as the
+continuation PC through `XJRSTF`.
+
+#### Guarded distinction
+
+Do not subtract one from `.AROPC` when reconstructing the normal trap return
+path merely because the diagnostic print routine does so.
 
 ---
 
@@ -7150,5 +7521,117 @@ Do not infer runtime behaviour from source or listing organization.
 
 ---
 
+
+
+<!-- projects/macro-20/domain/traps-and-interrupts.md -->
+
+# Traps and Interrupts
+
+## Scope
+
+Compact reasoning model for Gorin Chapter 29. This capsule is intentionally
+partial: arithmetic traps are established; PSI interrupt handling is not yet
+covered in enough detail to encode.
+
+## Framing
+
+Gorin explicitly says TOPS-20 blurs the distinction between traps and
+interrupts. Do not import a modern textbook synchronous/asynchronous taxonomy
+as the governing model.
+
+In the material covered so far:
+
+- arithmetic exceptions use the trap mechanism;
+- other event handling is introduced through the software interrupt / PSI
+  system later in the chapter.
+
+## Arithmetic-trap generator
+
+For `.SWART`, set:
+
+```text
+AC1 = process handle
+AC2 = .SWART
+AC3 = address of four-word trap block
+SWTRP%
+```
+
+The trap block carries:
+
+```text
+.ARPFL  saved flags + failing instruction image
+.AROPC  trapping instruction PC + 1
+.AREFA  effective address of trapping instruction
+.ARNPC  new PC / handler word
+```
+
+The verified operational model is:
+
+```text
+register trap block
+    ↓
+arithmetic exception
+    ↓
+monitor records trap context
+    ↓
+handler examines/reports/optionally repairs result
+    ↓
+handler clears any flags that must not be reasserted
+    ↓
+XJRSTF from .ARPFL/.AROPC restores state and resumes
+```
+
+## Example 18 anchor
+
+The verified return sequence is:
+
+```asm
+TRAPIT: CALL   TRAPNT
+        XJRSTF TRAPB+.ARPFL
+```
+
+`XJRSTF` is load-bearing. Substituting `XJRST` caused the saved instruction
+image `231040,,0` to be interpreted as a PC and produced an illegal-instruction
+transfer to `231040`.
+
+For floating exponent underflow, Example 18's `DOFXU` identifies the failing
+floating instruction, locates the result (AC, memory, and where applicable
+AC+1), reports the computed value, and replaces the underflow result with zero
+before resumption.
+
+## Tooling evidence
+
+Current environment:
+
+```text
+MACRO %53B(1254)-4
+LINK 6(2425)
+```
+
+Useful commands established experimentally:
+
+```text
+MACRO listing:
+*relfile,listfile=sourcefile
+
+LINK map:
+@LOAD relfile /MAP
+```
+
+For Example 18 the TITLE is `TRAP`, so the map file is `TRAP.MAP`. The map
+places the program at low-segment base `140`; adding `140` to relocatable
+listing addresses reproduces observed runtime addresses exactly.
+
+## Boundaries / open questions
+
+- PSI dispatch structure, levels/channels, enabling, masking, and return
+  conventions are not yet accepted; wait for the remaining Chapter 29 text.
+- Do not infer good/bad trap coding rules before Gorin's post-example
+  discussion is incorporated.
+- Gorin's printed Example 18 addresses differ from the current build. The
+  current executable is internally consistent; the historical layout cause is
+  unresolved and deliberately parked.
+- CR/LF or literal-pool effects are hypotheses only and must not be promoted
+  without evidence.
 
 

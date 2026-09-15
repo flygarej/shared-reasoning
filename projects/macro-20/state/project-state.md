@@ -71,7 +71,7 @@ The verified Small Executive now includes working `PUSH` and `QUEUE`
 servers. It anchors process handling and IPCF composition in addition to
 COMND and JFN-based I/O.
 
-Current work is Chapter 29, traps and interrupts. The arithmetic-trap mechanism is now experimentally anchored; Gorin's discussion of good and bad trap coding and the PSI interrupt material remain to be covered.
+Current work is Chapter 29, traps and interrupts. The arithmetic-trap mechanism is experimentally anchored, and Gorin's discussion of accumulator save/restore strategies has been incorporated. PSI interrupt handling is the next branch to cover.
 
 ---
 
@@ -217,6 +217,12 @@ effective address `661`, while the current build reports `504`, `507`, and
 `670`. The current executable is internally consistent and correct. The cause
 of the historical layout difference is deliberately left unresolved because it
 does not affect the accepted trap semantics.
+
+Gorin's follow-on discussion compares three accumulator-preservation strategies:
+inline save/restore, an outer save/restore routine calling a worker, and a
+coroutine-like `SAVACS` pattern. The accepted design lesson is to move
+correctness-sensitive save/restore cleanup out of ordinary exit paths so that
+all normal returns are safe without duplicating or remembering restore logic.
 
 ---
 

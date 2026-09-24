@@ -2285,7 +2285,7 @@ The objective is not to burden learning with verification machinery, but to ensu
 
 
 
-<!-- projects/fresh-project/state/project-state.md -->
+<!-- projects/learn-git/state/project-state.md -->
 
 # project-state.md
 
@@ -2308,7 +2308,7 @@ The purpose of this document is to capture the project's current accepted unders
 ---
 
 
-<!-- projects/fresh-project/state/session-log.md -->
+<!-- projects/learn-git/state/session-log.md -->
 
 # session-log.md
 
@@ -2331,7 +2331,7 @@ The purpose of this document is to preserve the project's chronological evolutio
 ---
 
 
-<!-- projects/fresh-project/state/TODO.md -->
+<!-- projects/learn-git/state/TODO.md -->
 
 # Fresh Project TODO
 
@@ -2455,7 +2455,7 @@ not as bootstrap documentation.
 
 
 
-<!-- projects/fresh-project/domain/domain.md -->
+<!-- projects/learn-git/domain/domain.md -->
 
 # Domain knowledge
 

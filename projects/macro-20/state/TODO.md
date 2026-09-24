@@ -2,9 +2,9 @@
 
 ## Project TODO's
 
-- Continue Chapter 29 with Gorin's discussion of good versus bad trap coding,
-  then PSI interrupt handling. The arithmetic-trap Example 18 mechanism is
-  verified and should be retained as the reference experiment.
+- Continue Chapter 29 with PSI interrupt handling. The arithmetic-trap Example 18
+  mechanism and Gorin's SAVACS save/restore design discussion are incorporated
+  and should be retained as the reference context.
 - Park the historical address-layout discrepancy in Example 18 unless later
   assembler/linker material explains it naturally; do not treat it as a trap-semantic issue.
 - Revisit MACRO-20 macro expansion semantics after the introductory chapters:

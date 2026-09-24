@@ -228,9 +228,15 @@ Next: Chapter 29, traps and interrupts.
   the important control-flow and error-return instructions, including the
   `ERJMP .+1` instances and `XJRSTF`, agree with the printed source.
 
-Next: Gorin's discussion of good versus bad trap coding, followed by PSI
-interrupt handling. Extended addressing and assembler discussion follow this
-chapter.
+- Incorporated Gorin's discussion of accumulator-preservation strategies after
+  the trap example. Compared inline save/restore, an outer save/restore routine
+  calling a worker, and the coroutine-like `CALL SAVACS` pattern.
+- Accepted the design lesson that correctness-sensitive save/restore cleanup is
+  safer when factored out of ordinary exit paths, allowing worker code to return
+  normally without each path remembering restore logic.
+
+Next: PSI interrupt handling. Extended addressing and assembler discussion
+follow this chapter.
 
 ---
 
